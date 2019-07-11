@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Copyright (c) 2014 IBM Corporation and others.
+    All rights reserved. This program and the accompanying materials
+    are made available under the terms of the Eclipse Public License v1.0
+    which accompanies this distribution, and is available at
+    http://www.eclipse.org/legal/epl-v10.html
+   
+    Contributors:
+        IBM Corporation - initial API and implementation
+ -->
+<application id="Application_ID" version="6"
+    xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/application_6.xsd">
+
+  <display-name>Test Default Error Pages Application (Servlet 30 and Servlet 31 cases)</display-name>
+
+  <module id="WebModule_01">
+    <web>
+           <web-uri>ErrorPage_Web25None_NoFrag_ExtNone.war</web-uri>
+      <context-root>ErrorPage_Web25None_NoFrag_ExtNone</context-root>
+    </web>
+  </module>
+
+  <module id="WebModule_02">
+    <web>
+           <web-uri>ErrorPage_Web30None_Frag30None_ExtNone.war</web-uri>
+      <context-root>ErrorPage_Web30None_Frag30None_ExtNone</context-root>
+    </web>
+  </module>
+
+  <module id="WebModule_03">
+    <web>
+           <web-uri>ErrorPage_Web25None_NoFrag_ExtOne.war</web-uri>
+      <context-root>ErrorPage_Web25None_NoFrag_ExtOne</context-root>
+    </web>
+  </module>
+
+  <module id="WebModule_04">
+    <web>
+           <web-uri>ErrorPage_Web30One_Frag30None_ExtNone.war</web-uri>
+      <context-root>ErrorPage_Web30One_Frag30None_ExtNone</context-root>
+    </web>
+  </module>
+
+  <module id="WebModule_05">
+    <web>
+           <web-uri>ErrorPage_Web30None_Frag30One_ExtNone.war</web-uri>
+      <context-root>ErrorPage_Web30None_Frag30One_ExtNone</context-root>
+    </web>
+  </module>
+
+  <module id="WebModule_06">
+    <web>
+           <web-uri>ErrorPage_Web30None_Frag30None_ExtOne.war</web-uri>
+      <context-root>ErrorPage_Web30None_Frag30None_ExtOne</context-root>
+    </web>
+  </module>
+
+  <module id="WebModule_07">
+    <web>
+           <web-uri>ErrorPage_Web30One_Frag30None_ExtOne.war</web-uri>
+      <context-root>ErrorPage_Web30One_Frag30None_ExtOne</context-root>
+    </web>
+  </module>
+
+  <module id="WebModule_08">
+    <web>
+           <web-uri>ErrorPage_Web30None_Frag30One_ExtOne.war</web-uri>
+      <context-root>ErrorPage_Web30None_Frag30One_ExtOne</context-root>
+    </web>
+  </module>
+
+  <module id="WebModule_09">
+    <web>
+           <web-uri>ErrorPage_Web30One_Frag30OneSame_ExtNone.war</web-uri>
+      <context-root>ErrorPage_Web30One_Frag30OneSame_ExtNone</context-root>
+    </web>
+  </module>
+
+  <module id="WebModule_10">
+    <web>
+           <web-uri>ErrorPage_Web30None_Frag30TwoSame_ExtNone.war</web-uri>
+      <context-root>ErrorPage_Web30None_Frag30TwoSame_ExtNone</context-root>
+    </web>
+  </module>
+
+  <module id="WebModule_11">
+    <web>
+           <web-uri>ErrorPage_Web30One_Frag30TwoSame_ExtNone.war</web-uri>
+      <context-root>ErrorPage_Web30One_Frag30TwoSame_ExtNone</context-root>
+    </web>
+  </module>
+
+  <module id="WebModule_12">
+    <web>
+           <web-uri>ErrorPage_Web30One_Frag30OneDiff_ExtNone.war</web-uri>
+      <context-root>ErrorPage_Web30One_Frag30OneDiff_ExtNone</context-root>
+    </web>
+  </module>
+
+  <module id="WebModule_13">
+    <web>
+           <web-uri>ErrorPage_Web30None_Frag30TwoDiff_ExtNone.war</web-uri>
+      <context-root>ErrorPage_Web30None_Frag30TwoDiff_ExtNone</context-root>
+    </web>
+  </module>
+
+  <module id="WebModule_14">
+    <web>
+           <web-uri>ErrorPage_Web30One_Frag30TwoDiff_ExtNone.war</web-uri>
+      <context-root>ErrorPage_Web30One_Frag30TwoDiff_ExtNone</context-root>
+    </web>
+  </module>
+
+</application>
