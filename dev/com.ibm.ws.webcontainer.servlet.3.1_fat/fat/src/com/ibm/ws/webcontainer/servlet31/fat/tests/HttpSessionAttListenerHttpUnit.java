@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 IBM Corporation and others.
+ * Copyright (c) 2014, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -16,13 +16,20 @@ import java.util.logging.Logger;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import com.ibm.websphere.simplicity.ShrinkHelper;
 import com.ibm.ws.fat.util.LoggingTest;
 import com.ibm.ws.fat.util.SharedServer;
 
 import componenttest.annotation.MinimumJavaLevel;
+import componenttest.custom.junit.runner.FATRunner;
 import componenttest.custom.junit.runner.Mode;
 import componenttest.custom.junit.runner.Mode.TestMode;
 import junit.framework.Assert;
@@ -31,6 +38,7 @@ import junit.framework.Assert;
  *
  */
 @MinimumJavaLevel(javaLevel = 7)
+@RunWith(FATRunner.class)
 public class HttpSessionAttListenerHttpUnit extends LoggingTest {
 
     private static final Logger LOG = Logger.getLogger(HttpSessionAttListenerHttpUnit.class.getName());
@@ -39,6 +47,35 @@ public class HttpSessionAttListenerHttpUnit extends LoggingTest {
     public static SharedServer SHARED_SERVER = new SharedServer("servlet31_wcServer");
 
     private static final String LISTENER_SERVLET_URL = "/TestHttpSessionAttrListener/TestAddListener";
+    private static final String SESSION_ATTR_LISTENER_APP_NAME = "TestHttpSessionAttrListener";
+
+    @BeforeClass
+    public static void setup() throws Exception {
+        // Create TestHttpSessionAttrListener.war
+        WebArchive testHttpSessionAttrListenerWar = ShrinkWrap.create(WebArchive.class, SESSION_ATTR_LISTENER_APP_NAME + ".war");
+        testHttpSessionAttrListenerWar.addPackage("sessionListener");
+
+        ShrinkHelper.exportDropinAppToServer(SHARED_SERVER.getLibertyServer(), testHttpSessionAttrListenerWar);
+
+        // Add the apps to the server for validation
+        // PAN: TODO with this we seem to be moving on too soon and the tests are bombing
+        //SHARED_SERVER.getLibertyServer().addInstalledAppForValidation(SESSION_ATTR_LISTENER_APP_NAME);
+
+        // if (SHARED_SERVER.getLibertyServer().isStarted()) {
+        //     System.out.println("PAN: server is already started no going to start it");
+        // }
+
+        SHARED_SERVER.startIfNotStarted();
+
+        SHARED_SERVER.getLibertyServer().waitForStringInLog("CWWKZ0001I.* " + SESSION_ATTR_LISTENER_APP_NAME);
+    }
+
+    @AfterClass
+    public static void testCleanup() throws Exception {
+        if (SHARED_SERVER.getLibertyServer() != null && SHARED_SERVER.getLibertyServer().isStarted()) {
+            SHARED_SERVER.getLibertyServer().stopServer("SRVE8015E:.*");
+        }
+    }
 
     /*
      * This test will first create HttpSessionAttributeListener.
@@ -53,6 +90,7 @@ public class HttpSessionAttListenerHttpUnit extends LoggingTest {
         LOG.info("\n /************************************************************************************/");
         LOG.info("\n [WebContainer | HttpSessionAttListenerHttpUnit]: test_RemoveAttribute_onInvalidate Start");
         // PAN: TODO
+        // MOVED to after class
         //SHARED_SERVER.setExpectedErrors("SRVE8015E:.*");
 
         try {

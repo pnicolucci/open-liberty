@@ -15,12 +15,14 @@ import java.net.URLEncoder;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.ibm.ws.fat.util.LoggingTest;
 import com.ibm.ws.fat.util.SharedServer;
 import com.ibm.ws.fat.util.browser.WebBrowser;
 
 import componenttest.annotation.MinimumJavaLevel;
+import componenttest.custom.junit.runner.FATRunner;
 import componenttest.custom.junit.runner.Mode;
 import componenttest.custom.junit.runner.Mode.TestMode;
 
@@ -30,6 +32,7 @@ import componenttest.custom.junit.runner.Mode.TestMode;
  * Verify that injection is performed into several listener types.
  */
 @MinimumJavaLevel(javaLevel = 7)
+@RunWith(FATRunner.class)
 public class CDIListenersTest extends LoggingTest {
 
     // Server instance ...

@@ -12,16 +12,19 @@ package com.ibm.ws.webcontainer.servlet31.fat.tests;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.ibm.ws.fat.util.LoggingTest;
 import com.ibm.ws.fat.util.SharedServer;
 import com.ibm.ws.fat.util.browser.WebBrowser;
 
 import componenttest.annotation.MinimumJavaLevel;
+import componenttest.custom.junit.runner.FATRunner;
 import componenttest.custom.junit.runner.Mode;
 import componenttest.custom.junit.runner.Mode.TestMode;
 
 @MinimumJavaLevel(javaLevel = 7)
+@RunWith(FATRunner.class)
 public class CDITests extends LoggingTest {
 
     @ClassRule

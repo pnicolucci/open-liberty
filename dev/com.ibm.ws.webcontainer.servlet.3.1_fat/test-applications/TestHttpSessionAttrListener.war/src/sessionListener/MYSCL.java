@@ -77,7 +77,7 @@ public class MYSCL implements ServletContextListener {
      */
     @Override
     public void contextDestroyed(ServletContextEvent arg0) {
-        System.out.println("ServletContextListener : MYSCL destoryed");
+        System.out.println("ServletContextListener : MYSCL destroyed");
     }
 
 }

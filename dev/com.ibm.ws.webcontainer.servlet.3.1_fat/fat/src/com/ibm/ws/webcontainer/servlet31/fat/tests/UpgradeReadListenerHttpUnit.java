@@ -29,13 +29,16 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.ibm.ws.fat.util.LoggingTest;
 import com.ibm.ws.fat.util.SharedServer;
 
 import componenttest.annotation.MinimumJavaLevel;
+import componenttest.custom.junit.runner.FATRunner;
 
 @MinimumJavaLevel(javaLevel = 7)
+@RunWith(FATRunner.class)
 public class UpgradeReadListenerHttpUnit extends LoggingTest {
 
     private static final Logger LOG = Logger.getLogger(UpgradeReadListenerHttpUnit.class.getName());

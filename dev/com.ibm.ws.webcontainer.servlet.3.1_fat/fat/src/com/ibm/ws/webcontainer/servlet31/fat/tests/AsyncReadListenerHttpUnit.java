@@ -28,15 +28,18 @@ import org.apache.commons.httpclient.methods.PostMethod;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.ibm.ws.fat.util.LoggingTest;
 import com.ibm.ws.fat.util.SharedServer;
 import com.meterware.httpunit.HttpException;
 
 import componenttest.annotation.MinimumJavaLevel;
+import componenttest.custom.junit.runner.FATRunner;
 import junit.framework.Assert;
 
 @MinimumJavaLevel(javaLevel = 7)
+@RunWith(FATRunner.class)
 public class AsyncReadListenerHttpUnit extends LoggingTest {
     private static final Logger LOG = Logger.getLogger(AsyncReadListenerHttpUnit.class.getName());
 

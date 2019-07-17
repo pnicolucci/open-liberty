@@ -30,6 +30,7 @@ import org.apache.http.protocol.HTTP;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.ibm.websphere.simplicity.log.Log;
 import com.ibm.ws.fat.util.LoggingTest;
@@ -37,11 +38,13 @@ import com.ibm.ws.fat.util.SharedServer;
 import com.ibm.ws.webcontainer.security.test.servlets.PostParamsClient;
 
 import componenttest.annotation.MinimumJavaLevel;
+import componenttest.custom.junit.runner.FATRunner;
 import componenttest.custom.junit.runner.Mode;
 import componenttest.custom.junit.runner.Mode.TestMode;
 
 @MinimumJavaLevel(javaLevel = 7)
 @Mode(TestMode.FULL)
+@RunWith(FATRunner.class)
 public class FormLoginReadListenerTest extends LoggingTest {
     private static final Logger LOG = Logger.getLogger(FormLoginReadListenerTest.class.getName());
 

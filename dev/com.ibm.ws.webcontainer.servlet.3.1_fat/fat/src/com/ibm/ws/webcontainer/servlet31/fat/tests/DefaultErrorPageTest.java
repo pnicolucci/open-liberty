@@ -18,6 +18,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.ibm.ws.fat.util.LoggingTest;
 import com.ibm.ws.fat.util.SharedServer;
@@ -28,6 +29,7 @@ import com.meterware.httpunit.WebResponse;
 
 import componenttest.annotation.ExpectedFFDC;
 import componenttest.annotation.MinimumJavaLevel;
+import componenttest.custom.junit.runner.FATRunner;
 import componenttest.custom.junit.runner.Mode;
 import componenttest.custom.junit.runner.Mode.TestMode;
 import componenttest.topology.impl.LibertyServer;
@@ -74,6 +76,7 @@ import componenttest.topology.impl.LibertyServer;
  * require java7.
  */
 @MinimumJavaLevel(javaLevel = 7)
+@RunWith(FATRunner.class)
 public class DefaultErrorPageTest extends LoggingTest {
     private static final Logger LOG = Logger.getLogger(DefaultErrorPageTest.class.getName());
 

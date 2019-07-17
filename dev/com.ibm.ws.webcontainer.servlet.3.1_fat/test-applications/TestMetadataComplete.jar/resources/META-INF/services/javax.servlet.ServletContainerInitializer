@@ -8,5 +8,5 @@
 # * Contributors:
 # *     IBM Corporation - initial API and implementation
 # *******************************************************************************/
-initializer.HashSetChildInitializer
-initializer.ParentServletInitializer
+com.ibm.ws.webcontainer.servlet31.fat.metadatacomplete.initializer.HashSetChildInitializer
+com.ibm.ws.webcontainer.servlet31.fat.metadatacomplete.initializer.ParentServletInitializer

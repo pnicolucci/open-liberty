@@ -39,7 +39,7 @@ src: \
 	test-applications/TestHttpSessionAttrListener.war/src,\
 	test-applications/TestMetadataComplete.jar/src,\
 	test-applications/TestMetadataComplete.war/src,\
-	test-applications/TestMetadataCompleteExcludeFragment.war/src,\
+	test-applications/TestMetadataCompleteExcludedFragment.jar/src,\
 	test-applications/TestProgrammaticListenerAddition.jar/src,\
 	test-applications/TestServlet31.jar/src,\
 	test-applications/TestServlet31.war/src,\

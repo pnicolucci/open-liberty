@@ -24,10 +24,12 @@ import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
+import org.junit.runner.RunWith;
 
 import com.ibm.websphere.simplicity.log.Log;
 
 import componenttest.annotation.MinimumJavaLevel;
+import componenttest.custom.junit.runner.FATRunner;
 import componenttest.topology.impl.LibertyServer;
 import componenttest.topology.impl.LibertyServerFactory;
 import componenttest.topology.utils.HttpUtils;
@@ -36,6 +38,7 @@ import componenttest.topology.utils.HttpUtils;
  *
  */
 @MinimumJavaLevel(javaLevel = 7)
+@RunWith(FATRunner.class)
 public class NBMultiReadTest {
 
     private static LibertyServer server;

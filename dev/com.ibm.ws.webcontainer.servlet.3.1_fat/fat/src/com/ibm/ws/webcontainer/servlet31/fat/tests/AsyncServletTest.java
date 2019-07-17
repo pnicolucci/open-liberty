@@ -21,6 +21,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.ibm.ws.fat.util.LoggingTest;
 import com.ibm.ws.fat.util.SharedServer;
@@ -30,6 +31,7 @@ import com.meterware.httpunit.WebRequest;
 import com.meterware.httpunit.WebResponse;
 
 import componenttest.annotation.MinimumJavaLevel;
+import componenttest.custom.junit.runner.FATRunner;
 import componenttest.custom.junit.runner.Mode;
 import componenttest.custom.junit.runner.Mode.TestMode;
 
@@ -37,6 +39,7 @@ import componenttest.custom.junit.runner.Mode.TestMode;
  * Tests to execute on the wcServer that use HttpUnit.
  */
 @MinimumJavaLevel(javaLevel = 7)
+@RunWith(FATRunner.class)
 public class AsyncServletTest extends LoggingTest {
     private static final Logger LOG = Logger.getLogger(AsyncServletTest.class.getName());
     protected static final Map<String, String> testUrlMap = new HashMap<String, String>();

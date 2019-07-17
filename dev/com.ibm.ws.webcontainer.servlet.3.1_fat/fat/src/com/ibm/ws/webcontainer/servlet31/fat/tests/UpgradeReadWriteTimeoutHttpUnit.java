@@ -23,11 +23,13 @@ import java.util.logging.Logger;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.ibm.ws.fat.util.LoggingTest;
 import com.ibm.ws.fat.util.SharedServer;
 
 import componenttest.annotation.MinimumJavaLevel;
+import componenttest.custom.junit.runner.FATRunner;
 import componenttest.custom.junit.runner.Mode;
 import componenttest.custom.junit.runner.Mode.TestMode;
 
@@ -35,6 +37,7 @@ import componenttest.custom.junit.runner.Mode.TestMode;
  * The Servlet 3.1 test bucket class to test out the custom properties added for Servlet 3.1
  */
 @MinimumJavaLevel(javaLevel = 7)
+@RunWith(FATRunner.class)
 public class UpgradeReadWriteTimeoutHttpUnit extends LoggingTest {
 
     private static final Logger LOG = Logger.getLogger(UpgradeReadWriteTimeoutHttpUnit.class.getName());

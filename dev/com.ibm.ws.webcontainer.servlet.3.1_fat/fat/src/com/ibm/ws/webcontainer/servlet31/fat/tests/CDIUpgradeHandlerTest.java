@@ -27,6 +27,7 @@ import java.util.logging.Logger;
 
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.ibm.ws.fat.util.LoggingTest;
 import com.ibm.ws.fat.util.SharedServer;
@@ -34,6 +35,7 @@ import com.ibm.ws.fat.util.browser.WebBrowser;
 import com.ibm.ws.fat.util.browser.WebResponse;
 
 import componenttest.annotation.MinimumJavaLevel;
+import componenttest.custom.junit.runner.FATRunner;
 import componenttest.custom.junit.runner.Mode;
 import componenttest.custom.junit.runner.Mode.TestMode;
 
@@ -61,6 +63,7 @@ import componenttest.custom.junit.runner.Mode.TestMode;
  * </ul>
  */
 @MinimumJavaLevel(javaLevel = 7)
+@RunWith(FATRunner.class)
 public class CDIUpgradeHandlerTest extends LoggingTest {
 
     // Server instance ...

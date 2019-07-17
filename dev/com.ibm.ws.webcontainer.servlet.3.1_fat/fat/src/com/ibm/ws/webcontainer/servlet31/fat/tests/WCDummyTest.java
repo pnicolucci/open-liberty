@@ -17,13 +17,17 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.ibm.ws.fat.util.LoggingTest;
 import com.ibm.ws.fat.util.SharedServer;
 
+import componenttest.custom.junit.runner.FATRunner;
+
 /**
  *
  */
+@RunWith(FATRunner.class)
 public class WCDummyTest extends LoggingTest {
     private static final Logger LOG = Logger.getLogger(WCDummyTest.class.getName());
     protected static final Map<String, String> testUrlMap = new HashMap<String, String>();

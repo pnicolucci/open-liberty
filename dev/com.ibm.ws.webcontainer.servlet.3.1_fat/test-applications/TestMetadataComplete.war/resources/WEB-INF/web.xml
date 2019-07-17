@@ -18,7 +18,7 @@
     
     <servlet>
     	<servlet-name>DisplayInits</servlet-name>
-    	<servlet-class>servlets.DisplayInits</servlet-class>
+    	<servlet-class>com.ibm.ws.webcontainer.servlet31.fat.metadatacomplete.servlets.DisplayInits</servlet-class>
     </servlet>
     
     <servlet-mapping>

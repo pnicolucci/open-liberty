@@ -19,11 +19,17 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.jboss.shrinkwrap.api.ShrinkWrap;
+import org.jboss.shrinkwrap.api.spec.JavaArchive;
+import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
+import com.ibm.websphere.simplicity.ShrinkHelper;
 import com.ibm.ws.fat.util.LoggingTest;
 import com.ibm.ws.fat.util.SharedServer;
 import com.meterware.httpunit.GetMethodWebRequest;
@@ -33,6 +39,7 @@ import com.meterware.httpunit.WebResponse;
 
 import componenttest.annotation.ExpectedFFDC;
 import componenttest.annotation.MinimumJavaLevel;
+import componenttest.custom.junit.runner.FATRunner;
 import componenttest.custom.junit.runner.Mode;
 import componenttest.custom.junit.runner.Mode.TestMode;
 
@@ -40,16 +47,52 @@ import componenttest.custom.junit.runner.Mode.TestMode;
  * Tests to execute on the wcServer that use HttpUnit.
  */
 @MinimumJavaLevel(javaLevel = 7)
+@RunWith(FATRunner.class)
 public class WCServerHttpUnit extends LoggingTest {
     private static final Logger LOG = Logger.getLogger(WCServerHttpUnit.class.getName());
     protected static final Map<String, String> testUrlMap = new HashMap<String, String>();
+    private static final String TESTSERVLET31_APP_NAME = "TestServlet31";
+    private static final String TESTSERVLET31_JAR_NAME = "TestServlet31";
+    private static final String SESSIONIDLISTENER_JAR_NAME = "SessionIdListener";
 
     @ClassRule
     public static SharedServer SHARED_SERVER = new SharedServer("servlet31_wcServer");
 
+    @BeforeClass
+    public static void setup() throws Exception {
+        // Create the TestServlet31 jar
+        JavaArchive testServlet31Jar = ShrinkWrap.create(JavaArchive.class, TESTSERVLET31_JAR_NAME + ".jar");
+        testServlet31Jar.addPackage("com.ibm.ws.webcontainer.servlet31.fat.testservlet31.jar.servlets");
+
+        // Create the SessionIdListener jar
+        JavaArchive sessionIdListenerJar = ShrinkWrap.create(JavaArchive.class, SESSIONIDLISTENER_JAR_NAME + ".jar");
+        sessionIdListenerJar.addPackage("com.ibm.ws.webcontainer.servlet31.fat.sessionidlistener.listeners");
+        sessionIdListenerJar.addPackage("com.ibm.ws.webcontainer.servlet31.fat.sessionidlistener.servlets");
+
+        // Create the TestServlet31.war application
+        WebArchive testServlet31War = ShrinkWrap.create(WebArchive.class, TESTSERVLET31_APP_NAME + ".war");
+        testServlet31War.addAsLibrary(testServlet31Jar);
+        testServlet31War.addAsLibrary(sessionIdListenerJar);
+        testServlet31War.addPackage("com.ibm.ws.webcontainer.servlet31.fat.testservlet31.war.listeners");
+        testServlet31War.addPackage("com.ibm.ws.webcontainer.servlet31.fat.testservlet31.war.servlets");
+
+        ShrinkHelper.addDirectory(testServlet31War, "test-applications/" + TESTSERVLET31_APP_NAME + ".war" + "/resources");
+        ShrinkHelper.exportDropinAppToServer(SHARED_SERVER.getLibertyServer(), testServlet31War);
+
+        // Add the apps to the server for validation
+        //SHARED_SERVER.getLibertyServer().addInstalledAppForValidation(TESTSERVLET31_APP_NAME);
+
+        SHARED_SERVER.startIfNotStarted();
+
+        SHARED_SERVER.getLibertyServer().waitForStringInLog("CWWKZ0001I.* " + TESTSERVLET31_APP_NAME);
+    }
+
     @AfterClass
     public static void testCleanup() throws Exception {
-        // test cleanup
+        if (SHARED_SERVER.getLibertyServer() != null && SHARED_SERVER.getLibertyServer().isStarted()) {
+            LOG.info("PAN: AfterClass Shutting down");
+            SHARED_SERVER.getLibertyServer().stopServer();
+        }
     }
 
     @Before
