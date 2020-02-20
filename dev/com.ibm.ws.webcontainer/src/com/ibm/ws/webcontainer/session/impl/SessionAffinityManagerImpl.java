@@ -38,6 +38,7 @@ import com.ibm.wsspi.session.SessionAffinityContext;
 import com.ibm.wsspi.webcontainer.WebContainerRequestState;
 import com.ibm.wsspi.webcontainer.metadata.WebComponentMetaData;
 import com.ibm.wsspi.webcontainer.metadata.WebModuleMetaData;
+import com.ibm.wsspi.webcontainer.servlet.ExtendedCookie;
 import com.ibm.wsspi.webcontainer.servlet.IExtendedRequest;
 import com.ibm.wsspi.webcontainer.servlet.IExtendedResponse;
 import com.ibm.wsspi.webcontainer.webapp.WebAppConfig;
@@ -415,9 +416,10 @@ public class SessionAffinityManagerImpl extends SessionAffinityManager {
                  */
                 StringBuffer logStringBuffer = new StringBuffer();
                 
-                Cookie cookie = AccessController.doPrivileged(new PrivilegedAction<Cookie>() {
-                    public Cookie run() {
-                        return new Cookie(whichCookie, cookieString.toString());
+                // PAN:
+                ExtendedCookie cookie = AccessController.doPrivileged(new PrivilegedAction<ExtendedCookie>() {
+                    public ExtendedCookie run() {
+                        return new ExtendedCookie(whichCookie, cookieString.toString());
                     }
                 });
                 cookie.setPath(_smc.getSessionCookiePath());
@@ -492,12 +494,18 @@ public class SessionAffinityManagerImpl extends SessionAffinityManager {
                         }
                     }
                     // Get the appropriate SameSite value from the configuration and pass to the WebContainer using the RequestState 
-                    SameSiteCookie sessionSameSiteCookie = _smc.getSessionCookieSameSite();
+                    /*SameSiteCookie sessionSameSiteCookie = _smc.getSessionCookieSameSite();
                     if (sessionSameSiteCookie != SameSiteCookie.DISABLED) {
                         WebContainerRequestState requestState = WebContainerRequestState.getInstance(true);
                         String sameSiteCookieValue = sessionSameSiteCookie.getSameSiteCookieValue();
                         requestState.setCookieAttribute(cookie.getName(), "SameSite=" + sameSiteCookieValue);
-                    }
+                    } */
+                    // PAN:
+                    // Potential for SameSiteCookie.DISABLED this should resolve to SameSite.UNKNOWN, need to check  UNKNOWN in IResponseImpl
+                    SameSiteCookie sessionSameSiteCookie = _smc.getSessionCookieSameSite();
+                    //cookie.setSameSite(sessionSameSiteCookie.getSameSiteCookieValue()); // Using a String
+                    cookie.setSameSite(ExtendedCookie.SameSite.get(sessionSameSiteCookie.getSameSiteCookieValue())); // Using the SameSite Enum
+                    System.out.println("PAN: " + ExtendedCookie.SameSite.get(sessionSameSiteCookie.getSameSiteCookieValue()));
                     ((IExtendedResponse) response).addSessionCookie(cookie);
                 } else {
                     if (isTraceOn && LoggingUtil.SESSION_LOGGER_CORE.isLoggable(Level.FINE)) {

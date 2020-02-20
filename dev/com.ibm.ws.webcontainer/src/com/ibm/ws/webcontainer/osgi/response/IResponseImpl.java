@@ -29,6 +29,7 @@ import com.ibm.wsspi.http.HttpCookie;
 import com.ibm.wsspi.http.HttpInboundConnection;
 import com.ibm.wsspi.http.HttpResponse;
 import com.ibm.wsspi.webcontainer.WebContainerRequestState;
+import com.ibm.wsspi.webcontainer.servlet.ExtendedCookie;
 import com.ibm.wsspi.webcontainer.util.WrappingEnumeration;
 
 /**
@@ -81,7 +82,7 @@ public class IResponseImpl implements IResponse
      *
      * Current support by the Channel Framework is for the SameSite Cookie Attribute.
      */
-    WebContainerRequestState requestState = WebContainerRequestState.getInstance(false);
+   /* WebContainerRequestState requestState = WebContainerRequestState.getInstance(false);
     if (requestState != null) {
         String cookieAttribute = requestState.getCookieAttribute(cookieName);
         if (cookieAttribute != null) {
@@ -100,6 +101,17 @@ public class IResponseImpl implements IResponse
 
             // Remove the Cookie attribute that was used as it is no longer needed.
             requestState.removeCookieAttribute(cookieName);
+        } */
+    
+    // PAN:
+    /*if(cookie instanceof ExtendedCookie) {
+        ExtendedCookie extendedCookie = (ExtendedCookie) cookie;
+        hc.setAttribute("SameSite",extendedCookie.getSameSite());
+    } */
+    if(cookie instanceof ExtendedCookie) {
+        ExtendedCookie extendedCookie = (ExtendedCookie) cookie;
+        if(extendedCookie.getSameSite() != ExtendedCookie.SameSite.UNKNOWN) {
+            hc.setAttribute("SameSite", extendedCookie.getSameSite().getName());
         }
     }
 
