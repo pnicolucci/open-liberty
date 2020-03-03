@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2015, 2019 IBM Corporation and others.
+/*******************************************************************************
+ * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import org.junit.AfterClass;
@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 
 import com.ibm.websphere.simplicity.ShrinkHelper;
 import com.ibm.ws.jsf22.fat.CDITestBase;
+import com.ibm.ws.jsf22.fat.JSFUtils;
 
 import componenttest.annotation.Server;
 import componenttest.annotation.SkipForRepeat;
@@ -43,7 +44,7 @@ public class CDIFacesInMetaInfTests extends CDITestBase {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "TestJSFEL";
+    private static final String APP_NAME = "CDIFacesInMetaInf";
 
     protected static final Class<?> c = CDIFacesInMetaInfTests.class;
 
@@ -54,7 +55,9 @@ public class CDIFacesInMetaInfTests extends CDITestBase {
     public static void setup() throws Exception {
 
         // CDITests uses CDICommon packages
-        ShrinkHelper.defaultDropinApp(jsfCDIFacesInMetaInfServer, "CDIFacesInMetaInf.war", "com.ibm.ws.jsf22.fat.cdicommon.*");
+        if (!JSFUtils.isAppInstalled(jsfCDIFacesInMetaInfServer, APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(jsfCDIFacesInMetaInfServer, APP_NAME + ".war", "com.ibm.ws.jsf22.fat.cdicommon.*");
+        }
 
         jsfCDIFacesInMetaInfServer.startServer(CDIFacesInMetaInfTests.class.getSimpleName() + ".log");
 
@@ -78,7 +81,7 @@ public class CDIFacesInMetaInfTests extends CDITestBase {
      */
     @Test
     public void testActionListenerInjection_CDIFacesInMetaInf() throws Exception {
-        testActionListenerInjectionByApp("CDIFacesInMetaInf", jsfCDIFacesInMetaInfServer);
+        testActionListenerInjectionByApp(APP_NAME, jsfCDIFacesInMetaInfServer);
     }
 
     /**
@@ -91,7 +94,7 @@ public class CDIFacesInMetaInfTests extends CDITestBase {
      */
     @Test
     public void testNavigationHandlerInjection_CDIFacesInMetaInf() throws Exception {
-        testNavigationHandlerInjectionByApp("CDIFacesInMetaInf", jsfCDIFacesInMetaInfServer);
+        testNavigationHandlerInjectionByApp(APP_NAME, jsfCDIFacesInMetaInfServer);
     }
 
     /**
@@ -104,7 +107,7 @@ public class CDIFacesInMetaInfTests extends CDITestBase {
      */
     @Test
     public void testELResolverInjection_CDIFacesInMetaInf() throws Exception {
-        testELResolverInjectionByApp("CDIFacesInMetaInf", jsfCDIFacesInMetaInfServer);
+        testELResolverInjectionByApp(APP_NAME, jsfCDIFacesInMetaInfServer);
     }
 
     /**
@@ -116,7 +119,7 @@ public class CDIFacesInMetaInfTests extends CDITestBase {
      */
     @Test
     public void testCustomResourceHandlerInjections_CDIFacesInMetaInf() throws Exception {
-        testCustomResourceHandlerInjectionsByApp("CDIFacesInMetaInf", jsfCDIFacesInMetaInfServer);
+        testCustomResourceHandlerInjectionsByApp(APP_NAME, jsfCDIFacesInMetaInfServer);
 
     }
 
@@ -129,7 +132,7 @@ public class CDIFacesInMetaInfTests extends CDITestBase {
      */
     @Test
     public void testCustomStateManagerInjections_CDIFacesInMetaInf() throws Exception {
-        testCustomStateManagerInjectionsByApp("CDIFacesInMetaInf", jsfCDIFacesInMetaInfServer);
+        testCustomStateManagerInjectionsByApp(APP_NAME, jsfCDIFacesInMetaInfServer);
     }
 
     /**
@@ -141,6 +144,6 @@ public class CDIFacesInMetaInfTests extends CDITestBase {
      */
     @Test
     public void testFactoryAndOtherScopeInjections_CDIFacesInMetaInf() throws Exception {
-        testFactoryAndOtherAppScopedInjectionsByApp("CDIFacesInMetaInf", jsfCDIFacesInMetaInfServer);
+        testFactoryAndOtherAppScopedInjectionsByApp(APP_NAME, jsfCDIFacesInMetaInfServer);
     }
 }

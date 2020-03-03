@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,14 +7,13 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -46,7 +45,7 @@ public class JSF22ComponentRendererTests {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "JSF22ComponentRenderer";
+    private static final String APP_NAME = "JSF22ComponentRenderer";
 
     protected static final Class<?> c = JSF22ComponentRendererTests.class;
 
@@ -55,7 +54,9 @@ public class JSF22ComponentRendererTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        WebArchive War = ShrinkHelper.defaultDropinApp(jsfTestServer2, "JSF22ComponentRenderer.war", "com.ibm.ws.jsf22.fat.componentrenderer.*");
+        if (!JSFUtils.isAppInstalled(jsfTestServer2, APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(jsfTestServer2, APP_NAME + ".war", "com.ibm.ws.jsf22.fat.componentrenderer.*");
+        }
 
         jsfTestServer2.startServer(JSF22ComponentRendererTests.class.getSimpleName() + ".log");
     }
@@ -82,7 +83,7 @@ public class JSF22ComponentRendererTests {
 
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "jsf479.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "jsf479.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: " + testUrl);
@@ -113,7 +114,7 @@ public class JSF22ComponentRendererTests {
 
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "jsf1134.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "jsf1134.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: " + testUrl);
@@ -151,7 +152,7 @@ public class JSF22ComponentRendererTests {
 
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "jsf1019.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "jsf1019.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: " + testUrl);
@@ -187,7 +188,7 @@ public class JSF22ComponentRendererTests {
 
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "jsf703.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "jsf703.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: " + testUrl);
@@ -216,7 +217,7 @@ public class JSF22ComponentRendererTests {
 
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "jsf943.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "jsf943.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: " + testUrl);
@@ -243,7 +244,7 @@ public class JSF22ComponentRendererTests {
 
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "jsf997.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "jsf997.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: " + testUrl);
@@ -272,7 +273,7 @@ public class JSF22ComponentRendererTests {
 
             String testUrl = "/JSF22ComponentRenderer/jsf599.xhtml";
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "jsf599.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "jsf599.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: " + testUrl);

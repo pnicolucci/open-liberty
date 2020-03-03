@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertNotNull;
@@ -45,7 +45,8 @@ public class JSFServerTest {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "TestJSF2.2";
+    private static final String APP_NAME_JSF22 = "TestJSF2.2";
+    private static final String APP_NAME_FACELETS_RESOURCE_RESOLVER_ANNOTATION = "JSF22FaceletsResourceResolverAnnotation";
 
     protected static final Class<?> c = JSFServerTest.class;
 
@@ -56,8 +57,12 @@ public class JSFServerTest {
     public static void setup() throws Exception {
 
         // Create the TestJSF2.2.war and JSF22FaceletsResourceResolverAnnotation.war applications
-        ShrinkHelper.defaultDropinApp(jsfTestServer1, "TestJSF2.2.war", "com.ibm.ws.fat.jsf22.basic.*");
-        ShrinkHelper.defaultDropinApp(jsfTestServer1, "JSF22FaceletsResourceResolverAnnotation.war", "com.ibm.ws.jsf22.resourceresolver");
+        if (!JSFUtils.isAppInstalled(jsfTestServer1, APP_NAME_JSF22)) {
+            ShrinkHelper.defaultDropinApp(jsfTestServer1, APP_NAME_JSF22 + ".war", "com.ibm.ws.fat.jsf22.basic.*");
+        }
+        if (!JSFUtils.isAppInstalled(jsfTestServer1, APP_NAME_FACELETS_RESOURCE_RESOLVER_ANNOTATION)) {
+            ShrinkHelper.defaultDropinApp(jsfTestServer1, APP_NAME_FACELETS_RESOURCE_RESOLVER_ANNOTATION + ".war", "com.ibm.ws.jsf22.resourceresolver");
+        }
 
         jsfTestServer1.startServer(JSFServerTest.class.getSimpleName() + ".log");
 
@@ -80,7 +85,7 @@ public class JSFServerTest {
     @Test
     public void testServlet() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME_JSF22, "");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             assertTrue(page.asText().contains("Hello World"));
@@ -116,7 +121,7 @@ public class JSFServerTest {
     @SkipForRepeat("JSF-2.3")
     public void testLibertyWebConfigProvider() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME_JSF22, "");
             // Ensure the isErrorPagePresent message is logged in the trace during the RESTORE_VIEW phase.
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
@@ -233,7 +238,7 @@ public class JSFServerTest {
 
         // Use the SharedServer to verify a response.
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, "JSF22FaceletsResourceResolverAnnotation", "index.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME_FACELETS_RESOURCE_RESOLVER_ANNOTATION, "index.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
             assertTrue(page.asText().contains("Hello World"));
 

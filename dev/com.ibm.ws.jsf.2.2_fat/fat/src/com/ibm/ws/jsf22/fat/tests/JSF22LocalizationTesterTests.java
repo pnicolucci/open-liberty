@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertTrue;
@@ -44,7 +44,8 @@ public class JSF22LocalizationTesterTests {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "JSF22LocalizationTester";
+    private static final String APP_NAME = "JSF22LocalizationTester";
+    private static final String RESOURCE_LOCATION = "test-applications/JSF22LocalizationTester.war/src/com/ibm/ws/jsf22/fat/localprops/";
 
     protected static final Class<?> c = JSF22LocalizationTesterTests.class;
 
@@ -54,18 +55,20 @@ public class JSF22LocalizationTesterTests {
     @BeforeClass
     public static void setup() throws Exception {
 
-        WebArchive JSF22LocalizationTesterWar = ShrinkHelper.buildDefaultApp("JSF22LocalizationTester.war", "com.ibm.ws.jsf22.fat.localbean.*");
+        if (!JSFUtils.isAppInstalled(jsfTestServer2, APP_NAME)) {
+            WebArchive JSF22LocalizationTesterWar = ShrinkHelper.buildDefaultApp(APP_NAME + ".war", "com.ibm.ws.jsf22.fat.localbean.*");
 
-        JSF22LocalizationTesterWar.addAsResource(new File("test-applications/JSF22LocalizationTester.war/src/com/ibm/ws/jsf22/fat/localprops/messages.properties"),
-                                                 "com/ibm/ws/jsf22/fat/localprops/messages.properties");
-        JSF22LocalizationTesterWar.addAsResource(new File("test-applications/JSF22LocalizationTester.war/src/com/ibm/ws/jsf22/fat/localprops/messages_zh_CN.properties"),
-                                                 "com/ibm/ws/jsf22/fat/localprops/messages_zh_CN.properties");
-        JSF22LocalizationTesterWar.addAsResource(new File("test-applications/JSF22LocalizationTester.war/src/com/ibm/ws/jsf22/fat/localprops/resources_zh_CN.properties"),
-                                                 "com/ibm/ws/jsf22/fat/localprops/resources_zh_CN.properties");
-        JSF22LocalizationTesterWar.addAsResource(new File("test-applications/JSF22LocalizationTester.war/src/com/ibm/ws/jsf22/fat/localprops/resources.properties"),
-                                                 "com/ibm/ws/jsf22/fat/localprops/resources.properties");
+            JSF22LocalizationTesterWar.addAsResource(new File(RESOURCE_LOCATION + "messages.properties"),
+                                                     "com/ibm/ws/jsf22/fat/localprops/messages.properties");
+            JSF22LocalizationTesterWar.addAsResource(new File(RESOURCE_LOCATION + "messages_zh_CN.properties"),
+                                                     "com/ibm/ws/jsf22/fat/localprops/messages_zh_CN.properties");
+            JSF22LocalizationTesterWar.addAsResource(new File(RESOURCE_LOCATION + "resources_zh_CN.properties"),
+                                                     "com/ibm/ws/jsf22/fat/localprops/resources_zh_CN.properties");
+            JSF22LocalizationTesterWar.addAsResource(new File(RESOURCE_LOCATION + "resources.properties"),
+                                                     "com/ibm/ws/jsf22/fat/localprops/resources.properties");
 
-        ShrinkHelper.exportDropinAppToServer(jsfTestServer2, JSF22LocalizationTesterWar);
+            ShrinkHelper.exportDropinAppToServer(jsfTestServer2, JSF22LocalizationTesterWar);
+        }
 
         jsfTestServer2.startServer(JSF22LocalizationTesterTests.class.getSimpleName() + ".log");
 
@@ -88,7 +91,7 @@ public class JSF22LocalizationTesterTests {
     public void JSF22LocalizationTester_TestLocalAndGlobalResources() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "default.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "default.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             if (page == null) {
@@ -112,7 +115,7 @@ public class JSF22LocalizationTesterTests {
         try (WebClient webClient = new WebClient()) {
             webClient.addRequestHeader("Accept-Language", "zh_CN");
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "default.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "default.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             if (page == null) {

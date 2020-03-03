@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2015, 2019 IBM Corporation and others.
+/*******************************************************************************
+ * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,10 +7,12 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat;
 
 import java.net.URL;
+import java.util.Set;
+import java.util.logging.Logger;
 
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.ibm.websphere.simplicity.log.Log;
@@ -23,13 +25,14 @@ import componenttest.topology.impl.LibertyServer;
 public class JSFUtils {
 
     protected static final Class<?> c = JSFUtils.class;
+    private static final Logger LOG = Logger.getLogger(c.getName());
 
-     /**
+    /**
      * Construct a URL for a test case so a request can be made.
      *
-     * @param server - The server that is under test, this is used to get the port and host name.
+     * @param server      - The server that is under test, this is used to get the port and host name.
      * @param contextRoot - The context root of the application
-     * @param path - Additional path information for the request.
+     * @param path        - Additional path information for the request.
      * @return - A fully formed URL.
      * @throws Exception
      */
@@ -40,9 +43,9 @@ public class JSFUtils {
     /**
      * Construct a URL for a test case so a request can be made.
      *
-     * @param server - The server that is under test, this is used to get the port and host name.
+     * @param server      - The server that is under test, this is used to get the port and host name.
      * @param contextRoot - The context root of the application
-     * @param path - Additional path information for the request.
+     * @param path        - Additional path information for the request.
      * @return - A fully formed URL string.
      * @throws Exception
      */
@@ -50,13 +53,13 @@ public class JSFUtils {
 
         StringBuilder sb = new StringBuilder();
         sb.append("http://")
-          .append(server.getHostname())
-          .append(":")
-          .append(server.getHttpDefaultPort())
-          .append("/")
-          .append(contextRoot)
-          .append("/")
-          .append(path);
+                        .append(server.getHostname())
+                        .append(":")
+                        .append(server.getHttpDefaultPort())
+                        .append("/")
+                        .append(contextRoot)
+                        .append("/")
+                        .append(path);
 
         return sb.toString();
     }
@@ -79,5 +82,17 @@ public class JSFUtils {
             Log.info(c, "waitForPageResponse", "Waiting for: " + responseMessage + " isTextFound: " + isTextFound + " i: " + i);
         }
         return isTextFound;
+    }
+
+    public static boolean isAppInstalled(LibertyServer libertyServer, String appName) throws Exception {
+        boolean appInstalled = false;
+        if (libertyServer.isStarted()) {
+            Set<String> installedApp = libertyServer.getInstalledAppNames(appName);
+            if (!installedApp.isEmpty()) {
+                appInstalled = true;
+            }
+        }
+        LOG.info("The following app: " + appName + " is installed: " + appInstalled);
+        return appInstalled;
     }
 }

@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2015, 2019 IBM Corporation and others.
+/*******************************************************************************
+ * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 
 import com.ibm.websphere.simplicity.ShrinkHelper;
 import com.ibm.ws.jsf22.fat.CDITestBase;
+import com.ibm.ws.jsf22.fat.JSFUtils;
 
 import componenttest.annotation.Server;
 import componenttest.annotation.SkipForRepeat;
@@ -44,7 +45,7 @@ public class CDIFacesInWebXMLTests extends CDITestBase {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "TestJSFEL";
+    private static final String APP_NAME = "CDIFacesInWebXML";
 
     protected static final Class<?> c = CDIFacesInWebXMLTests.class;
 
@@ -55,9 +56,11 @@ public class CDIFacesInWebXMLTests extends CDITestBase {
     public static void setup() throws Exception {
 
         // CDIFacesInWebXML uses CDICommon packages
-        WebArchive war = ShrinkHelper.buildDefaultApp("CDIFacesInWebXML.war", "com.ibm.ws.jsf22.fat.cdicommon.*");
+        if (!JSFUtils.isAppInstalled(jsfCDIFacesInWebXMLServer, APP_NAME)) {
+            WebArchive war = ShrinkHelper.buildDefaultApp(APP_NAME + ".war", "com.ibm.ws.jsf22.fat.cdicommon.*");
 
-        ShrinkHelper.exportDropinAppToServer(jsfCDIFacesInWebXMLServer, war);
+            ShrinkHelper.exportDropinAppToServer(jsfCDIFacesInWebXMLServer, war);
+        }
 
         jsfCDIFacesInWebXMLServer.startServer(CDIFacesInWebXMLTests.class.getSimpleName() + ".log");
 
@@ -81,7 +84,7 @@ public class CDIFacesInWebXMLTests extends CDITestBase {
      */
     @Test
     public void testActionListenerInjection_CDIFacesInWebXML() throws Exception {
-        testActionListenerInjectionByApp("CDIFacesInWebXML", jsfCDIFacesInWebXMLServer);
+        testActionListenerInjectionByApp(APP_NAME, jsfCDIFacesInWebXMLServer);
     }
 
     /**
@@ -94,7 +97,7 @@ public class CDIFacesInWebXMLTests extends CDITestBase {
      */
     @Test
     public void testNavigationHandlerInjection_CDIFacesInWebXML() throws Exception {
-        testNavigationHandlerInjectionByApp("CDIFacesInWebXML", jsfCDIFacesInWebXMLServer);
+        testNavigationHandlerInjectionByApp(APP_NAME, jsfCDIFacesInWebXMLServer);
     }
 
     /**
@@ -107,7 +110,7 @@ public class CDIFacesInWebXMLTests extends CDITestBase {
      */
     @Test
     public void testELResolverInjection_CDIFacesInWebXML() throws Exception {
-        testELResolverInjectionByApp("CDIFacesInWebXML", jsfCDIFacesInWebXMLServer);
+        testELResolverInjectionByApp(APP_NAME, jsfCDIFacesInWebXMLServer);
     }
 
     /**
@@ -119,7 +122,7 @@ public class CDIFacesInWebXMLTests extends CDITestBase {
      */
     @Test
     public void testCustomResourceHandlerInjections_CDIFacesInWebXML() throws Exception {
-        testCustomResourceHandlerInjectionsByApp("CDIFacesInWebXML", jsfCDIFacesInWebXMLServer);
+        testCustomResourceHandlerInjectionsByApp(APP_NAME, jsfCDIFacesInWebXMLServer);
 
     }
 
@@ -132,7 +135,7 @@ public class CDIFacesInWebXMLTests extends CDITestBase {
      */
     @Test
     public void testCustomStateManagerInjections_CDIFacesInWebXML() throws Exception {
-        testCustomStateManagerInjectionsByApp("CDIFacesInWebXML", jsfCDIFacesInWebXMLServer);
+        testCustomStateManagerInjectionsByApp(APP_NAME, jsfCDIFacesInWebXMLServer);
     }
 
     /**
@@ -144,6 +147,6 @@ public class CDIFacesInWebXMLTests extends CDITestBase {
      */
     @Test
     public void testFactoryAndOtherScopeInjections_CDIFacesInWebXML() throws Exception {
-        testFactoryAndOtherAppScopedInjectionsByApp("CDIFacesInWebXML", jsfCDIFacesInWebXMLServer);
+        testFactoryAndOtherAppScopedInjectionsByApp(APP_NAME, jsfCDIFacesInWebXMLServer);
     }
 }

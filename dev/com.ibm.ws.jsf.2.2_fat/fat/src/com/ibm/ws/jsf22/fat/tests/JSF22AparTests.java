@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertFalse;
@@ -61,73 +61,148 @@ public class JSF22AparTests {
     public TestName name = new TestName();
 
     protected static final Class<?> c = JSF22AparTests.class;
+    private static final String APP_NAME_PI47600 = "PI47600";
+    private static final String JAR_NAME_PI30335 = "PI30335";
+    private static final String APP_NAME_PI30335_DEFAULT = "PI30335_Default";
+    private static final String APP_NAME_PI30335_FALSE = "PI30335_False";
+    private static final String APP_NAME_PH01566 = "PH01566";
+    private static final String APP_NAME_PI50108 = "PI50108";
+    private static final String APP_NAME_PI46218FLOW1 = "PI46218Flow1";
+    private static final String APP_NAME_PI46218FLOW2 = "PI46218Flow2";
+    private static final String APP_NAME_PI57255CDI = "PI57255CDI";
+    private static final String APP_NAME_PI59422 = "PI59422";
+    private static final String APP_NAME_PI63135 = "PI63135";
+    private static final String APP_NAME_VIEWSCOPEDCDIBEAN = "ViewScopedCDIBean";
+    private static final String APP_NAME_VIEWSCOPEDJSFBEAN = "ViewScopedJSFBean";
+    private static final String APP_NAME_PI64714 = "PI64714";
+    private static final String APP_NAME_PI64718 = "PI64718";
+    private static final String APP_NAME_PI67525 = "PI67525";
+    private static final String APP_NAME_PI85492 = "PI85492";
+    private static final String APP_NAME_PI89363 = "PI89363";
+    private static final String APP_NAME_PI79562 = "PI79562";
+    private static final String APP_NAME_PI57255_DEFAULT = "PI57255Default";
+    private static final String APP_NAME_PI51038 = "PI51038";
+    private static final String APP_NAME_PI51038_DEFAULT = "PI51038_Default";
+    private static final String APP_NAME_PI89363_STRICT_JSF2 = "PI89363StrictJSF2";
+    private static final String APP_NAME_PI89168 = "PI89168";
+    private static final String APP_NAME_PI90507 = "PI90507";
+    private static final String APP_NAME_PI90391 = "PI90391";
+    private static final String APP_NAME_PH06008 = "PH06008";
 
     @Server("jsfAparServer")
     public static LibertyServer jsfAparServer;
 
     @BeforeClass
     public static void setup() throws Exception {
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI47600.war", "com.ibm.ws.jsf22.fat.tests.PI47600");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI47600)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI47600 + ".war", "com.ibm.ws.jsf22.fat.tests.PI47600");
+        }
 
-        JavaArchive PI30335Jar = ShrinkHelper.buildJavaArchive("PI30335.jar", "com.ibm.ws.jsf22.fat.tests.PI30335");
-        WebArchive PI30335DefaultWar = ShrinkHelper.buildDefaultApp("PI30335_Default.war", "");
-        PI30335DefaultWar.addAsLibraries(PI30335Jar);
-        ShrinkHelper.exportDropinAppToServer(jsfAparServer, PI30335DefaultWar);
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI30335_DEFAULT) && !JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI30335_FALSE)) {
+            JavaArchive PI30335Jar = ShrinkHelper.buildJavaArchive(JAR_NAME_PI30335 + ".jar", "com.ibm.ws.jsf22.fat.tests.PI30335");
+            WebArchive PI30335DefaultWar = ShrinkHelper.buildDefaultApp(APP_NAME_PI30335_DEFAULT + ".war", "");
+            PI30335DefaultWar.addAsLibraries(PI30335Jar);
+            ShrinkHelper.exportDropinAppToServer(jsfAparServer, PI30335DefaultWar);
 
-        WebArchive PI30335FalseWar = ShrinkHelper.buildDefaultApp("PI30335_False.war", "");
-        PI30335FalseWar.addAsLibraries(PI30335Jar);
-        ShrinkHelper.exportDropinAppToServer(jsfAparServer, PI30335FalseWar);
+            WebArchive PI30335FalseWar = ShrinkHelper.buildDefaultApp(APP_NAME_PI30335_FALSE + ".war", "");
+            PI30335FalseWar.addAsLibraries(PI30335Jar);
+            ShrinkHelper.exportDropinAppToServer(jsfAparServer, PI30335FalseWar);
+        }
 
-        JavaArchive PH01566Jar = ShrinkHelper.buildJavaArchive("PH01566.jar", "");
-        WebArchive PH01566War = ShrinkHelper.buildDefaultApp("PH01566.war", "com.ibm.ws.jsf22.fat.PH01566");
-        PH01566War.addAsLibraries(PH01566Jar);
-        ShrinkHelper.exportDropinAppToServer(jsfAparServer, PH01566War);
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PH01566)) {
+            JavaArchive PH01566Jar = ShrinkHelper.buildJavaArchive(APP_NAME_PH01566 + ".jar", "");
+            WebArchive PH01566War = ShrinkHelper.buildDefaultApp(APP_NAME_PH01566 + ".war", "com.ibm.ws.jsf22.fat.PH01566");
+            PH01566War.addAsLibraries(PH01566Jar);
+            ShrinkHelper.exportDropinAppToServer(jsfAparServer, PH01566War);
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI50108.war", "com.ibm.ws.jsf22.fat.tests.PI50108");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI50108)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI50108 + ".war", "com.ibm.ws.jsf22.fat.tests.PI50108");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI46218Flow1.war", "com.ibm.ws.jsf22.fat.PI46218Flow1.*");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI46218FLOW1)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI46218FLOW1 + ".war", "com.ibm.ws.jsf22.fat.PI46218Flow1.*");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI46218Flow2.war", "com.ibm.ws.jsf22.fat.PI46218Flow2.*");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI46218FLOW2)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI46218FLOW2 + ".war", "com.ibm.ws.jsf22.fat.PI46218Flow2.*");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI57255CDI.war", "com.ibm.ws.jsf22.fat.PI57255.*");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI57255CDI)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI57255CDI + ".war", "com.ibm.ws.jsf22.fat.PI57255.*");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI59422.war", "com.ibm.ws.jsf22.fat.PI59422");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI59422)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI59422 + ".war", "com.ibm.ws.jsf22.fat.PI59422");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI63135.war", "com.ibm.ws.jsf22.fat.PI63135");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI63135)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI63135 + ".war", "com.ibm.ws.jsf22.fat.PI63135");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "ViewScopedCDIBean.war", "com.ibm.ws.jsf22.fat.viewscopedcdi");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_VIEWSCOPEDCDIBEAN)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_VIEWSCOPEDCDIBEAN + ".war", "com.ibm.ws.jsf22.fat.viewscopedcdi");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "ViewScopedJSFBean.war", "com.ibm.ws.jsf22.fat.viewscopedjsf");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_VIEWSCOPEDJSFBEAN)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_VIEWSCOPEDJSFBEAN + ".war", "com.ibm.ws.jsf22.fat.viewscopedjsf");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI64714.war", "com.ibm.ws.jsf22.fat.PI64714");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI64714)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI64714 + ".war", "com.ibm.ws.jsf22.fat.PI64714");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI64718.war", "com.ibm.ws.jsf22.fat.PI64718");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI64718)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI64718 + ".war", "com.ibm.ws.jsf22.fat.PI64718");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI67525.war", "com.ibm.ws.jsf22.fat.PI67525");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI67525)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI67525 + ".war", "com.ibm.ws.jsf22.fat.PI67525");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI85492.war", "com.ibm.ws.jsf22.fat.PI85492");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI85492)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI85492 + ".war", "com.ibm.ws.jsf22.fat.PI85492");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI89363.war", "com.ibm.ws.jsf22.fat.PI89363");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI89363)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI89363 + ".war", "com.ibm.ws.jsf22.fat.PI89363");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI79562.war", "");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI79562)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI79562 + ".war", "");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI57255Default.war", "");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI57255_DEFAULT)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI57255_DEFAULT + ".war", "");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI51038.war", "");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI51038)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI51038 + ".war", "");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI51038_Default.war", "");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI51038_DEFAULT)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI51038_DEFAULT + ".war", "");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI89363StrictJSF2.war", "");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI89363_STRICT_JSF2)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI89363_STRICT_JSF2 + ".war", "");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI89168.war", "");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI89168)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI89168 + ".war", "");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI79562.war", "");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI90507)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI90507 + ".war", "com.ibm.ws.jsf22.fat.PI90507");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI90507.war", "com.ibm.ws.jsf22.fat.PI90507");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PI90391)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PI90391 + ".war", "");
+        }
 
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PI90391.war", "");
-
-        ShrinkHelper.defaultDropinApp(jsfAparServer, "PH06008.war", "");
+        if (!JSFUtils.isAppInstalled(jsfAparServer, APP_NAME_PH06008)) {
+            ShrinkHelper.defaultDropinApp(jsfAparServer, APP_NAME_PH06008 + ".war", "");
+        }
 
         jsfAparServer.startServer(JSF22AparTests.class.getSimpleName() + ".log");
 
@@ -171,7 +246,7 @@ public class JSF22AparTests {
     @Test
     public void testPI47600() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfAparServer, "PI47600", "");
+            URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PI47600, "");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             assertTrue("testPI47600:: the app output was null!", page != null);
@@ -197,7 +272,7 @@ public class JSF22AparTests {
         String msgToSearchFor = "ManagedBean Ref: com.ibm.ws.jsf22.fat.tests.PI30335.ManagedBean2";
 
         // Use the SharedServer to verify a response.
-        this.verifyResponse("PI30335_Default", "", "ManagedBean1", jsfAparServer);
+        this.verifyResponse(APP_NAME_PI30335_DEFAULT, "", "ManagedBean1", jsfAparServer);
 
         // Check the logs to see if the message was found.
         String managedBeanReference = jsfAparServer.waitForStringInLog(msgToSearchFor);
@@ -216,7 +291,7 @@ public class JSF22AparTests {
         String msgToSearchFor = "ManagedBean Ref: null";
 
         // Use the SharedServer to verify a response
-        this.verifyResponse("PI30335_False", "", "ManagedBean1", jsfAparServer);
+        this.verifyResponse(APP_NAME_PI30335_FALSE, "", "ManagedBean1", jsfAparServer);
 
         // Check the logs to see if the message was found
         String managedBeanReference = jsfAparServer.waitForStringInLog(msgToSearchFor);
@@ -234,7 +309,7 @@ public class JSF22AparTests {
     @Test
     public void testPI50108() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfAparServer, "PI50108", "");
+            URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PI50108, "");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // Make sure the test page was rendered correctly
@@ -266,7 +341,7 @@ public class JSF22AparTests {
     @Test
     public void testPI51038() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfAparServer, "PI51038", "");
+            URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PI51038, "");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // Make sure the test page was rendered correctly
@@ -291,7 +366,7 @@ public class JSF22AparTests {
     @Test
     public void testPI51038_Default() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfAparServer, "PI51038_Default", "");
+            URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PI51038_DEFAULT, "");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // Make sure the test page was rendered correctly
@@ -322,8 +397,8 @@ public class JSF22AparTests {
      */
     @Test
     public void testPI46218() throws Exception {
-        testSimpleFlow("/PI46218Flow1", "test-flow-1");
-        testSimpleFlow("/PI46218Flow2", "test-flow-2");
+        testSimpleFlow("/" + APP_NAME_PI46218FLOW1, "test-flow-1");
+        testSimpleFlow("/" + APP_NAME_PI46218FLOW2, "test-flow-2");
     }
 
     /***
@@ -334,10 +409,10 @@ public class JSF22AparTests {
      */
     @Test
     public void testPI57255() throws Exception {
-        URL url = JSFUtils.createHttpUrl(jsfAparServer, "PI57255Default", "");
+        URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PI57255_DEFAULT, "");
 
         // Need to restart server to make sure the non-CDI application is loaded first
-        jsfAparServer.restartDropinsApplication("PI57255.war");
+        jsfAparServer.restartDropinsApplication(APP_NAME_PI57255_DEFAULT + ".war");
 
         try (WebClient webClient = new WebClient()) {
             HtmlPage page;
@@ -348,7 +423,7 @@ public class JSF22AparTests {
             assertTrue("Page did not have expected response: Hello World", page.asText().contains("Hello World"));
 
             // Use a flow to test that CDI is available for the CDI-enabled application
-            testSimpleFlow("/PI57255CDI", "sample-flow");
+            testSimpleFlow("/" + APP_NAME_PI57255CDI, "sample-flow");
         }
     }
 
@@ -360,7 +435,7 @@ public class JSF22AparTests {
      */
     @Test
     public void testPI59422() throws Exception {
-        URL url = JSFUtils.createHttpUrl(jsfAparServer, "PI59422", "index.xhtml");
+        URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PI59422, "index.xhtml");
 
         // The messages written to the logs need to occur in the following order:
         final String[] messages = new String[] {
@@ -436,7 +511,7 @@ public class JSF22AparTests {
     public void testPI63135() throws Exception {
         try (WebClient webClient = new WebClient()) {
             HtmlPage page;
-            URL url = JSFUtils.createHttpUrl(jsfAparServer, "PI63135", "index.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PI63135, "index.xhtml");
 
             Log.info(c, name.getMethodName(), "Making a request to " + url);
             page = webClient.getPage(url);
@@ -459,7 +534,7 @@ public class JSF22AparTests {
     @Test
     public void testViewScopedJSFManagedBeanPreDestroy() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfAparServer, "ViewScopedJSFBean", "");
+            URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_VIEWSCOPEDJSFBEAN, "");
 
             Log.info(c, name.getMethodName(), "Making a request to " + url);
 
@@ -486,7 +561,7 @@ public class JSF22AparTests {
     @Test
     public void testViewScopedCDIManagedBeanPreDestroy() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfAparServer, "ViewScopedCDIBean", "");
+            URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_VIEWSCOPEDCDIBEAN, "");
 
             Log.info(c, name.getMethodName(), "Making a request to " + url);
 
@@ -523,7 +598,7 @@ public class JSF22AparTests {
     public void testPI64714() throws Exception {
         try (WebClient webClient = new WebClient()) {
             HtmlPage page;
-            URL url = JSFUtils.createHttpUrl(jsfAparServer, "PI64714", "index.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PI64714, "index.xhtml");
 
             Log.info(c, name.getMethodName(), "PI64714: Making a request to " + url);
             page = webClient.getPage(url);
@@ -561,7 +636,7 @@ public class JSF22AparTests {
     public void testPI64718() throws Exception {
         try (WebClient webClient = new WebClient()) {
             HtmlPage page;
-            URL url = JSFUtils.createHttpUrl(jsfAparServer, "PI64718", "index.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PI64718, "index.xhtml");
 
             Log.info(c, name.getMethodName(), "PI64718: Making a request to " + url);
             page = webClient.getPage(url);
@@ -640,7 +715,7 @@ public class JSF22AparTests {
     @Test
     public void testPI67525() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfAparServer, "PI67525", "index.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PI67525, "index.xhtml");
 
             Log.info(c, name.getMethodName(), "PI67525: Making a request to " + url);
 
@@ -667,7 +742,7 @@ public class JSF22AparTests {
     @Test
     public void testPI79562() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfAparServer, "PI79562", "faces/index.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PI79562, "faces/index.xhtml");
             // final String url = SHARED_SERVER.getServerUrl(true, "/PI79562/faces/index.xhtml");
 
             Log.info(c, name.getMethodName(), "PI79562: Making a request to " + url);
@@ -692,7 +767,7 @@ public class JSF22AparTests {
     public void testPI85492() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfAparServer, "PI85492", "");
+            URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PI85492, "");
 
             Log.info(c, name.getMethodName(), "PI85492: Making a request to " + url);
 
@@ -724,7 +799,7 @@ public class JSF22AparTests {
         try (WebClient webClient = new WebClient(BrowserVersion.CHROME)) {
             webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
 
-            URL url = JSFUtils.createHttpUrl(jsfAparServer, "PI89363", "index.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PI89363, "index.xhtml");
 
             Log.info(c, name.getMethodName(), "PI89363: Making a request to " + url);
 
@@ -788,7 +863,7 @@ public class JSF22AparTests {
             webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
 
             jsfAparServer.addIgnoredErrors(Arrays.asList("SRVE0777E:.*"));
-            URL url = JSFUtils.createHttpUrl(jsfAparServer, "PI89363StrictJSF2", "index.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PI89363_STRICT_JSF2, "index.xhtml");
 
             Log.info(c, name.getMethodName(), "PI89363StrictJSF2: Making a request to " + url);
 
@@ -849,7 +924,7 @@ public class JSF22AparTests {
             String expectedSRVE0777E = "SRVE0777E";
             jsfAparServer.addIgnoredErrors(Arrays.asList(expectedSRVE0777E));
 
-            URL url = JSFUtils.createHttpUrl(jsfAparServer, "PI89168", "index.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PI89168, "index.xhtml");
 
             Log.info(c, name.getMethodName(), "PI89168: Making a request to " + url);
 
@@ -901,7 +976,7 @@ public class JSF22AparTests {
      */
     @Test
     public void testPI90391() throws Exception {
-        URL url = JSFUtils.createHttpUrl(jsfAparServer, "PI90391", "");
+        URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PI90391, "");
         try (WebClient webClient = new WebClient()) {
             HtmlPage page;
             String message;
@@ -1019,7 +1094,7 @@ public class JSF22AparTests {
     public void testPI90507NonBindingCase() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfAparServer, "PI90507", "actionListenerNonBinding.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PI90507, "actionListenerNonBinding.xhtml");
 
             Log.info(c, name.getMethodName(), "PI90507: Making a request to " + url);
 
@@ -1039,7 +1114,7 @@ public class JSF22AparTests {
             // Restart the app so that preDestory gets called;
             // make sure we reset log offsets correctly
             jsfAparServer.setMarkToEndOfLog();
-            jsfAparServer.restartDropinsApplication("PI90507.war");
+            jsfAparServer.restartDropinsApplication(APP_NAME_PI90507 + ".war");
             jsfAparServer.resetLogOffsets();
 
             // Verify that PreDestroy is not being called
@@ -1063,7 +1138,7 @@ public class JSF22AparTests {
     public void testPI90507BindingCase() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfAparServer, "PI90507", "actionListenerBinding.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PI90507, "actionListenerBinding.xhtml");
 
             Log.info(c, name.getMethodName(), "PI90507: Making a request to " + url);
 
@@ -1083,7 +1158,7 @@ public class JSF22AparTests {
             // Restart the app so that preDestory gets called;
             // make sure we reset log offsets correctly
             jsfAparServer.setMarkToEndOfLog();
-            jsfAparServer.restartDropinsApplication("PI90507.war");
+            jsfAparServer.restartDropinsApplication(APP_NAME_PI90507 + ".war");
             jsfAparServer.resetLogOffsets();
 
             // Verify that PreDestroy is not being called
@@ -1103,7 +1178,7 @@ public class JSF22AparTests {
     public void testPH01566_and_PH09730() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfAparServer, "PH01566", "index.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PH01566, "index.xhtml");
 
             Log.info(c, name.getMethodName(), "PH01566: Making a request to " + url);
             HtmlPage page = (HtmlPage) webClient.getPage(url);
@@ -1132,7 +1207,7 @@ public class JSF22AparTests {
     public void testPH06008() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfAparServer, "PH06008", "index.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfAparServer, APP_NAME_PH06008, "index.xhtml");
 
             Log.info(c, name.getMethodName(), "PH06008: Making a request to " + url);
             HtmlPage page = (HtmlPage) webClient.getPage(url);

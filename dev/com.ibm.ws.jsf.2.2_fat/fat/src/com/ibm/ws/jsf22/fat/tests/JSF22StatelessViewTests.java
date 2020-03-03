@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertTrue;
@@ -43,7 +43,7 @@ public class JSF22StatelessViewTests {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "JSF22StatelessView";
+    private static final String APP_NAME = "JSF22StatelessView";
 
     protected static final Class<?> c = JSF22StatelessViewTests.class;
 
@@ -52,7 +52,9 @@ public class JSF22StatelessViewTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        ShrinkHelper.defaultDropinApp(jsf22StatelessViewServer, "JSF22StatelessView.war", "com.ibm.ws.jsf22.fat.statelessview.beans");
+        if (!JSFUtils.isAppInstalled(jsf22StatelessViewServer, APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(jsf22StatelessViewServer, APP_NAME + ".war", "com.ibm.ws.jsf22.fat.statelessview.beans");
+        }
 
         jsf22StatelessViewServer.startServer(JSF22StatelessViewTests.class.getSimpleName() + ".log");
     }
@@ -79,7 +81,7 @@ public class JSF22StatelessViewTests {
     public void JSF22StatelessView_TestSimpleStatelessView() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsf22StatelessViewServer, "JSF22StatelessView", "JSF22StatelessView_Simple.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsf22StatelessViewServer, APP_NAME, "JSF22StatelessView_Simple.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             if (page == null) {
@@ -106,7 +108,7 @@ public class JSF22StatelessViewTests {
     public void JSF22StatelessView_TestIsTransientTrue() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsf22StatelessViewServer, "JSF22StatelessView", "JSF22StatelessView_isTransient_true.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsf22StatelessViewServer, APP_NAME, "JSF22StatelessView_isTransient_true.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // Make sure the page initially renders correctly
@@ -147,7 +149,7 @@ public class JSF22StatelessViewTests {
     public void JSF22StatelessView_TestIsTransientFalse() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsf22StatelessViewServer, "JSF22StatelessView", "JSF22StatelessView_isTransient_false.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsf22StatelessViewServer, APP_NAME, "JSF22StatelessView_isTransient_false.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // Make sure the page initially renders correctly
@@ -188,7 +190,7 @@ public class JSF22StatelessViewTests {
     public void JSF22StatelessView_TestIsTransientDefault() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsf22StatelessViewServer, "JSF22StatelessView", "JSF22StatelessView_isTransient_default.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsf22StatelessViewServer, APP_NAME, "JSF22StatelessView_isTransient_default.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // Make sure the page initially renders correctly
@@ -271,7 +273,7 @@ public class JSF22StatelessViewTests {
     private void testViewScopeManagedBeanTransient(String resource) throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsf22StatelessViewServer, contextRoot, resource);
+            URL url = JSFUtils.createHttpUrl(jsf22StatelessViewServer, APP_NAME, resource);
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // Make sure the page initially renders correctly
@@ -314,7 +316,7 @@ public class JSF22StatelessViewTests {
     private void testViewScopeManagedBeanNotTransient(String resource) throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsf22StatelessViewServer, contextRoot, resource);
+            URL url = JSFUtils.createHttpUrl(jsf22StatelessViewServer, APP_NAME, resource);
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // Make sure the page initially renders correctly

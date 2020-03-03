@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertEquals;
@@ -45,7 +45,7 @@ import componenttest.topology.impl.LibertyServer;
 public class JSF22ResetValuesAndAjaxDelayTests {
     public TestName name = new TestName();
 
-    String contextRoot = "TestJSF22Ajax";
+    private static final String APP_NAME = "TestJSF22Ajax";
 
     @Server("jsf22TracingServer")
     public static LibertyServer jsf22TracingServer;
@@ -56,7 +56,9 @@ public class JSF22ResetValuesAndAjaxDelayTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        ShrinkHelper.defaultDropinApp(jsf22TracingServer, "TestJSF22Ajax.war", "com.ibm.ws.jsf22.fat.ajax.ajaxDelay", "com.ibm.ws.jsf22.fat.ajax.resetValue");
+        if (!JSFUtils.isAppInstalled(jsf22TracingServer, APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(jsf22TracingServer, APP_NAME + ".war", "com.ibm.ws.jsf22.fat.ajax.ajaxDelay", "com.ibm.ws.jsf22.fat.ajax.resetValue");
+        }
 
         jsf22TracingServer.startServer(JSF22ResetValuesAndAjaxDelayTests.class.getSimpleName() + ".log");
     }
@@ -81,7 +83,7 @@ public class JSF22ResetValuesAndAjaxDelayTests {
             webClient.setAjaxController(new NicelyResynchronizingAjaxController());
             webClient.getOptions().setThrowExceptionOnScriptError(false);
 
-            URL url = JSFUtils.createHttpUrl(jsf22TracingServer, contextRoot, "resetValuesTest.jsf");
+            URL url = JSFUtils.createHttpUrl(jsf22TracingServer, APP_NAME, "resetValuesTest.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /TestJSF22Ajax/resetValuesTest.jsf");
@@ -137,7 +139,7 @@ public class JSF22ResetValuesAndAjaxDelayTests {
             jsf22TracingServer.setMarkToEndOfLog();
 
             Log.info(c, name.getMethodName(), "Navigating to: /TestJSF22Ajax/ajaxDelayTest.jsf");
-            URL url = JSFUtils.createHttpUrl(jsf22TracingServer, contextRoot, "ajaxDelayTest.jsf");
+            URL url = JSFUtils.createHttpUrl(jsf22TracingServer, APP_NAME, "ajaxDelayTest.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Returned from navigating to: /TestJSF22Ajax/ajaxDelayTest.jsf and setting mark in logs.");
@@ -174,7 +176,7 @@ public class JSF22ResetValuesAndAjaxDelayTests {
             jsf22TracingServer.setMarkToEndOfLog();
 
             Log.info(c, name.getMethodName(), "Navigating to: /TestJSF22Ajax/ajaxZeroDelayTest.jsf");
-            URL url = JSFUtils.createHttpUrl(jsf22TracingServer, contextRoot, "ajaxZeroDelayTest.jsf");
+            URL url = JSFUtils.createHttpUrl(jsf22TracingServer, APP_NAME, "ajaxZeroDelayTest.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Returned from navigating to: /TestJSF22Ajax/ajaxDelayTest.jsf and setting mark in logs.");

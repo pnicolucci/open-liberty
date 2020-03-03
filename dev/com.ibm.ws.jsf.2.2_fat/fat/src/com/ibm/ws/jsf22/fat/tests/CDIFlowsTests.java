@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertTrue;
@@ -50,7 +50,7 @@ public class CDIFlowsTests {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "CDIFacesFlows";
+    private static final String APP_NAME = "CDIFacesFlows";
 
     protected static final Class<?> c = CDIFlowsTests.class;
 
@@ -59,7 +59,9 @@ public class CDIFlowsTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        ShrinkHelper.defaultDropinApp(jsfCDIFlowsServer, "CDIFacesFlows.war", "com.ibm.ws.jsf22.fat.cdiflows.beans");
+        if (!JSFUtils.isAppInstalled(jsfCDIFlowsServer, APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(jsfCDIFlowsServer, "CDIFacesFlows.war", "com.ibm.ws.jsf22.fat.cdiflows.beans");
+        }
 
         jsfCDIFlowsServer.startServer(CDIFlowsTests.class.getSimpleName() + ".log");
     }
@@ -80,7 +82,7 @@ public class CDIFlowsTests {
      */
     @Test
     public void JSF22Flows_TestSimpleBean() throws Exception {
-        URL url = JSFUtils.createHttpUrl(jsfCDIFlowsServer, contextRoot, "");
+        URL url = JSFUtils.createHttpUrl(jsfCDIFlowsServer, APP_NAME, "");
         JSF22FlowsTests.testSimpleCase("simpleBean", url);
     }
 
@@ -91,7 +93,7 @@ public class CDIFlowsTests {
      */
     @Test
     public void JSF22Flows_TestFlowBuilder() throws Exception {
-        URL url = JSFUtils.createHttpUrl(jsfCDIFlowsServer, contextRoot, "");
+        URL url = JSFUtils.createHttpUrl(jsfCDIFlowsServer, APP_NAME, "");
         JSF22FlowsTests.testSimpleCase("simpleFlowBuilder", url);
     }
 
@@ -103,7 +105,7 @@ public class CDIFlowsTests {
      */
     @Test
     public void JSF22Flows_TestMixedConfiguration() throws Exception {
-        URL url = JSFUtils.createHttpUrl(jsfCDIFlowsServer, contextRoot, "");
+        URL url = JSFUtils.createHttpUrl(jsfCDIFlowsServer, APP_NAME, "");
         JSF22FlowsTests.testNestedFlows("mixedNested1", "mixedNested2", "mixedNested", url);
     }
 
@@ -144,7 +146,7 @@ public class CDIFlowsTests {
      */
     @Test
     public void JSF22Flows_TestProgrammaticSwitch() throws Exception {
-        URL url = JSFUtils.createHttpUrl(jsfCDIFlowsServer, contextRoot, "");
+        URL url = JSFUtils.createHttpUrl(jsfCDIFlowsServer, APP_NAME, "");
         JSF22FlowsTests.testFlowSwitch("programmaticSwitch", url);
     }
 
@@ -154,7 +156,7 @@ public class CDIFlowsTests {
     private void testInitializerAndFinalizer() throws Exception {
         // Navigate to the index
         try (WebClient webClient = JSF22FlowsTests.getWebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfCDIFlowsServer, contextRoot, "");
+            URL url = JSFUtils.createHttpUrl(jsfCDIFlowsServer, APP_NAME, "");
             HtmlPage page = JSF22FlowsTests.getIndex(webClient, url);
             String flowID = "initializeFinalize";
 

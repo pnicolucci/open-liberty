@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertEquals;
@@ -48,7 +48,7 @@ public class JSFHtml5Tests {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "JSF22HTML5";
+    private static final String APP_NAME = "JSF22HTML5";
 
     protected static final Class<?> c = JSFHtml5Tests.class;
 
@@ -57,8 +57,9 @@ public class JSFHtml5Tests {
 
     @BeforeClass
     public static void setup() throws Exception {
-
-        ShrinkHelper.defaultDropinApp(jsfTestServer1, "JSF22HTML5.war", "com.ibm.ws.jsf22.fat.html5.*");
+        if (!JSFUtils.isAppInstalled(jsfTestServer1, APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(jsfTestServer1, APP_NAME + ".war", "com.ibm.ws.jsf22.fat.html5.*");
+        }
 
         jsfTestServer1.startServer(JSFHtml5Tests.class.getSimpleName() + ".log");
     }
@@ -85,7 +86,7 @@ public class JSFHtml5Tests {
     @Test
     public void testHtml5TextBox() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "Html5TextBox.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "Html5TextBox.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /TestJSF2.2/Html5TextBox.jsf");
@@ -127,7 +128,7 @@ public class JSFHtml5Tests {
     @Test
     public void testHtml5PassThroughElement() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "Html5PassThroughElement.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "Html5PassThroughElement.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /TestJSF2.2/Html5TextBoxPassThroughElement.jsf");
@@ -172,7 +173,7 @@ public class JSFHtml5Tests {
     @Test
     public void testHtml5PassThroughAttributes() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "Html5PassThroughAttributes.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "Html5PassThroughAttributes.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /TestJSF2.2/Html5PassThroughAttributes.jsf");
@@ -215,7 +216,7 @@ public class JSFHtml5Tests {
     @Test
     public void testHtml5PassThroughAttribute() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "Html5PassThroughAttribute.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "Html5PassThroughAttribute.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /TestJSF2.2/Html5PassThroughAttribute.jsf");
@@ -253,7 +254,7 @@ public class JSFHtml5Tests {
     @Test
     public void testHtml5_ID() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "Html5TestID.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "Html5TestID.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "testHtml5_ID:: page " + page.asXml());
@@ -280,7 +281,7 @@ public class JSFHtml5Tests {
     @Test
     public void testHtml5_PasthroughTextarea() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "PasthroughElementTextarea.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "PasthroughElementTextarea.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "testHtml5_PasthroughTextarea:: page " + page.asXml());

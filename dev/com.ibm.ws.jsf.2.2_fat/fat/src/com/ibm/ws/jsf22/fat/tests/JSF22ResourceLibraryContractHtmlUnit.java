@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertFalse;
@@ -53,7 +53,9 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "TestResourceContractsFromJar";
+    private static final String APP_NAME_CONTRACTS_FROM_JAR = "TestResourceContractsFromJar";
+    private static final String APP_NAME_CONTRACTS = "TestResourceContracts";
+    private static final String APP_NAME_CONTRACTS_DIRECTORY = "TestResourceContractsDirectory";
 
     protected static final Class<?> c = JSF22ResourceLibraryContractHtmlUnit.class;
 
@@ -63,18 +65,24 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     @BeforeClass
     public static void setup() throws Exception {
 
-        JavaArchive ContractsJar = ShrinkHelper.buildJavaArchive("Contracts.jar", "");
-        ShrinkHelper.addDirectory(ContractsJar, "test-applications" + "/Contracts.jar");
+        if (!JSFUtils.isAppInstalled(jsfTestServer1, APP_NAME_CONTRACTS_FROM_JAR)) {
+            JavaArchive ContractsJar = ShrinkHelper.buildJavaArchive("Contracts.jar", "");
+            ShrinkHelper.addDirectory(ContractsJar, "test-applications" + "/Contracts.jar");
 
-        WebArchive TestResourceContractsFromJarWar = ShrinkHelper.buildDefaultApp("TestResourceContractsFromJar.war", "com.ibm.ws.jsf22.fat.contractsfromjar.beans");
-        TestResourceContractsFromJarWar.addAsLibraries(ContractsJar);
+            WebArchive TestResourceContractsFromJarWar = ShrinkHelper.buildDefaultApp(APP_NAME_CONTRACTS_FROM_JAR + ".war", "com.ibm.ws.jsf22.fat.contractsfromjar.beans");
+            TestResourceContractsFromJarWar.addAsLibraries(ContractsJar);
+            ShrinkHelper.exportDropinAppToServer(jsfTestServer1, TestResourceContractsFromJarWar);
+        }
 
-        WebArchive TestResourceContractsWar = ShrinkHelper.buildDefaultApp("TestResourceContracts.war");
-        WebArchive TestResourceContractsDirectoryWar = ShrinkHelper.buildDefaultApp("TestResourceContractsDirectory.war");
+        if (!JSFUtils.isAppInstalled(jsfTestServer1, APP_NAME_CONTRACTS)) {
+            WebArchive TestResourceContractsWar = ShrinkHelper.buildDefaultApp(APP_NAME_CONTRACTS + ".war");
+            ShrinkHelper.exportDropinAppToServer(jsfTestServer1, TestResourceContractsWar);
+        }
 
-        ShrinkHelper.exportDropinAppToServer(jsfTestServer1, TestResourceContractsWar);
-        ShrinkHelper.exportDropinAppToServer(jsfTestServer1, TestResourceContractsDirectoryWar);
-        ShrinkHelper.exportDropinAppToServer(jsfTestServer1, TestResourceContractsFromJarWar);
+        if (!JSFUtils.isAppInstalled(jsfTestServer1, APP_NAME_CONTRACTS_DIRECTORY)) {
+            WebArchive TestResourceContractsDirectoryWar = ShrinkHelper.buildDefaultApp(APP_NAME_CONTRACTS_DIRECTORY + ".war");
+            ShrinkHelper.exportDropinAppToServer(jsfTestServer1, TestResourceContractsDirectoryWar);
+        }
 
         jsfTestServer1.startServer(JSF22ResourceLibraryContractHtmlUnit.class.getSimpleName() + ".log");
     }
@@ -121,7 +129,7 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     @Test
     @Mode(TestMode.LITE)
     public void Test1_Contract_viaURL_MapDirectory() throws Exception {
-        assertTrue(getPageForURL("TestResourceContracts", "faces/user/index.xhtml").asText().contains("This must be template for team"));
+        assertTrue(getPageForURL(APP_NAME_CONTRACTS, "faces/user/index.xhtml").asText().contains("This must be template for team"));
 
         // the following messages should not appear in logs when jsf2.2 feature is enabled on server
 
@@ -153,7 +161,7 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     @Test
     @Mode(TestMode.FULL)
     public void Test2_Contract_viaURL_MapDirectory() throws Exception {
-        assertTrue(getPageForURL("TestResourceContracts", "faces/management/index.xhtml").asText().contains("This must be template for manager"));
+        assertTrue(getPageForURL(APP_NAME_CONTRACTS, "faces/management/index.xhtml").asText().contains("This must be template for manager"));
     }
 
     /**
@@ -165,7 +173,7 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     @Test
     @Mode(TestMode.LITE)
     public void Test3_Contract_viaMultipleURL_MapSpecific() throws Exception {
-        assertTrue(getPageForURL("TestResourceContracts", "faces/developers/index.xhtml").asText().contains("This must be template for team"));
+        assertTrue(getPageForURL(APP_NAME_CONTRACTS, "faces/developers/index.xhtml").asText().contains("This must be template for team"));
     }
 
     /**
@@ -176,7 +184,7 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     @Test
     @Mode(TestMode.LITE)
     public void Test4_Contract_viaURL_MapSpecific() throws Exception {
-        assertTrue(getPageForURL("TestResourceContracts", "faces/developers/index2.xhtml").asText().contains("This must be template for test1"));
+        assertTrue(getPageForURL(APP_NAME_CONTRACTS, "faces/developers/index2.xhtml").asText().contains("This must be template for test1"));
     }
 
     /**
@@ -189,7 +197,7 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     public void Test5_Contract_viaURL_UnavailableContract() throws Exception {
 
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, "TestResourceContracts", "faces/developers/index1.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME_CONTRACTS, "faces/developers/index1.xhtml");
             HtmlPage page = null;
 
             try {
@@ -219,7 +227,7 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     @Test
     @Mode(TestMode.LITE)
     public void Test6_Contract_viaURL_withfView() throws Exception {
-        assertTrue(getPageForURL("TestResourceContracts", "faces/others/index.xhtml").asText().contains("This must be template for manager"));
+        assertTrue(getPageForURL(APP_NAME_CONTRACTS, "faces/others/index.xhtml").asText().contains("This must be template for manager"));
     }
 
     /**
@@ -230,7 +238,7 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     @Test
     @Mode(TestMode.LITE)
     public void Test7_Contract_viaURL_StarMapping() throws Exception {
-        assertTrue(getPageForURL("TestResourceContracts", "faces/forall/index.xhtml").asText().contains("This must be template for test1"));
+        assertTrue(getPageForURL(APP_NAME_CONTRACTS, "faces/forall/index.xhtml").asText().contains("This must be template for test1"));
     }
 
     /**
@@ -244,7 +252,7 @@ public class JSF22ResourceLibraryContractHtmlUnit {
      */
     @Test
     public void Test8_Contract_viaURL_MultipleContract() throws Exception {
-        assertTrue(getPageForURL("TestResourceContracts", "faces/user/index1.xhtml").asText().contains("This must be template for test1"));
+        assertTrue(getPageForURL(APP_NAME_CONTRACTS, "faces/user/index1.xhtml").asText().contains("This must be template for test1"));
     }
 
     /**
@@ -255,7 +263,7 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     @Test
     @Mode(TestMode.FULL)
     public void Test9_MyContract_viaURL_MapDirectory() throws Exception {
-        assertTrue(getPageForURL("TestResourceContractsDirectory", "faces/user/index.xhtml").asText().contains("This must be template for team in MyContracts"));
+        assertTrue(getPageForURL(APP_NAME_CONTRACTS_DIRECTORY, "faces/user/index.xhtml").asText().contains("This must be template for team in MyContracts"));
     }
 
     /**
@@ -266,7 +274,7 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     @Test
     @Mode(TestMode.LITE)
     public void Test10_MyContract_viaURL_MapDirectory() throws Exception {
-        assertTrue(getPageForURL("TestResourceContractsDirectory", "faces/management/index.xhtml").asText().contains("This must be template for manager in MyContracts"));
+        assertTrue(getPageForURL(APP_NAME_CONTRACTS_DIRECTORY, "faces/management/index.xhtml").asText().contains("This must be template for manager in MyContracts"));
     }
 
     /**
@@ -278,7 +286,7 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     @Test
     @Mode(TestMode.LITE)
     public void Test11_MyContract_viaMultipleURL_MapSpecific() throws Exception {
-        assertTrue(getPageForURL("TestResourceContractsDirectory", "faces/developers/index.xhtml").asText().contains("This must be template for team in MyContracts"));
+        assertTrue(getPageForURL(APP_NAME_CONTRACTS_DIRECTORY, "faces/developers/index.xhtml").asText().contains("This must be template for team in MyContracts"));
     }
 
     /**
@@ -289,7 +297,7 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     @Test
     @Mode(TestMode.LITE)
     public void Test12_Contract_viaURL_MapSpecific() throws Exception {
-        assertTrue(getPageForURL("TestResourceContractsDirectory", "faces/developers/index2.xhtml").asText().contains("This must be template for test1 in MyContracts"));
+        assertTrue(getPageForURL(APP_NAME_CONTRACTS_DIRECTORY, "faces/developers/index2.xhtml").asText().contains("This must be template for test1 in MyContracts"));
     }
 
     /**
@@ -302,7 +310,7 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     @Mode(TestMode.LITE)
     public void Test13_MyContract_viaURL_UnavailableContract() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, "TestResourceContractsDirectory", "faces/developers/index1.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME_CONTRACTS_DIRECTORY, "faces/developers/index1.xhtml");
             HtmlPage Page;
 
             try {
@@ -332,7 +340,7 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     @Test
     @Mode(TestMode.LITE)
     public void Test14_MyContract_viaURL_withfView() throws Exception {
-        assertTrue(getPageForURL("TestResourceContractsDirectory", "faces/others/index.xhtml").asText().contains("This must be template for manager in MyContracts"));
+        assertTrue(getPageForURL(APP_NAME_CONTRACTS_DIRECTORY, "faces/others/index.xhtml").asText().contains("This must be template for manager in MyContracts"));
     }
 
     /**
@@ -343,7 +351,7 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     @Test
     @Mode(TestMode.LITE)
     public void Test15_MyContract_viaURL_StarMapping() throws Exception {
-        assertTrue(getPageForURL("TestResourceContractsDirectory", "faces/forall/index.xhtml").asText().contains("This must be template for test1 in MyContracts"));
+        assertTrue(getPageForURL(APP_NAME_CONTRACTS_DIRECTORY, "faces/forall/index.xhtml").asText().contains("This must be template for test1 in MyContracts"));
     }
 
     /**
@@ -358,7 +366,7 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     @Test
     @Mode(TestMode.LITE)
     public void Test16_MyContract_viaURL_MultipleContract() throws Exception {
-        assertTrue(getPageForURL("TestResourceContractsDirectory", "faces/user/index1.xhtml").asText().contains("This must be template for test1 in MyContracts"));
+        assertTrue(getPageForURL(APP_NAME_CONTRACTS_DIRECTORY, "faces/user/index1.xhtml").asText().contains("This must be template for test1 in MyContracts"));
     }
 
     /**
@@ -370,7 +378,7 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     @Mode(TestMode.LITE)
     public void Test17_Contract_viaJar_MapDirectory() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, "TestResourceContractsFromJar", "faces/user/index.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME_CONTRACTS_FROM_JAR, "faces/user/index.xhtml");
             HtmlPage htmlPage = (HtmlPage) webClient.getPage(url);
 
             assertTrue(htmlPage.asText().contains("This must be template for team"));
@@ -410,7 +418,7 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     public void Test18_Contract_viaJar_MapDirectory() throws Exception {
 
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, "TestResourceContractsFromJar", "faces/management/index.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME_CONTRACTS_FROM_JAR, "faces/management/index.xhtml");
             HtmlPage htmlPage = (HtmlPage) webClient.getPage(url);
 
             //Log.info(c, name.getMethodName(), "JSF22ResourceLibraryContractHtmlUnit :: getPageForURL Page content. --> " + htmlPage.asXml()); //only needed for debug
@@ -450,7 +458,7 @@ public class JSF22ResourceLibraryContractHtmlUnit {
     @Test
     @Mode(TestMode.LITE)
     public void Test19_Contract3_viaJar() throws Exception {
-        assertTrue(getPageForURL("TestResourceContractsFromJar", "faces/forall/index.xhtml").asText().contains("This must be template for test1"));
+        assertTrue(getPageForURL(APP_NAME_CONTRACTS_FROM_JAR, "faces/forall/index.xhtml").asText().contains("This must be template for test1"));
     }
 
     // return the Page for the URL

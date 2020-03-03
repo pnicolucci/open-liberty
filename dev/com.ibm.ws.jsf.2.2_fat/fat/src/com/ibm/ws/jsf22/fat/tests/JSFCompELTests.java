@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertFalse;
@@ -48,7 +48,7 @@ public class JSFCompELTests {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "TestJSFEL";
+    private static final String APP_NAME = "TestJSFEL";
 
     protected static final Class<?> c = JSFCompELTests.class;
 
@@ -57,7 +57,9 @@ public class JSFCompELTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        ShrinkHelper.defaultDropinApp(jsfTestServer2, "TestJSFEL.war", "com.ibm.ws.jsf22.el.*");
+        if (!JSFUtils.isAppInstalled(jsfTestServer2, APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(jsfTestServer2, APP_NAME + ".war", "com.ibm.ws.jsf22.el.*");
+        }
 
         jsfTestServer2.startServer(JSFCompELTests.class.getSimpleName() + ".log");
     }
@@ -132,7 +134,7 @@ public class JSFCompELTests {
                                         "The order and number of ELResolvers from the CompositeELResolver are correct!",
                                         "Invoked JSF 2.2 new methods in ComponentSystemEvent, isAppropriateListener() and processListener()"
         };
-        this.verifyResponse(contextRoot, "ComponentEventListener.xhtml", expectedInResponse);
+        this.verifyResponse(APP_NAME, "ComponentEventListener.xhtml", expectedInResponse);
     }
 
     //this tests Jira http://java.net/jira/browse/JAVASERVERFACES_SPEC_PUBLIC-1092
@@ -141,7 +143,7 @@ public class JSFCompELTests {
     public void testELException() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "ELException.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "ELException.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
             HtmlForm form = page.getFormByName("form1");
             HtmlSubmitInput button = form.getInputByName("submit");
@@ -175,7 +177,7 @@ public class JSFCompELTests {
                                         "static method",
                                         "some param data"
         };
-        this.verifyResponse(contextRoot, "EL30StaticFieldMethod.xhtml", expectedInResponse);
+        this.verifyResponse(APP_NAME, "EL30StaticFieldMethod.xhtml", expectedInResponse);
     }
 
     //tests EL30 Operators
@@ -194,7 +196,7 @@ public class JSFCompELTests {
                                         "3",
                                         "8"
         };
-        this.verifyResponse(contextRoot, "EL30Operators.xhtml", expectedInResponse);
+        this.verifyResponse(APP_NAME, "EL30Operators.xhtml", expectedInResponse);
     }
 
     //tests EL30 map/collection
@@ -218,7 +220,7 @@ public class JSFCompELTests {
                                         "true",
                                         "1"
         };
-        this.verifyResponse(contextRoot, "EL30CollectionMap.xhtml", expectedInResponse);
+        this.verifyResponse(APP_NAME, "EL30CollectionMap.xhtml", expectedInResponse);
     }
 
     //tests EL30 Lambda
@@ -233,7 +235,7 @@ public class JSFCompELTests {
                                         "12",
         };
         // Use the SharedServer to verify a response.
-        this.verifyResponse(contextRoot, "EL30Lambda.xhtml", expectedInResponse);
+        this.verifyResponse(APP_NAME, "EL30Lambda.xhtml", expectedInResponse);
     }
 
     //tests ValueExpression support in f:ajax event=#{bean.method} - https://issues.apache.org/jira/browse/MYFACES-3233
@@ -243,7 +245,7 @@ public class JSFCompELTests {
         String[] expectedInResponse = {
                                         "true"
         };
-        this.verifyXmlResponse(contextRoot, "AjaxEvent.xhtml", "true");
+        this.verifyXmlResponse(APP_NAME, "AjaxEvent.xhtml", "true");
     }
 
 }

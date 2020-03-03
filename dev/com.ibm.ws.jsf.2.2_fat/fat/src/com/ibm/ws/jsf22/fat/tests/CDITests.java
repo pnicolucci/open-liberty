@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertFalse;
@@ -51,7 +51,7 @@ public class CDITests extends CDITestBase {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "CDITests";
+    private static final String APP_NAME = "CDITests";
 
     protected static final Class<?> c = CDITests.class;
 
@@ -62,9 +62,11 @@ public class CDITests extends CDITestBase {
     public static void setup() throws Exception {
 
         //CDITests.war uses CDICommon packages
-        WebArchive CDITestsWar = ShrinkHelper.buildDefaultApp("CDITests.war", "com.ibm.ws.jsf22.fat.cditests.beans.*", "com.ibm.ws.jsf22.fat.cdicommon.*");
+        if (!JSFUtils.isAppInstalled(jsfCDIServer, APP_NAME)) {
+            WebArchive CDITestsWar = ShrinkHelper.buildDefaultApp(APP_NAME + ".war", "com.ibm.ws.jsf22.fat.cditests.beans.*", "com.ibm.ws.jsf22.fat.cdicommon.*");
 
-        ShrinkHelper.exportDropinAppToServer(jsfCDIServer, CDITestsWar);
+            ShrinkHelper.exportDropinAppToServer(jsfCDIServer, CDITestsWar);
+        }
 
         jsfCDIServer.startServer(CDITests.class.getSimpleName() + ".log");
     }
@@ -88,7 +90,7 @@ public class CDITests extends CDITestBase {
     @SkipForRepeat("JSF-2.3")
     @Test
     public void testActionListenerInjection_CDITests() throws Exception {
-        testActionListenerInjectionByApp("CDITests", jsfCDIServer);
+        testActionListenerInjectionByApp(APP_NAME, jsfCDIServer);
     }
 
     /**
@@ -102,7 +104,7 @@ public class CDITests extends CDITestBase {
     @SkipForRepeat("JSF-2.3")
     @Test
     public void testNavigationHandlerInjection_CDITests() throws Exception {
-        testNavigationHandlerInjectionByApp("CDITests", jsfCDIServer);
+        testNavigationHandlerInjectionByApp(APP_NAME, jsfCDIServer);
     }
 
     /**
@@ -116,7 +118,7 @@ public class CDITests extends CDITestBase {
     @SkipForRepeat("JSF-2.3")
     @Test
     public void testELResolverInjection_CDITests() throws Exception {
-        testELResolverInjectionByApp("CDITests", jsfCDIServer);
+        testELResolverInjectionByApp(APP_NAME, jsfCDIServer);
     }
 
     /**
@@ -129,7 +131,7 @@ public class CDITests extends CDITestBase {
     @SkipForRepeat("JSF-2.3")
     @Test
     public void testCustomResourceHandlerInjections_CDITests() throws Exception {
-        testCustomResourceHandlerInjectionsByApp("CDITests", jsfCDIServer);
+        testCustomResourceHandlerInjectionsByApp(APP_NAME, jsfCDIServer);
 
     }
 
@@ -143,7 +145,7 @@ public class CDITests extends CDITestBase {
     @SkipForRepeat("JSF-2.3")
     @Test
     public void testCustomStateManagerInjections_CDITests() throws Exception {
-        testCustomStateManagerInjectionsByApp("CDITests", jsfCDIServer);
+        testCustomStateManagerInjectionsByApp(APP_NAME, jsfCDIServer);
     }
 
     /**
@@ -156,7 +158,7 @@ public class CDITests extends CDITestBase {
     @SkipForRepeat("JSF-2.3")
     @Test
     public void testFactoryAndOtherScopeInjections_CDITests() throws Exception {
-        testFactoryAndOtherAppScopedInjectionsByApp("CDITests", jsfCDIServer);
+        testFactoryAndOtherAppScopedInjectionsByApp(APP_NAME, jsfCDIServer);
     }
 
     /**
@@ -175,7 +177,7 @@ public class CDITests extends CDITestBase {
         String msgToSearchFor2 = "MyFaces CDI support enabled";
 
         // Use the SharedServer to verify a response.
-        this.verifyResponse("CDITests", "index.xhtml", jsfCDIServer, "Hello Worldy world");
+        this.verifyResponse(APP_NAME, "index.xhtml", jsfCDIServer, "Hello Worldy world");
 
         // Check the trace.log to see if the proper InjectionProvider is being used.
         String isInjectionProviderBeingLoaded = jsfCDIServer.waitForStringInTrace(msgToSearchFor1, 30 * 1000);
@@ -205,7 +207,7 @@ public class CDITests extends CDITestBase {
     @Test
     public void testBeanInjection() throws Exception {
         // Use the SharedServer to verify a response.
-        this.verifyResponse("CDITests", "TestBean.jsf", jsfCDIServer,
+        this.verifyResponse(APP_NAME, "TestBean.jsf", jsfCDIServer,
                             ":TestBean:", "class com.ibm.ws.jsf22.fat.cdicommon.beans.injected.TestBeanFieldBean",
                             "class com.ibm.ws.jsf22.fat.cdicommon.beans.injected.ConstructorBean",
                             "com.ibm.ws.jsf22.fat.cdicommon.beans.injected.MethodBean",
@@ -222,7 +224,7 @@ public class CDITests extends CDITestBase {
     @Test
     public void testViewScopeInjections() throws Exception {
         try (WebClient webClient = new WebClient(); WebClient webClient2 = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfCDIServer, contextRoot, "ViewScope.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfCDIServer, APP_NAME, "ViewScope.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // Make sure the page initially renders correctly
@@ -293,10 +295,10 @@ public class CDITests extends CDITestBase {
     @Test
     public void testPreDestroyInjection() throws Exception {
         // Drive requests to ensure all injected objected are created.
-        this.verifyStatusCode("CDITests", "index.xhtml", 200, jsfCDIServer);
-        this.verifyStatusCode("CDITests", "TestBean.jsf", 200, jsfCDIServer);
-        this.verifyStatusCode("CDITests", "ActionListener.jsf", "form:submitButton", 200, jsfCDIServer);
-        this.verifyStatusCode("CDITests", "FactoryInfo.jsf", 200, jsfCDIServer);
+        this.verifyStatusCode(APP_NAME, "index.xhtml", 200, jsfCDIServer);
+        this.verifyStatusCode(APP_NAME, "TestBean.jsf", 200, jsfCDIServer);
+        this.verifyStatusCode(APP_NAME, "ActionListener.jsf", "form:submitButton", 200, jsfCDIServer);
+        this.verifyStatusCode(APP_NAME, "FactoryInfo.jsf", 200, jsfCDIServer);
 
         // Restart the app so that preDestory gets called;
         // make sure we reset log offsets correctly

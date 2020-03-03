@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2019 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,22 +7,13 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertTrue;
 
 import java.net.URL;
 import java.util.Calendar;
-
-import com.gargoylesoftware.htmlunit.WebClient;
-import com.gargoylesoftware.htmlunit.html.HtmlForm;
-import com.gargoylesoftware.htmlunit.html.HtmlPage;
-import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
-import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
-import com.ibm.websphere.simplicity.ShrinkHelper;
-import com.ibm.websphere.simplicity.log.Log;
-import com.ibm.ws.jsf22.fat.JSFUtils;
 
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -32,6 +23,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
+
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.html.HtmlForm;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.html.HtmlSubmitInput;
+import com.gargoylesoftware.htmlunit.html.HtmlTextInput;
+import com.ibm.websphere.simplicity.ShrinkHelper;
+import com.ibm.websphere.simplicity.log.Log;
+import com.ibm.ws.jsf22.fat.JSFUtils;
 
 import componenttest.annotation.Server;
 import componenttest.custom.junit.runner.FATRunner;
@@ -47,7 +47,8 @@ public class JSFHtmlUnit {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "JSF22TestResources";
+    private static final String APP_NAME_JSF22_RESOURCES = "JSF22TestResources";
+    private static final String APP_NAME_JSF22_BACKWARDCOMPATIBILITY = "JSF22BackwardCompatibilityTests";
 
     protected static final Class<?> c = JSF22ResourceLibraryContractHtmlUnit.class;
 
@@ -56,20 +57,25 @@ public class JSFHtmlUnit {
 
     @BeforeClass
     public static void setup() throws Exception {
-        // Create the JSF22TestResourcesJar that is used in JSF22TestResourcesWar
-        JavaArchive JSF22TestResourcesJar = ShrinkHelper.buildJavaArchive("JSF22TestResources.jar", "");
+        if (!JSFUtils.isAppInstalled(jsfTestServer2, APP_NAME_JSF22_RESOURCES)) {
+            // Create the JSF22TestResourcesJar that is used in JSF22TestResourcesWar
+            JavaArchive JSF22TestResourcesJar = ShrinkHelper.buildJavaArchive(APP_NAME_JSF22_RESOURCES + ".jar", "");
 
-        // Create the JSF22TestResources.war application
-        WebArchive JSF22TestResourcesWar = ShrinkHelper.buildDefaultApp("JSF22TestResources.war", "com.ibm.ws.jsf22.fat.resources.*");
-        JSF22TestResourcesWar.addAsLibraries(JSF22TestResourcesJar);
-        ShrinkHelper.addDirectory(JSF22TestResourcesWar, "test-applications" + "/JSF22TestResources.jar");
+            // Create the JSF22TestResources.war application
+            WebArchive JSF22TestResourcesWar = ShrinkHelper.buildDefaultApp(APP_NAME_JSF22_RESOURCES + ".war", "com.ibm.ws.jsf22.fat.resources.*");
+            JSF22TestResourcesWar.addAsLibraries(JSF22TestResourcesJar);
+            ShrinkHelper.addDirectory(JSF22TestResourcesWar, "test-applications" + "/" + APP_NAME_JSF22_RESOURCES + ".jar");
 
-        // Create the JSF22BackwardCompatibilityTests.war application
-        WebArchive JSF22BackwardCompatibilityTestsWar = ShrinkHelper.buildDefaultApp("JSF22BackwardCompatibilityTests.war", "com.ibm.ws.jsf22.fat.backwards.*");
+            ShrinkHelper.exportDropinAppToServer(jsfTestServer2, JSF22TestResourcesWar);
+        }
 
-        // Add both wars to the server
-        ShrinkHelper.exportDropinAppToServer(jsfTestServer2, JSF22BackwardCompatibilityTestsWar);
-        ShrinkHelper.exportDropinAppToServer(jsfTestServer2, JSF22TestResourcesWar);
+        if (!JSFUtils.isAppInstalled(jsfTestServer2, APP_NAME_JSF22_BACKWARDCOMPATIBILITY)) {
+            // Create the JSF22BackwardCompatibilityTests.war application
+            WebArchive JSF22BackwardCompatibilityTestsWar = ShrinkHelper.buildDefaultApp(APP_NAME_JSF22_BACKWARDCOMPATIBILITY + ".war", "com.ibm.ws.jsf22.fat.backwards.*");
+
+            // Add both wars to the server
+            ShrinkHelper.exportDropinAppToServer(jsfTestServer2, JSF22BackwardCompatibilityTestsWar);
+        }
 
         jsfTestServer2.startServer(JSFHtmlUnit.class.getSimpleName() + ".log");
     }
@@ -93,34 +99,34 @@ public class JSFHtmlUnit {
     @Test
     public void testNewResourceDirectory() throws Exception {
 
-        WebClient webClient = new WebClient();
-        URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "personInformation.jsf");
-        HtmlPage personInfoPage = (HtmlPage) webClient.getPage(url);
+        try (WebClient webClient = new WebClient()) {
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME_JSF22_RESOURCES, "personInformation.jsf");
+            HtmlPage personInfoPage = (HtmlPage) webClient.getPage(url);
 
-        assertTrue(personInfoPage.asText().contains("Please provide the following information:"));
-        // Get the form that we are dealing with and within that form
-        HtmlForm form = personInfoPage.getFormByName("personInfoForm");
+            assertTrue(personInfoPage.asText().contains("Please provide the following information:"));
+            // Get the form that we are dealing with and within that form
+            HtmlForm form = personInfoPage.getFormByName("personInfoForm");
 
-        // Find the fields and submit button
-        HtmlTextInput firstNameTextField = form.getInputByName("personInfoForm:firstName");
-        HtmlTextInput lastNameTextField = form.getInputByName("personInfoForm:lastName");
-        HtmlTextInput favoriteAnimalTextField = form.getInputByName("personInfoForm:favoriteAnimal");
+            // Find the fields and submit button
+            HtmlTextInput firstNameTextField = form.getInputByName("personInfoForm:firstName");
+            HtmlTextInput lastNameTextField = form.getInputByName("personInfoForm:lastName");
+            HtmlTextInput favoriteAnimalTextField = form.getInputByName("personInfoForm:favoriteAnimal");
 
-        HtmlSubmitInput button = form.getInputByName("personInfoForm:showMessageButton");
+            HtmlSubmitInput button = form.getInputByName("personInfoForm:showMessageButton");
 
-        // Change the value of the text field
-        firstNameTextField.setValueAttribute("John");
-        lastNameTextField.setValueAttribute("Smith");
-        favoriteAnimalTextField.setValueAttribute("Dogs");
+            // Change the value of the text field
+            firstNameTextField.setValueAttribute("John");
+            lastNameTextField.setValueAttribute("Smith");
+            favoriteAnimalTextField.setValueAttribute("Dogs");
 
-        // Now submit the form by clicking the button and get back the second page.
-        HtmlPage messagePage = button.click();
+            // Now submit the form by clicking the button and get back the second page.
+            HtmlPage messagePage = button.click();
 
-        assertTrue(messagePage.asText().contains("Hello"));
-        assertTrue(messagePage.asText().contains("John Smith!"));
-        assertTrue(messagePage.asText().contains("Thanks for providing the required information. Now we know that your favorite animal is:"));
-        assertTrue(messagePage.asText().contains("Dogs"));
-
+            assertTrue(messagePage.asText().contains("Hello"));
+            assertTrue(messagePage.asText().contains("John Smith!"));
+            assertTrue(messagePage.asText().contains("Thanks for providing the required information. Now we know that your favorite animal is:"));
+            assertTrue(messagePage.asText().contains("Dogs"));
+        }
     }
 
     /**
@@ -135,13 +141,14 @@ public class JSFHtmlUnit {
     @Mode(TestMode.FULL)
     @Test
     public void testMapViewIdtoResourcePath() throws Exception {
-        WebClient webClient = new WebClient();
-        URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "mapViewIdToResource.jsf");
-        HtmlPage page = (HtmlPage) webClient.getPage(url);
+        try (WebClient webClient = new WebClient()) {
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME_JSF22_RESOURCES, "mapViewIdToResource.jsf");
+            HtmlPage page = (HtmlPage) webClient.getPage(url);
 
-        assertTrue(page.asText().contains("Using a template inside /WEB-INF/resources/templates"));
-        assertTrue(page.asText().contains("This template is working as expected!"));
-        assertTrue(page.asText().contains("JSF22TestResources.war!/WEB-INF/resources/templates/basicTemplate.xhtml"));
+            assertTrue(page.asText().contains("Using a template inside /WEB-INF/resources/templates"));
+            assertTrue(page.asText().contains("This template is working as expected!"));
+            assertTrue(page.asText().contains("JSF22TestResources.war!/WEB-INF/resources/templates/basicTemplate.xhtml"));
+        }
     }
 
     /**
@@ -157,13 +164,14 @@ public class JSFHtmlUnit {
     @Mode(TestMode.FULL)
     @Test
     public void testLoadViewFromExternalLocation() throws Exception {
-        WebClient webClient = new WebClient();
-        URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "loadViewFromExternalLocation.jsf");
-        HtmlPage page = (HtmlPage) webClient.getPage(url);
+        try (WebClient webClient = new WebClient()) {
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME_JSF22_RESOURCES, "loadViewFromExternalLocation.jsf");
+            HtmlPage page = (HtmlPage) webClient.getPage(url);
 
-        assertTrue(page.asText().contains("Using a template loaded from external location using class-path /META-INF/resources/templates"));
-        assertTrue(page.asText().contains("This template is working as expected!"));
-        assertTrue(page.asText().contains("/WEB-INF/lib/JSF22TestResources.jar!/META-INF/resources/templates/basicTemplate.xhtml"));
+            assertTrue(page.asText().contains("Using a template loaded from external location using class-path /META-INF/resources/templates"));
+            assertTrue(page.asText().contains("This template is working as expected!"));
+            assertTrue(page.asText().contains("/WEB-INF/lib/JSF22TestResources.jar!/META-INF/resources/templates/basicTemplate.xhtml"));
+        }
     }
 
     /**
@@ -185,19 +193,20 @@ public class JSFHtmlUnit {
     @Mode(TestMode.FULL)
     @Test
     public void testUserAgentNeedsUpdateTrueCondition() throws Exception {
-        WebClient webClient = new WebClient();
-        Calendar calendar = Calendar.getInstance();
+        try (WebClient webClient = new WebClient()) {
+            Calendar calendar = Calendar.getInstance();
 
-        webClient.addRequestHeader("If-Modified-Since", "Thu, 01 Jan " + (calendar.get(Calendar.YEAR) - 1) + " 00:00:00 GMT");
+            webClient.addRequestHeader("If-Modified-Since", "Thu, 01 Jan " + (calendar.get(Calendar.YEAR) - 1) + " 00:00:00 GMT");
 
-        URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "testUserAgentNeedsUpdateMethod.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME_JSF22_RESOURCES, "testUserAgentNeedsUpdateMethod.jsf");
 
-        HtmlPage trueConditionPage = (HtmlPage) webClient.getPage(url);
-        Log.info(c, name.getMethodName(), "Response true: " + trueConditionPage.asText());
+            HtmlPage trueConditionPage = (HtmlPage) webClient.getPage(url);
+            Log.info(c, name.getMethodName(), "Response true: " + trueConditionPage.asText());
 
-        assertTrue(trueConditionPage.asText().contains("Request Headers:"));
-        assertTrue(trueConditionPage.asText().contains("If-Modified-Since"));
-        assertTrue(trueConditionPage.asText().contains("User Agent Needs Update Result: true"));
+            assertTrue(trueConditionPage.asText().contains("Request Headers:"));
+            assertTrue(trueConditionPage.asText().contains("If-Modified-Since"));
+            assertTrue(trueConditionPage.asText().contains("User Agent Needs Update Result: true"));
+        }
     }
 
     /**
@@ -219,19 +228,20 @@ public class JSFHtmlUnit {
     @Mode(TestMode.FULL)
     @Test
     public void testUserAgentNeedsUpdateFalseCondition() throws Exception {
-        WebClient webClient = new WebClient();
-        Calendar calendar = Calendar.getInstance();
+        try (WebClient webClient = new WebClient()) {
+            Calendar calendar = Calendar.getInstance();
 
-        webClient.addRequestHeader("If-Modified-Since", "Thu, 01 Jan " + (calendar.get(Calendar.YEAR) + 1) + " 00:00:00 GMT");
+            webClient.addRequestHeader("If-Modified-Since", "Thu, 01 Jan " + (calendar.get(Calendar.YEAR) + 1) + " 00:00:00 GMT");
 
-        URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "testUserAgentNeedsUpdateMethod.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME_JSF22_RESOURCES, "testUserAgentNeedsUpdateMethod.jsf");
 
-        HtmlPage falseConditionPage = (HtmlPage) webClient.getPage(url);
-        Log.info(c, name.getMethodName(), "Response false: " + falseConditionPage.asText());
+            HtmlPage falseConditionPage = (HtmlPage) webClient.getPage(url);
+            Log.info(c, name.getMethodName(), "Response false: " + falseConditionPage.asText());
 
-        assertTrue(falseConditionPage.asText().contains("Request Headers:"));
-        assertTrue(falseConditionPage.asText().contains("If-Modified-Since"));
-        assertTrue(falseConditionPage.asText().contains("User Agent Needs Update Result: false"));
+            assertTrue(falseConditionPage.asText().contains("Request Headers:"));
+            assertTrue(falseConditionPage.asText().contains("If-Modified-Since"));
+            assertTrue(falseConditionPage.asText().contains("User Agent Needs Update Result: false"));
+        }
     }
 
     /**
@@ -247,34 +257,35 @@ public class JSFHtmlUnit {
      */
     @Test
     public void testProcessValueChangeAndProcessActionMethods() throws Exception {
-        WebClient webClient = new WebClient();
-        URL url = JSFUtils.createHttpUrl(jsfTestServer2, "JSF22BackwardCompatibilityTests", "testProcessValueChangeAndProcessAction.jsf");
-        HtmlPage page = (HtmlPage) webClient.getPage(url);
+        try (WebClient webClient = new WebClient()) {
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME_JSF22_BACKWARDCOMPATIBILITY, "testProcessValueChangeAndProcessAction.jsf");
+            HtmlPage page = (HtmlPage) webClient.getPage(url);
 
-        assertTrue(page.asText().contains("Write a word:"));
-        assertTrue(page.asText().contains("Write a name:"));
+            assertTrue(page.asText().contains("Write a word:"));
+            assertTrue(page.asText().contains("Write a name:"));
 
-        // Get the form that we are dealing with and within that form
-        HtmlForm form = page.getFormByName("testForm");
+            // Get the form that we are dealing with and within that form
+            HtmlForm form = page.getFormByName("testForm");
 
-        // Find the fields and submit button
-        HtmlTextInput wordTextField = form.getInputByName("wordInput");
-        HtmlTextInput nameTextField = form.getInputByName("nameInput");
+            // Find the fields and submit button
+            HtmlTextInput wordTextField = form.getInputByName("wordInput");
+            HtmlTextInput nameTextField = form.getInputByName("nameInput");
 
-        HtmlSubmitInput button = form.getInputByName("submitButton");
+            HtmlSubmitInput button = form.getInputByName("submitButton");
 
-        // Change the value of the text field
-        wordTextField.setValueAttribute("Dolphins");
-        nameTextField.setValueAttribute("John");
+            // Change the value of the text field
+            wordTextField.setValueAttribute("Dolphins");
+            nameTextField.setValueAttribute("John");
 
-        // Now submit the form by clicking the button and get back the second page.
-        HtmlPage resultPage = button.click();
+            // Now submit the form by clicking the button and get back the second page.
+            HtmlPage resultPage = button.click();
 
-        assertTrue(resultPage.asText().contains("Testing ExceptionFromProcessValueChange: Exception thrown is correct since it is an instance of ELException"));
-        assertTrue(resultPage.asText().contains("Testing ExceptionFromProcessAction: Exception thrown is correct since it is an instance of ELException"));
-        assertTrue(resultPage.asText().contains("Testing ELException: NullPointerException. Exception thrown is correct since it is an instance of NullPointerException"));
-        assertTrue(resultPage.asText().contains("Word: Dolphins"));
-        assertTrue(resultPage.asText().contains("Name: John"));
+            assertTrue(resultPage.asText().contains("Testing ExceptionFromProcessValueChange: Exception thrown is correct since it is an instance of ELException"));
+            assertTrue(resultPage.asText().contains("Testing ExceptionFromProcessAction: Exception thrown is correct since it is an instance of ELException"));
+            assertTrue(resultPage.asText().contains("Testing ELException: NullPointerException. Exception thrown is correct since it is an instance of NullPointerException"));
+            assertTrue(resultPage.asText().contains("Word: Dolphins"));
+            assertTrue(resultPage.asText().contains("Name: John"));
+        }
     }
 
     /**
@@ -288,29 +299,30 @@ public class JSFHtmlUnit {
      */
     @Test
     public void testGetTypeFromCompositeComponentELResolver() throws Exception {
-        WebClient webClient = new WebClient();
-        URL url = JSFUtils.createHttpUrl(jsfTestServer2, "JSF22BackwardCompatibilityTests", "testCompositeComponentAttribute.jsf");
-        HtmlPage page = (HtmlPage) webClient.getPage(url);
+        try (WebClient webClient = new WebClient()) {
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME_JSF22_BACKWARDCOMPATIBILITY, "testCompositeComponentAttribute.jsf");
+            HtmlPage page = (HtmlPage) webClient.getPage(url);
 
-        Log.info(c, name.getMethodName(), "Response: " + page.asText());
+            Log.info(c, name.getMethodName(), "Response: " + page.asText());
 
-        assertTrue(page.asText().contains("Untyped Literal From Map - Attribute: untypedXliteral, Type: Object"));
-        assertTrue(page.asText().contains("Typed Literal From Map - Attribute: typedXliteral, Type: Integer"));
-        Log.info(c, name.getMethodName(), "one");
-        assertTrue(page.asText().contains("Untyped Unset From Map - Attribute: untypedXunset, Type: Object"));
-        assertTrue(page.asText().contains("Typed Unset From Map - Attribute: typedXunset, Type: Dog"));
-        Log.info(c, name.getMethodName(), "one");
-        assertTrue(page.asText().contains("Untyped WideEL From Map - Attribute: untypedXwideEL, Type: Animal"));
-        assertTrue(page.asText().contains("Typed WideEL From Map - Attribute: typedXwideEL, Type: Dog"));
-        Log.info(c, name.getMethodName(), "one");
-        assertTrue(page.asText().contains("Untyped MediumEL From Map - Attribute: untypedXmediumEL, Type: Dog"));
-        assertTrue(page.asText().contains("Typed MediumEL From Map - Attribute: typedXmediumEL, Type: Dog"));
-        Log.info(c, name.getMethodName(), "one");
-        assertTrue(page.asText().contains("Untyped NarrowEL From Map - Attribute: untypedXnarrowEL, Type: Pitbull"));
-        assertTrue(page.asText().contains("Typed NarrowEL From Map - Attribute: typedXnarrowEL, Type: Pitbull"));
-        Log.info(c, name.getMethodName(), "one");
-        assertTrue(page.asText().contains("Untyped NullEL From Map - Attribute: untypedXnullEL, Type: Dog"));
-        assertTrue(page.asText().contains("Typed NullEL From Map - Attribute: typedXnullEL, Type: Dog"));
+            assertTrue(page.asText().contains("Untyped Literal From Map - Attribute: untypedXliteral, Type: Object"));
+            assertTrue(page.asText().contains("Typed Literal From Map - Attribute: typedXliteral, Type: Integer"));
+            Log.info(c, name.getMethodName(), "one");
+            assertTrue(page.asText().contains("Untyped Unset From Map - Attribute: untypedXunset, Type: Object"));
+            assertTrue(page.asText().contains("Typed Unset From Map - Attribute: typedXunset, Type: Dog"));
+            Log.info(c, name.getMethodName(), "one");
+            assertTrue(page.asText().contains("Untyped WideEL From Map - Attribute: untypedXwideEL, Type: Animal"));
+            assertTrue(page.asText().contains("Typed WideEL From Map - Attribute: typedXwideEL, Type: Dog"));
+            Log.info(c, name.getMethodName(), "one");
+            assertTrue(page.asText().contains("Untyped MediumEL From Map - Attribute: untypedXmediumEL, Type: Dog"));
+            assertTrue(page.asText().contains("Typed MediumEL From Map - Attribute: typedXmediumEL, Type: Dog"));
+            Log.info(c, name.getMethodName(), "one");
+            assertTrue(page.asText().contains("Untyped NarrowEL From Map - Attribute: untypedXnarrowEL, Type: Pitbull"));
+            assertTrue(page.asText().contains("Typed NarrowEL From Map - Attribute: typedXnarrowEL, Type: Pitbull"));
+            Log.info(c, name.getMethodName(), "one");
+            assertTrue(page.asText().contains("Untyped NullEL From Map - Attribute: untypedXnullEL, Type: Dog"));
+            assertTrue(page.asText().contains("Typed NullEL From Map - Attribute: typedXnullEL, Type: Dog"));
+        }
 
     }
 
@@ -323,13 +335,13 @@ public class JSFHtmlUnit {
      */
     @Test
     public void testifLibraryExist() throws Exception {
-        WebClient webClient = new WebClient();
-        URL url = JSFUtils.createHttpUrl(jsfTestServer2, "JSF22TestResources", "checkifLibraryExists.jsf");
-        HtmlPage page = (HtmlPage) webClient.getPage(url);
+        try (WebClient webClient = new WebClient()) {
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME_JSF22_RESOURCES, "checkifLibraryExists.jsf");
+            HtmlPage page = (HtmlPage) webClient.getPage(url);
 
-        Log.info(c, name.getMethodName(), "Response: " + page.asText());
+            Log.info(c, name.getMethodName(), "Response: " + page.asText());
 
-        assertTrue(page.asText().contains("Library Exist: true"));
-
+            assertTrue(page.asText().contains("Library Exist: true"));
+        }
     }
 }

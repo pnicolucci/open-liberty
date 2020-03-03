@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertTrue;
@@ -46,8 +46,7 @@ public class JSF22InputFileTests {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "JSF22InputFile";
-    // static Props testProps = Props.getInstance();
+    private static final String APP_NAME = "JSF22InputFile";
 
     protected static final Class<?> c = JSF22InputFileTests.class;
 
@@ -56,7 +55,9 @@ public class JSF22InputFileTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        ShrinkHelper.defaultDropinApp(jsfTestServer2, "JSF22InputFile.war", "com.ibm.ws.jsf22.fat.input");
+        if (!JSFUtils.isAppInstalled(jsfTestServer2, APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(jsfTestServer2, APP_NAME + ".war", "com.ibm.ws.jsf22.fat.input");
+        }
 
         jsfTestServer2.startServer(JSF22InputFileTests.class.getSimpleName() + ".log");
     }
@@ -94,7 +95,7 @@ public class JSF22InputFileTests {
 
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "fileUploadTest.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "fileUploadTest.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             HtmlFileInput fileInput = (HtmlFileInput) page.getElementById("form1:file1");

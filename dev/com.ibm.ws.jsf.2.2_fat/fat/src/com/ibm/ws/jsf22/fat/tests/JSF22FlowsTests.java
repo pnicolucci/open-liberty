@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertTrue;
@@ -56,7 +56,7 @@ public class JSF22FlowsTests {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "JSF22FacesFlows";
+    private static final String APP_NAME = "JSF22FacesFlows";
 
     protected static final Class<?> c = JSF22FlowsTests.class;
 
@@ -65,13 +65,15 @@ public class JSF22FlowsTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        JavaArchive JSF22FacesFlowsJar = ShrinkHelper.buildJavaArchive("JSF22FacesFlows.jar", "");
+        if (!JSFUtils.isAppInstalled(jsfFacesFlowsServer, APP_NAME)) {
+            JavaArchive JSF22FacesFlowsJar = ShrinkHelper.buildJavaArchive(APP_NAME + ".jar", "");
 
-        WebArchive JSF22FacesFlowsWar = ShrinkHelper.buildDefaultApp("JSF22FacesFlows.war", "com.ibm.ws.jsf22.fat.flows.beans");
+            WebArchive JSF22FacesFlowsWar = ShrinkHelper.buildDefaultApp(APP_NAME + ".war", "com.ibm.ws.jsf22.fat.flows.beans");
 
-        JSF22FacesFlowsWar.addAsLibraries(JSF22FacesFlowsJar);
+            JSF22FacesFlowsWar.addAsLibraries(JSF22FacesFlowsJar);
 
-        ShrinkHelper.exportDropinAppToServer(jsfFacesFlowsServer, JSF22FacesFlowsWar);
+            ShrinkHelper.exportDropinAppToServer(jsfFacesFlowsServer, JSF22FacesFlowsWar);
+        }
 
         jsfFacesFlowsServer.startServer(JSF22FlowsTests.class.getSimpleName() + ".log");
     }
@@ -91,7 +93,7 @@ public class JSF22FlowsTests {
      */
     @Test
     public void JSF22Flows_TestSimple() throws Exception {
-        URL url = JSFUtils.createHttpUrl(jsfFacesFlowsServer, contextRoot, "");
+        URL url = JSFUtils.createHttpUrl(jsfFacesFlowsServer, APP_NAME, "");
         testSimpleCase("simple", url);
     }
 
@@ -102,7 +104,7 @@ public class JSF22FlowsTests {
      */
     @Test
     public void JSF22Flows_TestSimpleFacesConfig() throws Exception {
-        URL url = JSFUtils.createHttpUrl(jsfFacesFlowsServer, contextRoot, "");
+        URL url = JSFUtils.createHttpUrl(jsfFacesFlowsServer, APP_NAME, "");
         testSimpleCase("simpleFacesConfig", url);
     }
 
@@ -114,7 +116,7 @@ public class JSF22FlowsTests {
      */
     @Test
     public void JSF22Flows_TestSimpleJar() throws Exception {
-        URL url = JSFUtils.createHttpUrl(jsfFacesFlowsServer, contextRoot, "");
+        URL url = JSFUtils.createHttpUrl(jsfFacesFlowsServer, APP_NAME, "");
         testSimpleCase("simple-jar", url);
     }
 
@@ -128,7 +130,7 @@ public class JSF22FlowsTests {
         // Navigate to the failed flow entry page
         try (WebClient webClient = getWebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfFacesFlowsServer, contextRoot, "JSF22Flows_noAccess.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfFacesFlowsServer, APP_NAME, "JSF22Flows_noAccess.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             assertNotInFlow(page);
@@ -150,7 +152,7 @@ public class JSF22FlowsTests {
     public void JSF22Flows_TestDeclarativeNavigation() throws Exception {
         // Navigate to the
         try (WebClient webClient = getWebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfFacesFlowsServer, contextRoot, "");
+            URL url = JSFUtils.createHttpUrl(jsfFacesFlowsServer, APP_NAME, "");
             HtmlPage page = getIndex(webClient, url);
 
             String flowID = "simpleNavigationDeclarative";
@@ -204,7 +206,7 @@ public class JSF22FlowsTests {
      */
     @Test
     public void JSF22Flows_TestDeclarativeSwitch() throws Exception {
-        URL url = JSFUtils.createHttpUrl(jsfFacesFlowsServer, contextRoot, "");
+        URL url = JSFUtils.createHttpUrl(jsfFacesFlowsServer, APP_NAME, "");
         testFlowSwitch("declarativeSwitch", url);
     }
 
@@ -272,7 +274,7 @@ public class JSF22FlowsTests {
     @Test
     public void JSF22Flows_TestDeclarativeNestedFlows() throws Exception {
         // Navigate to the index
-        URL url = JSFUtils.createHttpUrl(jsfFacesFlowsServer, contextRoot, "");
+        URL url = JSFUtils.createHttpUrl(jsfFacesFlowsServer, APP_NAME, "");
         testNestedFlows("declarativeNested1", "declarativeNested2", "declarativeNested", url);
     }
 

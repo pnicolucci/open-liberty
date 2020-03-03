@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import java.net.URL;
@@ -45,21 +45,25 @@ public class JSF22IncludeTest {
 
     protected static final Class<?> c = JSF22IncludeTest.class;
 
-    @Server("jsf22IncludeTestServer")
+    private static final String APP_NAME = "TestJSF2.2";
 
-    public static LibertyServer jsf22IncludeTestServer;
+    @Server("jsfTestServer1")
+    public static LibertyServer jsfTestServer1;
 
     @BeforeClass
     public static void setup() throws Exception {
-        ShrinkHelper.defaultDropinApp(jsf22IncludeTestServer, "TestJSF2.2.war", "com.ibm.ws.fat.jsf22.fat.testjsf.*");
-        jsf22IncludeTestServer.startServer(JSF22IncludeTest.class.getSimpleName() + ".log");
+        if (!JSFUtils.isAppInstalled(jsfTestServer1, APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(jsfTestServer1, APP_NAME + ".war", "com.ibm.ws.fat.jsf22.fat.testjsf.*");
+        }
+
+        jsfTestServer1.startServer(JSF22IncludeTest.class.getSimpleName() + ".log");
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
         // Stop the server
-        if (jsf22IncludeTestServer != null && jsf22IncludeTestServer.isStarted()) {
-            jsf22IncludeTestServer.stopServer();
+        if (jsfTestServer1 != null && jsfTestServer1.isStarted()) {
+            jsfTestServer1.stopServer();
         }
     }
 
@@ -72,11 +76,10 @@ public class JSF22IncludeTest {
      */
     @Test
     public void testJSPInclude() throws Exception {
-        String contextRoot = "TestJSF2.2";
 
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsf22IncludeTestServer, contextRoot, "IncludeTest.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "IncludeTest.jsf");
 
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 

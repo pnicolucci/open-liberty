@@ -42,6 +42,8 @@ public class JSF22ThirdPartyApiTests {
 
     protected static final Class<?> c = JSF22ThirdPartyApiTests.class;
 
+    private static final String APP_NAME = "JSF22ThirdPartyApi";
+
     @Rule
     public TestName name = new TestName();
 
@@ -50,7 +52,9 @@ public class JSF22ThirdPartyApiTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        ShrinkHelper.defaultApp(jsf22ThirdPartyApiServer, "JSF22ThirdPartyApi.war", "com.ibm.ws.jsf22.fat.thirdpartyapi");
+        if (!JSFUtils.isAppInstalled(jsf22ThirdPartyApiServer, APP_NAME)) {
+            ShrinkHelper.defaultApp(jsf22ThirdPartyApiServer, APP_NAME + ".war", "com.ibm.ws.jsf22.fat.thirdpartyapi");
+        }
 
         // Start the server and use the class name so we can find logs easily.
         // Many tests use the same server.
@@ -72,11 +76,10 @@ public class JSF22ThirdPartyApiTests {
      */
     @Test
     public void testJSFThirdPartyAPIAccess() throws Exception {
-        String contextRoot = "JSF22ThirdPartyApi";
         try (WebClient webClient = new WebClient()) {
 
             // Construct the URL for the test
-            URL url = JSFUtils.createHttpUrl(jsf22ThirdPartyApiServer, contextRoot, "JSF22ThirdPartyAPI.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsf22ThirdPartyApiServer, APP_NAME, "JSF22ThirdPartyAPI.xhtml");
 
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
@@ -95,11 +98,10 @@ public class JSF22ThirdPartyApiTests {
      */
     @Test
     public void testJSFThirdPartyAPIAccessFails() throws Exception {
-        String contextRoot = "JSF22ThirdPartyApi";
         try (WebClient webClient = new WebClient()) {
 
             // Construct the URL for the test
-            URL url = JSFUtils.createHttpUrl(jsf22ThirdPartyApiServer, contextRoot, "JSF22ThirdPartyAPIFailure.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsf22ThirdPartyApiServer, APP_NAME, "JSF22ThirdPartyAPIFailure.xhtml");
 
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 

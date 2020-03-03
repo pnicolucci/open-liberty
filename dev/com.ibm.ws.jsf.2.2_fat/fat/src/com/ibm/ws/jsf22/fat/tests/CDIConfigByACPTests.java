@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2015, 2019 IBM Corporation and others.
+/*******************************************************************************
+ * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,11 +7,8 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
-
-import com.ibm.websphere.simplicity.ShrinkHelper;
-import com.ibm.ws.jsf22.fat.CDITestBase;
 
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
@@ -21,6 +18,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
+
+import com.ibm.websphere.simplicity.ShrinkHelper;
+import com.ibm.ws.jsf22.fat.CDITestBase;
+import com.ibm.ws.jsf22.fat.JSFUtils;
 
 import componenttest.annotation.Server;
 import componenttest.annotation.SkipForRepeat;
@@ -45,7 +46,7 @@ public class CDIConfigByACPTests extends CDITestBase {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "TestJSFEL";
+    private static final String APP_NAME = "CDIConfigByACP";
 
     protected static final Class<?> c = CDIConfigByACPTests.class;
 
@@ -55,15 +56,17 @@ public class CDIConfigByACPTests extends CDITestBase {
     @BeforeClass
     public static void setup() throws Exception {
 
-        // CDIConfigByACP uses CDICommon packages
-        JavaArchive CDIConfigByACPJar = ShrinkHelper.buildJavaArchive("CDIConfigByACP.jar", "com.ibm.ws.jsf22.fat.cdiconfigbyacp.jar",
-                                                                      "com.ibm.ws.jsf22.fat.cdicommon.*");
+        if (!JSFUtils.isAppInstalled(jsfCDIConfigByACPServer, APP_NAME)) {
+            // CDIConfigByACP uses CDICommon packages
+            JavaArchive CDIConfigByACPJar = ShrinkHelper.buildJavaArchive(APP_NAME + ".jar", "com.ibm.ws.jsf22.fat.cdiconfigbyacp.jar",
+                                                                          "com.ibm.ws.jsf22.fat.cdicommon.*");
 
-        WebArchive CDIConfigByACPWar = ShrinkHelper.buildDefaultApp("CDIConfigByACP.war", "com.ibm.ws.jsf22.fat.cdiconfigbyacp");
+            WebArchive CDIConfigByACPWar = ShrinkHelper.buildDefaultApp(APP_NAME + ".war", "com.ibm.ws.jsf22.fat.cdiconfigbyacp");
 
-        CDIConfigByACPWar.addAsLibraries(CDIConfigByACPJar);
+            CDIConfigByACPWar.addAsLibraries(CDIConfigByACPJar);
 
-        ShrinkHelper.exportDropinAppToServer(jsfCDIConfigByACPServer, CDIConfigByACPWar);
+            ShrinkHelper.exportDropinAppToServer(jsfCDIConfigByACPServer, CDIConfigByACPWar);
+        }
 
         jsfCDIConfigByACPServer.startServer(JSF22AppConfigPopTests.class.getSimpleName() + ".log");
 
@@ -88,7 +91,7 @@ public class CDIConfigByACPTests extends CDITestBase {
      */
     @Test
     public void testActionListenerInjection_CDIConfigByACP() throws Exception {
-        testActionListenerInjectionByApp("CDIConfigByACP", jsfCDIConfigByACPServer);
+        testActionListenerInjectionByApp(APP_NAME, jsfCDIConfigByACPServer);
     }
 
     /**
@@ -101,7 +104,7 @@ public class CDIConfigByACPTests extends CDITestBase {
      */
     @Test
     public void testNavigationHandlerInjection_CDIConfigByACP() throws Exception {
-        testNavigationHandlerInjectionByApp("CDIConfigByACP", jsfCDIConfigByACPServer);
+        testNavigationHandlerInjectionByApp(APP_NAME, jsfCDIConfigByACPServer);
     }
 
     /**
@@ -114,7 +117,7 @@ public class CDIConfigByACPTests extends CDITestBase {
      */
     @Test
     public void testELResolverInjection_CDIConfigByACP() throws Exception {
-        testELResolverInjectionByApp("CDIConfigByACP", jsfCDIConfigByACPServer);
+        testELResolverInjectionByApp(APP_NAME, jsfCDIConfigByACPServer);
     }
 
     /**
@@ -126,7 +129,7 @@ public class CDIConfigByACPTests extends CDITestBase {
      */
     @Test
     public void testCustomResourceHandlerInjections_CDIConfigByACP() throws Exception {
-        testCustomResourceHandlerInjectionsByApp("CDIConfigByACP", jsfCDIConfigByACPServer);
+        testCustomResourceHandlerInjectionsByApp(APP_NAME, jsfCDIConfigByACPServer);
 
     }
 
@@ -139,7 +142,7 @@ public class CDIConfigByACPTests extends CDITestBase {
      */
     @Test
     public void testCustomStateManagerInjections_CDIConfigByACP() throws Exception {
-        testCustomStateManagerInjectionsByApp("CDIConfigByACP", jsfCDIConfigByACPServer);
+        testCustomStateManagerInjectionsByApp(APP_NAME, jsfCDIConfigByACPServer);
     }
 
     /**
@@ -151,6 +154,6 @@ public class CDIConfigByACPTests extends CDITestBase {
      */
     @Test
     public void testFactoryAndOtherScopeInjections_CDIConfigByACP() throws Exception {
-        testFactoryAndOtherAppScopedInjectionsByApp("CDIConfigByACP", jsfCDIConfigByACPServer);
+        testFactoryAndOtherAppScopedInjectionsByApp(APP_NAME, jsfCDIConfigByACPServer);
     }
 }

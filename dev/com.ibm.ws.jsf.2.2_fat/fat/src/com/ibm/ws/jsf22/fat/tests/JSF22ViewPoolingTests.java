@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertFalse;
@@ -43,7 +43,7 @@ public class JSF22ViewPoolingTests {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "JSF22ViewPooling";
+    private static final String APP_NAME = "JSF22ViewPooling";
 
     protected static final Class<?> c = JSFCompELTests.class;
 
@@ -52,7 +52,9 @@ public class JSF22ViewPoolingTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        ShrinkHelper.defaultDropinApp(jsfTestServer2, "JSF22ViewPooling.war");
+        if (!JSFUtils.isAppInstalled(jsfTestServer2, APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(jsfTestServer2, APP_NAME + ".war");
+        }
 
         jsfTestServer2.startServer(JSF22ViewPoolingTests.class.getSimpleName() + ".log");
     }
@@ -77,7 +79,7 @@ public class JSF22ViewPoolingTests {
         try (WebClient webClient = new WebClient()) {
             webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "JSF22ViewPooling_Disabled.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "JSF22ViewPooling_Disabled.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             if (page == null) {

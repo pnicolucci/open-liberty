@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertTrue;
@@ -49,7 +49,8 @@ public class JSF22MiscellaneousTests {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "JSF22Miscellaneous";
+    private static final String APP_NAME_MISCELLANEOUS = "JSF22Miscellaneous";
+    private static final String APP_NAME_MISCELLANEOUS_SERIALIZER = "JSF22MiscellaneousSerialize";
 
     protected static final Class<?> c = JSF22MiscellaneousTests.class;
 
@@ -59,22 +60,24 @@ public class JSF22MiscellaneousTests {
     @BeforeClass
     public static void setup() throws Exception {
 
-        JavaArchive JSF22MiscellaneousJar = ShrinkHelper.buildJavaArchive("JSF22Miscellaneous.jar", "com.ibm.ws.jsf22.fat.miscbean.jar");
+        if (!JSFUtils.isAppInstalled(jsf22MiscellaneousServer, APP_NAME_MISCELLANEOUS)) {
+            JavaArchive JSF22MiscellaneousJar = ShrinkHelper.buildJavaArchive(APP_NAME_MISCELLANEOUS + ".jar", "com.ibm.ws.jsf22.fat.miscbean.jar");
 
-        WebArchive JSF22MiscellaneousWar = ShrinkHelper.buildDefaultApp("JSF22Miscellaneous.war", "com.ibm.ws.jsf22.fat.miscbean");
+            WebArchive JSF22MiscellaneousWar = ShrinkHelper.buildDefaultApp(APP_NAME_MISCELLANEOUS + ".war", "com.ibm.ws.jsf22.fat.miscbean");
 
-        WebArchive SerializeWar = ShrinkHelper.buildDefaultApp("JSF22MiscellaneousSerialize.war", "");
+            WebArchive SerializeWar = ShrinkHelper.buildDefaultApp(APP_NAME_MISCELLANEOUS_SERIALIZER + ".war", "");
 
-        EnterpriseArchive JSF22MiscellaneousEar = ShrinkWrap.create(EnterpriseArchive.class, "JSF22Miscellaneous.ear");
+            EnterpriseArchive JSF22MiscellaneousEar = ShrinkWrap.create(EnterpriseArchive.class, APP_NAME_MISCELLANEOUS + ".ear");
 
-        JSF22MiscellaneousWar.addAsLibraries(JSF22MiscellaneousJar);
-        SerializeWar.addAsLibraries(JSF22MiscellaneousJar);
-        JSF22MiscellaneousEar.addAsModule(JSF22MiscellaneousWar);
-        JSF22MiscellaneousEar.addAsModule(SerializeWar);
+            JSF22MiscellaneousWar.addAsLibraries(JSF22MiscellaneousJar);
+            SerializeWar.addAsLibraries(JSF22MiscellaneousJar);
+            JSF22MiscellaneousEar.addAsModule(JSF22MiscellaneousWar);
+            JSF22MiscellaneousEar.addAsModule(SerializeWar);
 
-        ShrinkHelper.addDirectory(JSF22MiscellaneousEar, "test-applications" + "/JSF22Miscellaneous.ear" + "/resources");
+            ShrinkHelper.addDirectory(JSF22MiscellaneousEar, "test-applications" + "/" + APP_NAME_MISCELLANEOUS + ".ear" + "/resources");
 
-        ShrinkHelper.exportDropinAppToServer(jsf22MiscellaneousServer, JSF22MiscellaneousEar);
+            ShrinkHelper.exportDropinAppToServer(jsf22MiscellaneousServer, JSF22MiscellaneousEar);
+        }
 
         jsf22MiscellaneousServer.startServer(JSF22MiscellaneousTests.class.getSimpleName() + ".log");
     }
@@ -96,7 +99,7 @@ public class JSF22MiscellaneousTests {
     public void testSimple() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, contextRoot, "testSimple.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, APP_NAME_MISCELLANEOUS, "testSimple.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             if (page == null) {
@@ -116,7 +119,7 @@ public class JSF22MiscellaneousTests {
     public void testAPI() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, contextRoot, "testAPI.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, APP_NAME_MISCELLANEOUS, "testAPI.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // Make sure the page initially renders correctly
@@ -169,7 +172,7 @@ public class JSF22MiscellaneousTests {
             // Use a synchronizing ajax controller to allow proper ajax updating
             webClient.setAjaxController(new NicelyResynchronizingAjaxController());
 
-            URL url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, contextRoot, "testResetValues.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, APP_NAME_MISCELLANEOUS, "testResetValues.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // Make sure the page initially renders correctly
@@ -215,7 +218,7 @@ public class JSF22MiscellaneousTests {
     public void testCSRF() throws Exception {
         try (WebClient webClient = new WebClient(); WebClient webClient2 = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, contextRoot, "testCSRF.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, APP_NAME_MISCELLANEOUS, "testCSRF.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // Make sure the page initially renders correctly
@@ -257,7 +260,7 @@ public class JSF22MiscellaneousTests {
             try {
                 // Turn off printing for this webClient.   We know there will very likely be an error.
                 webClient2.getOptions().setPrintContentOnFailingStatusCode(false);
-                url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, contextRoot, "protectedPage.xhtml");
+                url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, APP_NAME_MISCELLANEOUS, "protectedPage.xhtml");
                 webClient2.getPage(url);
                 Assert.fail("Protected page was retrieved.   This should not occur.");
             } catch (Exception ex1) {
@@ -279,7 +282,7 @@ public class JSF22MiscellaneousTests {
     public void testViewScopeBinding() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, contextRoot, "testViewScopeBinding.jsf");
+            URL url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, APP_NAME_MISCELLANEOUS, "testViewScopeBinding.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // Make sure the page initially renders correctly
@@ -310,7 +313,7 @@ public class JSF22MiscellaneousTests {
     public void testViewScopeBindingSerialize() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, contextRoot, "testViewScopeBinding.jsf");
+            URL url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, APP_NAME_MISCELLANEOUS, "testViewScopeBinding.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // Make sure the page initially renders correctly
@@ -341,7 +344,7 @@ public class JSF22MiscellaneousTests {
     public void testViewScopeMyFaces() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, contextRoot, "testViewScopeMyFaces.jsf");
+            URL url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, APP_NAME_MISCELLANEOUS, "testViewScopeMyFaces.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             System.out.println(page.asText());
@@ -372,7 +375,7 @@ public class JSF22MiscellaneousTests {
     public void testViewScopeMyFacesSerialize() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, "JSF22MiscellaneousSerialize", "testViewScopeMyFaces.jsf");
+            URL url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, APP_NAME_MISCELLANEOUS_SERIALIZER, "testViewScopeMyFaces.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // Make sure the page initially renders correctly
@@ -421,7 +424,7 @@ public class JSF22MiscellaneousTests {
     public void testExpressionFactoryImplConsistency() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, contextRoot, "testExpressionFactoryImplConsistency.jsf");
+            URL url = JSFUtils.createHttpUrl(jsf22MiscellaneousServer, APP_NAME_MISCELLANEOUS, "testExpressionFactoryImplConsistency.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // Make sure the page initially renders correctly

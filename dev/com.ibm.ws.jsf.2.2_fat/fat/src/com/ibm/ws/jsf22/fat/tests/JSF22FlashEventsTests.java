@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertEquals;
@@ -49,7 +49,7 @@ public class JSF22FlashEventsTests {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "JSF22FlashEvents";
+    private static final String APP_NAME = "JSF22FlashEvents";
 
     protected static final Class<?> c = JSF22FlashEventsTests.class;
 
@@ -63,7 +63,9 @@ public class JSF22FlashEventsTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        ShrinkHelper.defaultDropinApp(jsfTestServer1, "JSF22FlashEvents.war", "com.ibm.ws.jsf22.fat.flashevents.*");
+        if (!JSFUtils.isAppInstalled(jsfTestServer1, APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(jsfTestServer1, APP_NAME + ".war", "com.ibm.ws.jsf22.fat.flashevents.*");
+        }
 
         jsfTestServer1.startServer(JSF22FlashEventsTests.class.getSimpleName() + ".log");
 
@@ -109,7 +111,7 @@ public class JSF22FlashEventsTests {
         try (WebClient webClient = new WebClient()) {
             jsfTestServer1.setMarkToEndOfLog(logFiles);
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "indexNoFlash.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "indexNoFlash.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /JSF22FlashEvents/indexNoFlash.jsf");
@@ -126,7 +128,7 @@ public class JSF22FlashEventsTests {
 
             //start of test with Flash but no Keep
             jsfTestServer1.setMarkToEndOfLog();
-            url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "indexFlash.jsf");
+            url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "indexFlash.jsf");
             page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /JSF22FlashEvents/indexFlash.jsf");
@@ -174,7 +176,7 @@ public class JSF22FlashEventsTests {
             //Start test with Flash and Keep
             jsfTestServer1.setMarkToEndOfLog();
 
-            url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "indexFlashAndKeep.jsf");
+            url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "indexFlashAndKeep.jsf");
             page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /JSF22FlashEvents/indexFlashAndKeep.jsf");

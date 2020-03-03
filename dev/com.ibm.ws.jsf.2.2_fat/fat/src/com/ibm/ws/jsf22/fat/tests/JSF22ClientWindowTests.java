@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertFalse;
@@ -46,7 +46,7 @@ public class JSF22ClientWindowTests {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "JSF22ClientWindow";
+    private static final String APP_NAME = "JSF22ClientWindow";
 
     protected static final Class<?> c = JSF22ClientWindowTests.class;
 
@@ -55,7 +55,9 @@ public class JSF22ClientWindowTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        ShrinkHelper.defaultDropinApp(jsfTestServer2, "JSF22ClientWindow.war", "com.ibm.ws.jsf22.fat.clientwindow");
+        if (!JSFUtils.isAppInstalled(jsfTestServer2, APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(jsfTestServer2, APP_NAME + ".war", "com.ibm.ws.jsf22.fat.clientwindow");
+        }
 
         jsfTestServer2.startServer(JSF22ClientWindowTests.class.getSimpleName() + ".log");
     }
@@ -78,7 +80,7 @@ public class JSF22ClientWindowTests {
     public void JSF22ClientWindow_TestSimpleLink() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "index.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "index.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             if (page == null) {
@@ -112,7 +114,7 @@ public class JSF22ClientWindowTests {
     public void JSF22ClientWindow_TestSimpleLinkNewWindow() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "index.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "index.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             if (page == null) {
@@ -145,7 +147,7 @@ public class JSF22ClientWindowTests {
     public void JSF22ClientWindow_TestDisabledLink() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "index.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "index.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             if (page == null) {
@@ -174,7 +176,7 @@ public class JSF22ClientWindowTests {
             // Use a synchronizing ajax controller to allow proper ajax updating
             webClient.setAjaxController(new NicelyResynchronizingAjaxController());
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "index.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "index.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             if (page == null) {
@@ -220,7 +222,7 @@ public class JSF22ClientWindowTests {
     public void JSF22ClientWindow_TestCommandButton() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "index.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "index.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             if (page == null) {
@@ -265,7 +267,7 @@ public class JSF22ClientWindowTests {
     public void JSF22ClientWindow_TestCommandLink() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "index.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "index.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             if (page == null) {
@@ -310,7 +312,7 @@ public class JSF22ClientWindowTests {
     public void JSF22ClientWindow_TestButton() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "index.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "index.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             if (page == null) {
@@ -348,7 +350,7 @@ public class JSF22ClientWindowTests {
     public void JSF22ClientWindow_TestButtonDisabled() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "index.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "index.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             if (page == null) {
@@ -380,7 +382,7 @@ public class JSF22ClientWindowTests {
         try (WebClient webClient = new WebClient()) {
 
             //index.xhtml link
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "index.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "index.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             if (page == null) {
@@ -394,7 +396,7 @@ public class JSF22ClientWindowTests {
             HtmlElement output1 = (HtmlElement) page.getElementById("testFormPage2:windowIdParam");
 
             //index2.xhtml link
-            url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "index2.jsf");
+            url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "index2.jsf");
             HtmlPage page2 = (HtmlPage) webClient.getPage(url);
 
             if (page2 == null) {

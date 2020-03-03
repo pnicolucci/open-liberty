@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertEquals;
@@ -49,7 +49,7 @@ public class JSF22MiscLifecycleTests {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "JSF22ActionListener";
+    private static final String APP_NAME = "JSF22ActionListener";
 
     protected static final Class<?> c = JSF22MiscLifecycleTests.class;
 
@@ -58,7 +58,9 @@ public class JSF22MiscLifecycleTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        ShrinkHelper.defaultDropinApp(jsfTestServer1, "JSF22ActionListener.war", "com.ibm.ws.jsf22.fat.actionlistener.*");
+        if (!JSFUtils.isAppInstalled(jsfTestServer1, APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(jsfTestServer1, APP_NAME + ".war", "com.ibm.ws.jsf22.fat.actionlistener.*");
+        }
 
         jsfTestServer1.startServer(JSF22MiscLifecycleTests.class.getSimpleName() + ".log");
     }
@@ -81,7 +83,7 @@ public class JSF22MiscLifecycleTests {
     @Test
     public void testActionListenerWrapper() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "testActionListener.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "testActionListener.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /JSF22ActionListener/testActionListener.jsf");
@@ -108,7 +110,7 @@ public class JSF22MiscLifecycleTests {
     @Test
     public void testUIOutputNull() throws Exception {
         try (WebClient webClient = new WebClient()) {
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "simpleForm.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "simpleForm.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /JSF22ActionListener/simpleForm.jsf");
@@ -139,7 +141,7 @@ public class JSF22MiscLifecycleTests {
         try (WebClient webClient = new WebClient()) {
 
             webClient.setAjaxController(new NicelyResynchronizingAjaxController());
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "simpleForm.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "simpleForm.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /JSF22ActionListener/simpleForm.jsf");

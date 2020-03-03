@@ -1,5 +1,5 @@
-/*
- * Copyright (c) 2015, 2019 IBM Corporation and others.
+/*******************************************************************************
+ * Copyright (c) 1015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertTrue;
@@ -19,7 +19,7 @@ import org.junit.Test;
 /**
  * This is a dummy test that will always execute and pass. We need at least one test to always
  * execute in the automation framework.
- * 
+ *
  */
 public class JSFDummyTest {
     private static final Logger LOG = Logger.getLogger(JSFDummyTest.class.getName());

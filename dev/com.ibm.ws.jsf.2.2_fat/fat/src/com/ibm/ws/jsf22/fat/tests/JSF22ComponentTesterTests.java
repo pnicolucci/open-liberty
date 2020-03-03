@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertTrue;
@@ -48,7 +48,7 @@ public class JSF22ComponentTesterTests {
 
     private static BrowserVersion browser = BrowserVersion.CHROME;
 
-    String contextRoot = "JSF22ComponentTester";
+    private static final String APP_NAME = "JSF22ComponentTester";
 
     protected static final Class<?> c = JSF22ComponentTesterTests.class;
 
@@ -57,7 +57,9 @@ public class JSF22ComponentTesterTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        ShrinkHelper.defaultDropinApp(jsfTestServer2, "JSF22ComponentTester.war", "com.ibm.ws.jsf22.fat.componenttester.*");
+        if (!JSFUtils.isAppInstalled(jsfTestServer2, APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(jsfTestServer2, APP_NAME + ".war", "com.ibm.ws.jsf22.fat.componenttester.*");
+        }
 
         jsfTestServer2.startServer(JSF22ComponentTesterTests.class.getSimpleName() + ".log");
     }
@@ -79,7 +81,7 @@ public class JSF22ComponentTesterTests {
     public void JSF22ComponentTester_TestMultiComponents() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "index.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "index.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             if (page == null) {
@@ -113,7 +115,7 @@ public class JSF22ComponentTesterTests {
             webClient.getOptions().setThrowExceptionOnFailingStatusCode(false);
 
             // Drive the initial request.
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "index.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "index.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // Need to have a bit of time between requests to reproduce the issue
@@ -138,7 +140,7 @@ public class JSF22ComponentTesterTests {
     public void JSF22ComponentTester_TestDocType() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "testDoctype.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "testDoctype.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             if (page == null) {
@@ -158,7 +160,7 @@ public class JSF22ComponentTesterTests {
     public void JSF22ComponentTester_TestDocTag() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "testDoctag.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "testDoctag.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             if (page == null) {
@@ -184,7 +186,7 @@ public class JSF22ComponentTesterTests {
     public void JSF22ComponentTester_TestCommandButtonOrder() throws Exception {
         try (WebClient webClient = getWebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "testActionListenerOrder.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "testActionListenerOrder.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             System.out.print("JSF22ComponentTester_TestCommandButtonOrder: TOP");
@@ -223,7 +225,7 @@ public class JSF22ComponentTesterTests {
     public void JSF22ComponentTester_TestCommandLinkOrder() throws Exception {
         try (WebClient webClient = getWebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "testActionListenerOrder.xhtml");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "testActionListenerOrder.xhtml");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             if (page == null) {

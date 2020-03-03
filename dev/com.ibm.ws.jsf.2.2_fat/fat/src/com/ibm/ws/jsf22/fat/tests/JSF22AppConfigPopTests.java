@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertTrue;
@@ -46,7 +46,7 @@ public class JSF22AppConfigPopTests {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "JSF22AppConfigPop";
+    private static final String APP_NAME = "JSF22AppConfigPop";
 
     protected static final Class<?> c = JSF22AppConfigPopTests.class;
 
@@ -55,14 +55,15 @@ public class JSF22AppConfigPopTests {
 
     @BeforeClass
     public static void setup() throws Exception {
+        if (!JSFUtils.isAppInstalled(jsfTestServer2, APP_NAME)) {
+            JavaArchive jar = ShrinkHelper.buildJavaArchive(APP_NAME + ".jar", "com.ibm.ws.jsf22.fat.appconfigpop.jar");
 
-        JavaArchive jar = ShrinkHelper.buildJavaArchive("JSF22AppConfigPop.jar", "com.ibm.ws.jsf22.fat.appconfigpop.jar");
+            WebArchive war = ShrinkHelper.buildDefaultApp(APP_NAME + ".war", "com.ibm.ws.jsf22.fat.appconfigpop");
 
-        WebArchive war = ShrinkHelper.buildDefaultApp("JSF22AppConfigPop.war", "com.ibm.ws.jsf22.fat.appconfigpop");
+            war.addAsLibraries(jar);
 
-        war.addAsLibraries(jar);
-
-        ShrinkHelper.exportDropinAppToServer(jsfTestServer2, war);
+            ShrinkHelper.exportDropinAppToServer(jsfTestServer2, war);
+        }
 
         jsfTestServer2.startServer(JSF22AppConfigPopTests.class.getSimpleName() + ".log");
     }
@@ -133,9 +134,9 @@ public class JSF22AppConfigPopTests {
     @Test
     public void testAppPopConfiguredSimpleBean() throws Exception {
 
-        this.verifyResponse(contextRoot, "AddedBean.jsf", jsfTestServer2, "SuccessfulAddedBeanTest");
+        this.verifyResponse(APP_NAME, "AddedBean.jsf", jsfTestServer2, "SuccessfulAddedBeanTest");
 
-        this.verifyResponse(contextRoot, "ExistingBean.jsf", jsfTestServer2, "SuccessfulExistingBeanTest");
+        this.verifyResponse(APP_NAME, "ExistingBean.jsf", jsfTestServer2, "SuccessfulExistingBeanTest");
 
     }
 
@@ -149,7 +150,7 @@ public class JSF22AppConfigPopTests {
 
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "MPBean.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "MPBean.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // Make sure the page initially renders correctly
@@ -184,7 +185,7 @@ public class JSF22AppConfigPopTests {
     public void testACPNavigationRule() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer2, contextRoot, "nav.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer2, APP_NAME, "nav.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             // Make sure the page initially renders correctly
@@ -210,7 +211,7 @@ public class JSF22AppConfigPopTests {
      */
     @Test
     public void testAppPopConfiguredPhaseListener() throws Exception {
-        this.verifyResponse(contextRoot, "AddedBean.jsf", jsfTestServer2, "SuccessfulAddedBeanTest");
+        this.verifyResponse(APP_NAME, "AddedBean.jsf", jsfTestServer2, "SuccessfulAddedBeanTest");
         String msg = "JSF22:ACP beforePhase called.";
         assertTrue(jsfTestServer2.findStringsInLogs(msg).size() > 0);
     }
@@ -222,7 +223,7 @@ public class JSF22AppConfigPopTests {
      */
     @Test
     public void testAppPopConfiguredSystemEventListener() throws Exception {
-        this.verifyResponse(contextRoot, "AddedBean.jsf", jsfTestServer2, "SuccessfulAddedBeanTest");
+        this.verifyResponse(APP_NAME, "AddedBean.jsf", jsfTestServer2, "SuccessfulAddedBeanTest");
         String msg = "JSF22:  AOP System event listener called.";
         assertTrue(jsfTestServer2.findStringsInLogs(msg).size() > 0);
     }

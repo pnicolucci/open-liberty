@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import java.net.URL;
@@ -43,7 +43,7 @@ public class JSF22BeanValidationTests {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "BeanValidationTests";
+    private static final String APP_NAME = "BeanValidationTests";
 
     protected static final Class<?> c = JSF22BeanValidationTests.class;
 
@@ -52,7 +52,9 @@ public class JSF22BeanValidationTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-        ShrinkHelper.defaultDropinApp(jsf22beanvalServer, "BeanValidationTests.war", "com.ibm.ws.jsf22.fat.beanvalidation");
+        if (!JSFUtils.isAppInstalled(jsf22beanvalServer, APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(jsf22beanvalServer, APP_NAME + ".war", "com.ibm.ws.jsf22.fat.beanvalidation");
+        }
 
         jsf22beanvalServer.startServer(JSF22BeanValidationTests.class.getSimpleName() + ".log");
     }
@@ -77,7 +79,7 @@ public class JSF22BeanValidationTests {
 
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsf22beanvalServer, contextRoot, "BeanValidation.jsf");
+            URL url = JSFUtils.createHttpUrl(jsf22beanvalServer, APP_NAME, "BeanValidation.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /BeanValidationTests/BeanValidation.jsf");
@@ -111,7 +113,7 @@ public class JSF22BeanValidationTests {
 
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsf22beanvalServer, contextRoot, "BeanValidation.jsf");
+            URL url = JSFUtils.createHttpUrl(jsf22beanvalServer, APP_NAME, "BeanValidation.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /BeanValidationTests/BeanValidation.jsf");

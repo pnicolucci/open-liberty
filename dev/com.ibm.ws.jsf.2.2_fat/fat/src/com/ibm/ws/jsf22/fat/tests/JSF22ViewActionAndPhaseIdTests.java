@@ -1,4 +1,4 @@
-/*
+/*******************************************************************************
  * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
@@ -7,7 +7,7 @@
  *
  * Contributors:
  *     IBM Corporation - initial API and implementation
- */
+ *******************************************************************************/
 package com.ibm.ws.jsf22.fat.tests;
 
 import static org.junit.Assert.assertFalse;
@@ -46,7 +46,7 @@ public class JSF22ViewActionAndPhaseIdTests {
     @Rule
     public TestName name = new TestName();
 
-    String contextRoot = "TestJSF22ViewAction";
+    private static final String APP_NAME = "TestJSF22ViewAction";
 
     protected static final Class<?> c = JSF22ViewActionAndPhaseIdTests.class;
 
@@ -55,8 +55,9 @@ public class JSF22ViewActionAndPhaseIdTests {
 
     @BeforeClass
     public static void setup() throws Exception {
-
-        ShrinkHelper.defaultDropinApp(jsfTestServer1, "TestJSF22ViewAction.war", "com.ibm.ws.jsf22.fat.viewaction.*");
+        if (!JSFUtils.isAppInstalled(jsfTestServer1, APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(jsfTestServer1, APP_NAME + ".war", "com.ibm.ws.jsf22.fat.viewaction.*");
+        }
 
         jsfTestServer1.startServer(JSF22ViewActionAndPhaseIdTests.class.getSimpleName() + ".log");
     }
@@ -84,7 +85,7 @@ public class JSF22ViewActionAndPhaseIdTests {
     public void testViewActionDefault() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "testViewActionDefault.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "testViewActionDefault.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /TestJSF22ViewAction/testViewActionDefault.jsf");
@@ -126,7 +127,7 @@ public class JSF22ViewActionAndPhaseIdTests {
     public void testViewActionPostback() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "testViewActionPostback.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "testViewActionPostback.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /TestJSF22ViewAction/testViewActionPostback.jsf");
@@ -165,7 +166,7 @@ public class JSF22ViewActionAndPhaseIdTests {
     public void testViewActionNavigationValid() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "testViewActionNavigation.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "testViewActionNavigation.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /TestJSF22ViewAction/testViewActionNavigation.jsf");
@@ -196,7 +197,7 @@ public class JSF22ViewActionAndPhaseIdTests {
     public void testViewActionNavigationInvalid() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "testViewActionNavigation.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "testViewActionNavigation.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /TestJSF22ViewAction/testViewActionNavigation.jsf");
@@ -224,7 +225,7 @@ public class JSF22ViewActionAndPhaseIdTests {
     public void testViewActionImmediate() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "testViewActionImmediate.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "testViewActionImmediate.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /TestJSF22ViewAction/testViewActionImmediate.jsf");
@@ -242,7 +243,7 @@ public class JSF22ViewActionAndPhaseIdTests {
     public void testViewActionARVPhase() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "testViewActionARVPhase.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "testViewActionARVPhase.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /TestJSF22ViewAction/testViewActionARVPhase.jsf");
@@ -260,7 +261,7 @@ public class JSF22ViewActionAndPhaseIdTests {
     public void testViewActionPVPhase() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "testViewActionPVPhase.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "testViewActionPVPhase.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /TestJSF22ViewAction/testViewActionPVPhase.jsf");
@@ -278,7 +279,7 @@ public class JSF22ViewActionAndPhaseIdTests {
     public void testViewActionUMVPhase() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "testViewActionUMVPhase.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "testViewActionUMVPhase.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /TestJSF22ViewAction/testViewActionUMVPhase.jsf");
@@ -296,7 +297,7 @@ public class JSF22ViewActionAndPhaseIdTests {
     public void testViewActionIAPhase() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "testViewActionIAPhase.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "testViewActionIAPhase.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /TestJSF22ViewAction/testViewActionIAPhase.jsf");
@@ -315,7 +316,7 @@ public class JSF22ViewActionAndPhaseIdTests {
     public void testRestoreViewRenderResponsePhase() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "testRestoreViewRenderResponsePhase.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "testRestoreViewRenderResponsePhase.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /TestJSF22ViewAction/testRestoreViewRenderResponsePhase.jsf");
@@ -335,7 +336,7 @@ public class JSF22ViewActionAndPhaseIdTests {
     public void testEmptyMetatdata() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "testEmptyMetadata.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "testEmptyMetadata.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /TestJSF22ViewAction/testEmptyMetadata.jsf");
@@ -359,7 +360,7 @@ public class JSF22ViewActionAndPhaseIdTests {
     public void testNonEmptyMetatdata() throws Exception {
         try (WebClient webClient = new WebClient()) {
 
-            URL url = JSFUtils.createHttpUrl(jsfTestServer1, contextRoot, "testNonEmptyMetadata.jsf");
+            URL url = JSFUtils.createHttpUrl(jsfTestServer1, APP_NAME, "testNonEmptyMetadata.jsf");
             HtmlPage page = (HtmlPage) webClient.getPage(url);
 
             Log.info(c, name.getMethodName(), "Navigating to: /TestJSF22ViewAction/testNonEmptyMetadata.jsf");
