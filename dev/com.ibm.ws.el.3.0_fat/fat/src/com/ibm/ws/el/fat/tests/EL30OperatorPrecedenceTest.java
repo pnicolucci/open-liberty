@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2018 IBM Corporation and others.
+ * Copyright (c) 2018, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -15,6 +15,7 @@ import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
 
 import com.ibm.websphere.simplicity.ShrinkHelper;
+import com.ibm.ws.el.fat.ELUtils;
 import com.ibm.ws.el30.fat.servlets.EL30OperatorPrecedenceServlet;
 
 import componenttest.annotation.Server;
@@ -31,14 +32,17 @@ import componenttest.topology.utils.FATServletClient;
 @RunWith(FATRunner.class)
 @Mode(TestMode.FULL)
 public class EL30OperatorPrecedenceTest extends FATServletClient {
+    private static final String APP_NAME = "TestEL3.0";
 
     @Server("elServer")
-    @TestServlet(servlet = EL30OperatorPrecedenceServlet.class, contextRoot = "TestEL3.0")
+    @TestServlet(servlet = EL30OperatorPrecedenceServlet.class, contextRoot = APP_NAME)
     public static LibertyServer elServer;
 
     @BeforeClass
     public static void setup() throws Exception {
-        ShrinkHelper.defaultDropinApp(elServer, "TestEL3.0.war", "com.ibm.ws.el30.fat.beans", "com.ibm.ws.el30.fat.servlets");
+        if (!ELUtils.isAppInstalled(elServer, APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(elServer, APP_NAME + ".war", "com.ibm.ws.el30.fat.beans", "com.ibm.ws.el30.fat.servlets");
+        }
 
         elServer.startServer(EL30OperatorPrecedenceTest.class.getSimpleName() + ".log");
     }
