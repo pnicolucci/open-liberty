@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2015 IBM Corporation and others.
+ * Copyright (c) 2015, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 import com.ibm.websphere.simplicity.ShrinkHelper;
 import com.ibm.ws.fat.util.LoggingTest;
 import com.ibm.ws.fat.util.SharedServer;
+import com.ibm.ws.jsp23.fat.JSPUtils;
 
 import componenttest.annotation.MinimumJavaLevel;
 import componenttest.annotation.SkipForRepeat;
@@ -49,10 +50,11 @@ public class JSPJava8Test extends LoggingTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        ShrinkHelper.defaultDropinApp(SHARED_SERVER.getLibertyServer(),
-                                      APP_NAME + ".war");
+        if (!JSPUtils.isAppInstalled(SHARED_SERVER.getLibertyServer(), APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(SHARED_SERVER.getLibertyServer(),
+                                          APP_NAME + ".war");
+        }
 
-        SHARED_SERVER.getLibertyServer().addInstalledAppForValidation(APP_NAME);
         SHARED_SERVER.startIfNotStarted();
     }
 

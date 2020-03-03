@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 IBM Corporation and others.
+ * Copyright (c) 2019, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -11,6 +11,8 @@
 package com.ibm.ws.jsp23.fat;
 
 import java.net.URL;
+import java.util.Set;
+import java.util.logging.Logger;
 
 import componenttest.topology.impl.LibertyServer;
 
@@ -20,13 +22,14 @@ import componenttest.topology.impl.LibertyServer;
 public class JSPUtils {
 
     protected static final Class<?> c = JSPUtils.class;
+    private static final Logger LOG = Logger.getLogger(c.getName());
 
     /**
      * Construct a URL for a test case so a request can be made.
      *
-     * @param server - The server that is under test, this is used to get the port and host name.
+     * @param server      - The server that is under test, this is used to get the port and host name.
      * @param contextRoot - The context root of the application
-     * @param path - Additional path information for the request.
+     * @param path        - Additional path information for the request.
      * @return - A fully formed URL.
      * @throws Exception
      */
@@ -37,9 +40,9 @@ public class JSPUtils {
     /**
      * Construct a URL for a test case so a request can be made.
      *
-     * @param server - The server that is under test, this is used to get the port and host name.
+     * @param server      - The server that is under test, this is used to get the port and host name.
      * @param contextRoot - The context root of the application
-     * @param path - Additional path information for the request.
+     * @param path        - Additional path information for the request.
      * @return - A fully formed URL string.
      * @throws Exception
      */
@@ -56,5 +59,17 @@ public class JSPUtils {
                         .append(path);
 
         return sb.toString();
+    }
+
+    public static boolean isAppInstalled(LibertyServer libertyServer, String appName) throws Exception {
+        boolean appInstalled = false;
+        if (libertyServer.isStarted()) {
+            Set<String> installedApp = libertyServer.getInstalledAppNames(appName);
+            if (!installedApp.isEmpty()) {
+                appInstalled = true;
+            }
+        }
+        LOG.info("The following app: " + appName + " is installed: " + appInstalled);
+        return appInstalled;
     }
 }

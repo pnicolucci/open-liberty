@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2014 IBM Corporation and others.
+ * Copyright (c) 2014, 2020 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License v1.0
  * which accompanies this distribution, and is available at
@@ -23,6 +23,7 @@ import com.ibm.websphere.simplicity.ShrinkHelper;
 import com.ibm.ws.fat.util.LoggingTest;
 import com.ibm.ws.fat.util.SharedServer;
 import com.ibm.ws.fat.util.browser.WebBrowser;
+import com.ibm.ws.jsp23.fat.JSPUtils;
 
 import componenttest.annotation.SkipForRepeat;
 import componenttest.custom.junit.runner.FATRunner;
@@ -50,22 +51,25 @@ public class JSPServerTest extends LoggingTest {
 
     @BeforeClass
     public static void setup() throws Exception {
-        ShrinkHelper.defaultDropinApp(SHARED_SERVER.getLibertyServer(),
-                                      JSP23_APP_NAME + ".war",
-                                      "com.ibm.ws.jsp23.fat.testjsp23.beans",
-                                      "com.ibm.ws.jsp23.fat.testjsp23.interceptors",
-                                      "com.ibm.ws.jsp23.fat.testjsp23.listeners",
-                                      "com.ibm.ws.jsp23.fat.testjsp23.servlets",
-                                      "com.ibm.ws.jsp23.fat.testjsp23.tagHandler");
-        SHARED_SERVER.getLibertyServer().addInstalledAppForValidation(JSP23_APP_NAME);
+        if (!JSPUtils.isAppInstalled(SHARED_SERVER.getLibertyServer(), JSP23_APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(SHARED_SERVER.getLibertyServer(),
+                                          JSP23_APP_NAME + ".war",
+                                          "com.ibm.ws.jsp23.fat.testjsp23.beans",
+                                          "com.ibm.ws.jsp23.fat.testjsp23.interceptors",
+                                          "com.ibm.ws.jsp23.fat.testjsp23.listeners",
+                                          "com.ibm.ws.jsp23.fat.testjsp23.servlets",
+                                          "com.ibm.ws.jsp23.fat.testjsp23.tagHandler");
+        }
 
-        ShrinkHelper.defaultDropinApp(SHARED_SERVER.getLibertyServer(),
-                                      PI44611_APP_NAME + ".war");
-        SHARED_SERVER.getLibertyServer().addInstalledAppForValidation(PI44611_APP_NAME);
+        if (!JSPUtils.isAppInstalled(SHARED_SERVER.getLibertyServer(), PI44611_APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(SHARED_SERVER.getLibertyServer(),
+                                          PI44611_APP_NAME + ".war");
+        }
 
-        ShrinkHelper.defaultDropinApp(SHARED_SERVER.getLibertyServer(),
-                                      PI59436_APP_NAME + ".war");
-        SHARED_SERVER.getLibertyServer().addInstalledAppForValidation(PI59436_APP_NAME);
+        if (!JSPUtils.isAppInstalled(SHARED_SERVER.getLibertyServer(), PI59436_APP_NAME)) {
+            ShrinkHelper.defaultDropinApp(SHARED_SERVER.getLibertyServer(),
+                                          PI59436_APP_NAME + ".war");
+        }
 
         SHARED_SERVER.startIfNotStarted();
     }
