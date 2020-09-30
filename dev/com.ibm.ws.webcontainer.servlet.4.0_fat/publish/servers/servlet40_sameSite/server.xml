@@ -22,6 +22,7 @@
                   host="*"
                   httpPort="${bvt.prop.HTTP_default}"
                   httpsPort="${bvt.prop.HTTP_default.secure}">
+        <httpOptions v0CookieDateRFC1123compat="false"/>
     </httpEndpoint>
 
     <javaPermission className="java.util.PropertyPermission"
