@@ -28,18 +28,14 @@ Include-Resource: \
   @${repo;io.openliberty.jakarta.faces.3.0}!/META-INF/internal-resources/**, \
   META-INF=@src/META-INF
 
+-dsannotations: \
+  io.openliberty.faces.ext.FacesCDIExtensionMetadata
+  
 Service-Component: \
   io.openliberty.faces_3_0.taglib; \
     implementation:=com.ibm.ws.faces.taglibconfig.FacesGlobalTagLibConfig; \
     provide:='com.ibm.wsspi.jsp.taglib.config.GlobalTagLibConfig'; \
     properties:="service.vendor=IBM", \
-  io.openliberty.faces_3_0.cdiextension; \
-    implementation:=com.ibm.ws.jsf.shared.ext.CdiExtension; \
-    provide:='com.ibm.ws.cdi.extension.WebSphereCDIExtension'; \
-    properties:="service.vendor=IBM,\
-    bean.defining.annotations=jakarta.faces.flow.FlowScoped;jakarta.faces.view.ViewScoped,\
-    api.classes=jakarta.faces.flow.builder.FlowDefinition;jakarta.faces.flow.builder.FlowBuilderParameter,\
-    extension.classes.only=true",\
   io.openliberty.faces_30.dd; \
     implementation:=com.ibm.ws.javaee.version.FacesVersion; \
     provide:=com.ibm.ws.javaee.version.FacesVersion; \
@@ -65,6 +61,7 @@ Export-Package: \
   !org.apache.myfaces.shared.renderkit.html, \
   !org.apache.myfaces.shared.renderkit.html.util, \
   com.ibm.ws.faces.taglibconfig, \
+  io.openliberty.faces.ext, \
   org.apache.myfaces.application;thread-context=true;version=${Implementation-Version}, \
   org.apache.myfaces.application.viewstate;thread-context=true;version=${Implementation-Version}, \
   org.apache.myfaces.cdi.model;thread-context=true;version=${Implementation-Version}, \
@@ -138,4 +135,7 @@ Import-Package: \
   com.ibm.websphere.org.osgi.service.component;version=latest,\
   com.ibm.ws.org.osgi.annotation.versioning;version=latest,\
   org.apache.myfaces.buildtools:myfaces-builder-annotations;version=1.0.9,\
-  io.openliberty.faces.internal;version=latest
+  io.openliberty.faces.internal;version=latest,\
+  com.ibm.websphere.org.osgi.core,\
+  com.ibm.wsspi.org.osgi.service.component.annotations;version=latest,\
+  com.ibm.ws.cdi.interfaces;version=latest,\

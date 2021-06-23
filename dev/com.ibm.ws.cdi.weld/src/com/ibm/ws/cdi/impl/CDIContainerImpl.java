@@ -607,7 +607,7 @@ public class CDIContainerImpl implements CDIContainer, InjectionMetaDataListener
                     if (extensionArchive == null) {
                         extensionArchive = newSPIExtensionArchive(sr, extensionMetaData.getService(), applicationContext);
                         runtimeExtensionMap.put(serviceID, extensionArchive);
-                    } 
+                    }
                 }
                 extensionSet.add(extensionArchive);
             }
@@ -644,7 +644,10 @@ public class CDIContainerImpl implements CDIContainer, InjectionMetaDataListener
         Set<String> extraAnnotations = beanDefiningAnnotationClasses.stream().map(clazz -> clazz.getCanonicalName()).collect(Collectors.toSet());
         //The simpler SPI does not offer these properties.
         boolean applicationBDAsVisible = false;
-        boolean extClassesOnly = false;
+        // PAN: Make this true (was false) in order to test my theory that I need this to
+        // get the faces extension to work properly.
+       boolean extClassesOnly = true;
+        //boolean extClassesOnly = false;
 
         ExtensionArchive extensionArchive = cdiRuntime.getExtensionArchiveForBundle(bundle, extra_classes, extraAnnotations,
                                                                                     applicationBDAsVisible,
