@@ -12,9 +12,9 @@
 bVersion=1.0
 
 Bundle-SymbolicName: io.openliberty.org.apache.myfaces.4.0
-Bundle-Description:  Jakarta Server Faces, MyFaces 3.0 Implementation (4.0 Placeholder)
+Bundle-Description:  Jakarta Server Faces, MyFaces 4.0 Implementation
 
-Implementation-Version: 3.0.1
+Implementation-Version: 4.0.0
 
 -fixupmessages.missingexport: "Used bundle version * for exported package";is:=ignore
 
@@ -23,24 +23,24 @@ instrument.classesExcludes: \
   org/**/*.class
 
 Include-Resource: \
-  @${repo;org.apache.myfaces.core.impl;${Implementation-Version};EXACT}!/META-INF/**, \
-  @${repo;io.openliberty.jakarta.faces.3.0}!/META-INF/resources/**, \
-  @${repo;io.openliberty.jakarta.faces.3.0}!/META-INF/internal-resources/**, \
+  @${repo;org.apache.myfaces.core.impl;4.0.0.RC1;EXACT}!/META-INF/**, \
+  @${repo;io.openliberty.jakarta.faces.4.0}!/META-INF/resources/**, \
+  @${repo;io.openliberty.jakarta.faces.4.0}!/META-INF/internal-resources/**, \
   META-INF=@src/META-INF
 
 Service-Component: \
-  io.openliberty.faces_3_0.taglib; \
+  io.openliberty.faces_4_0.taglib; \
     implementation:=com.ibm.ws.faces.taglibconfig.FacesGlobalTagLibConfig; \
     provide:='com.ibm.wsspi.jsp.taglib.config.GlobalTagLibConfig'; \
     properties:="service.vendor=IBM", \
-  io.openliberty.faces_3_0.cdiextension; \
+  io.openliberty.faces_4_0.cdiextension; \
     implementation:=com.ibm.ws.jsf.shared.ext.CdiExtension; \
     provide:='com.ibm.ws.cdi.extension.WebSphereCDIExtension'; \
     properties:="service.vendor=IBM,\
     bean.defining.annotations=jakarta.faces.flow.FlowScoped;jakarta.faces.view.ViewScoped,\
     api.classes=jakarta.faces.flow.builder.FlowDefinition;jakarta.faces.flow.builder.FlowBuilderParameter,\
     extension.classes.only=true",\
-  io.openliberty.faces_30.dd; \
+  io.openliberty.faces_40.dd; \
     implementation:=com.ibm.ws.javaee.version.FacesVersion; \
     provide:=com.ibm.ws.javaee.version.FacesVersion; \
     properties:="version:Integer=30"
@@ -139,4 +139,4 @@ Import-Package: \
   com.ibm.websphere.org.osgi.service.component;version=latest,\
   com.ibm.ws.org.osgi.annotation.versioning;version=latest,\
   org.apache.myfaces.buildtools:myfaces-builder-annotations;version=1.0.9,\
-  io.openliberty.faces.internal;version=latest
+  io.openliberty.faces.shared.internal;version=latest

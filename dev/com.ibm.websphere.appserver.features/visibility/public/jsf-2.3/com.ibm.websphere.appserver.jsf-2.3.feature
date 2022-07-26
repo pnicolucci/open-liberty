@@ -50,7 +50,8 @@ Subsystem-Name: JavaServer Faces 2.3
  com.ibm.ws.org.apache.commons.discovery.0.2, \
  io.openliberty.org.apache.commons.logging, \
  com.ibm.ws.jsf.shared, \
- io.openliberty.faces.internal, \
+ io.openliberty.faces.shared.internal, \
+ io.openliberty.faces.2.3.shared.internal, \
  com.ibm.ws.cdi.interfaces, \
  com.ibm.ws.org.apache.commons.digester.1.8, \
  com.ibm.websphere.appserver.thirdparty.jsf-2.3; location:="dev/api/third-party/"
