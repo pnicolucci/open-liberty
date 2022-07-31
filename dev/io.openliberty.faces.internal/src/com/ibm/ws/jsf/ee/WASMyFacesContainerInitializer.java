@@ -89,7 +89,9 @@ public class WASMyFacesContainerInitializer extends MyFacesContainerInitializer 
         super.onStartup(clazzes, servletContext);
 
         Boolean mappingAdded = (Boolean) servletContext.getAttribute(MyFacesContainerInitializer.FACES_SERVLET_ADDED_ATTRIBUTE);
+        log.log(Level.INFO, "PAN: onStartup");
         if (mappingAdded != null && mappingAdded) {
+        	log.log(Level.INFO, "PAN: onStartup in if");
             /**
              * Add the myfaces lifecycle listener; this is necessary since the StartupServletContextListener registration
              * was moved from the myfaces_core.tld to a web-fragment.
@@ -99,7 +101,7 @@ public class WASMyFacesContainerInitializer extends MyFacesContainerInitializer 
              * that define a FacesServlet and we'll add the listener here for applications that have a FacesServlet defined dynamically.
              */
             addLifecycleListener(servletContext);
-
+            log.log(Level.INFO, "PAN: onStartup in if after addListener");
             log.log(Level.INFO, "Added StartupServletContextListener to the servlet context");
         }
     }

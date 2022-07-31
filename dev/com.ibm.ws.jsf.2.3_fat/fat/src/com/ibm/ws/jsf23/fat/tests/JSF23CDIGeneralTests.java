@@ -50,6 +50,7 @@ import componenttest.annotation.Server;
 import componenttest.custom.junit.runner.FATRunner;
 import componenttest.custom.junit.runner.Mode;
 import componenttest.custom.junit.runner.Mode.TestMode;
+import componenttest.rules.repeater.JakartaEE10Action;
 import componenttest.rules.repeater.JakartaEE9Action;
 import componenttest.topology.impl.LibertyServer;
 import junit.framework.Assert;
@@ -282,6 +283,8 @@ public class JSF23CDIGeneralTests {
     }
 
     private void checkInjectableELImplicitObjects(WebClient webClient) throws Exception {
+        // EE10 script error: om.gargoylesoftware.htmlunit.ScriptException: ReferenceError: "myfaces" is not defined.
+        webClient.getOptions().setThrowExceptionOnScriptError(false);
 
         // Add a message to the header map
         webClient.addRequestHeader("headerMessage", "This is a test");
@@ -326,7 +329,7 @@ public class JSF23CDIGeneralTests {
         assertTrue(resultPage.asText().contains("Message from HeaderValuesMap: [This is a test]"));
         assertTrue(resultPage.asText().contains("Request contextPath: /ELImplicitObjectsViaCDI"));
 
-        if (JakartaEE9Action.isActive()) {
+        if (JakartaEE9Action.isActive() || JakartaEE10Action.isActive()) {
             assertTrue(resultPage.asText().contains("Resource handler JSF_SCRIPT_LIBRARY_NAME constant: jakarta.faces"));
             assertTrue(resultPage.asText()
                             .contains("Flow map object is null: Exception: WELD-001303: No active contexts "
@@ -388,7 +391,7 @@ public class JSF23CDIGeneralTests {
             assertTrue(testELResolutionImplicitObjectsPage.asText().contains("HttpSession isNew: true"));
             // Additional Requirement (See section 5.6.3)
             assertTrue(testELResolutionImplicitObjectsPage.asText().contains("ExternalContext getApplicationContextPath: /ELImplicitObjectsViaCDI"));
-            
+
         }
     }
 
