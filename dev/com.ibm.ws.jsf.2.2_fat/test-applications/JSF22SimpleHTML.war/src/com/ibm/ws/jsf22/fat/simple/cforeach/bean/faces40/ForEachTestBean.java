@@ -17,6 +17,10 @@ import java.util.List;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 
+import com.ibm.ws.jsf22.fat.simple.cforeach.SimpleNotSerializableObject;
+import com.ibm.ws.jsf22.fat.simple.cforeach.SimpleOverridenEqualsObject;
+import com.ibm.ws.jsf22.fat.simple.cforeach.SimpleSerializableObject;
+
 /**
  * This bean helps testing the c:forEach tag when using an object with custom equals method (overriden equals)
  * and when using an object that is not serializable.
