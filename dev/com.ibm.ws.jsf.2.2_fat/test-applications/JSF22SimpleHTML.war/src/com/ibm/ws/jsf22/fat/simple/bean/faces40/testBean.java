@@ -22,7 +22,7 @@ import javax.inject.Named;
 @ApplicationScoped
 public class testBean {
 
-    public String submittedValue;
+    private String submittedValue;
 
     /**
      * @return the submittedValue
