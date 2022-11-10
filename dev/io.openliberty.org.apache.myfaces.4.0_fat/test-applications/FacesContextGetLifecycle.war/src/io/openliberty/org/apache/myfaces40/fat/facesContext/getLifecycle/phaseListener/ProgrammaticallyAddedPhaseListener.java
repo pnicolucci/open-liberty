@@ -10,6 +10,14 @@
  *******************************************************************************/
 package io.openliberty.org.apache.myfaces40.fat.facesContext.getLifecycle.phaseListener;
 
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Locale;
+
+import jakarta.faces.component.UIComponent;
+import jakarta.faces.component.UIInput;
+import jakarta.faces.context.FacesContext;
+import jakarta.faces.convert.NumberConverter;
 import jakarta.faces.event.PhaseEvent;
 import jakarta.faces.event.PhaseId;
 import jakarta.faces.event.PhaseListener;
@@ -22,13 +30,44 @@ public class ProgrammaticallyAddedPhaseListener implements PhaseListener {
     private static final long serialVersionUID = 1L;
 
     @Override
-    public void afterPhase(PhaseEvent event) {
-        event.getFacesContext().getExternalContext().log("afterPhase: " + event.getPhaseId());
-    }
+    public void afterPhase(PhaseEvent event) {}
 
     @Override
     public void beforePhase(PhaseEvent event) {
-        event.getFacesContext().getExternalContext().log("beforePhase: " + event.getPhaseId());
+        NumberConverter numberConverter = new NumberConverter();
+        Object controlFrenchBad = null;
+        Object controlNonFrench = null;
+        Object controlFrenchCorrect = null;
+
+        UIComponent comp = new UIInput();
+        FacesContext context = event.getFacesContext();
+
+        NumberFormat parserFrench = NumberFormat.getNumberInstance(Locale.FRENCH);
+        NumberFormat parser = NumberFormat.getNumberInstance();
+        //Object control;
+        try {
+            controlFrenchBad = parserFrench.parse("5.5");
+            controlNonFrench = parser.parse("5.5");
+            controlFrenchCorrect = parserFrench.parse("5,5");
+
+            event.getFacesContext().getExternalContext().log("controlFrenchBad: " + controlFrenchBad.toString());
+            event.getFacesContext().getExternalContext().log("controlNonFrench: " + controlNonFrench.toString());
+            event.getFacesContext().getExternalContext().log("controlFrenchCorrect: " + controlFrenchCorrect.toString());
+        } catch (ParseException pe) {
+            event.getFacesContext().getExternalContext().log(pe.getMessage() + pe.getStackTrace());
+        }
+
+        Object resultRegular = numberConverter.getAsObject(context, comp, "5.5");
+        event.getFacesContext().getExternalContext().log("resultRegular: " + resultRegular.toString());
+
+        context.getViewRoot().setLocale(Locale.FRENCH);
+        Object resultFrenchBad = numberConverter.getAsObject(context, comp, "5.5");
+        event.getFacesContext().getExternalContext().log("resultFrenchBad: " + resultFrenchBad.toString());
+
+        Object resultFrenchCorrect = numberConverter.getAsObject(context, comp, "5,5");
+        event.getFacesContext().getExternalContext().log("resultFrenchCorrect: " + resultFrenchCorrect.toString());
+
+        //event.getFacesContext().getExternalContext().log("Does result equal control? : " + control.equals(result));
     }
 
     @Override

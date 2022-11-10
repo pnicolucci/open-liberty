@@ -10,7 +10,6 @@
  *******************************************************************************/
 package io.openliberty.org.apache.myfaces40.fat.facesContext.getLifecycle.bean;
 
-import io.openliberty.org.apache.myfaces40.fat.facesContext.getLifecycle.phaseListener.ProgrammaticallyAddedPhaseListener;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.faces.context.FacesContext;
 import jakarta.inject.Named;
@@ -27,10 +26,12 @@ public class AddPhaseListenerBean {
     public void addPhaseListener() {
         FacesContext facesContext = FacesContext.getCurrentInstance();
 
-        if (!phaseListenerAdded) {
-            ProgrammaticallyAddedPhaseListener phaseListener = new ProgrammaticallyAddedPhaseListener();
-            facesContext.getLifecycle().addPhaseListener(phaseListener);
-            phaseListenerAdded = true;
-        }
+        /*
+         * if (!phaseListenerAdded) {
+         * ProgrammaticallyAddedPhaseListener phaseListener = new ProgrammaticallyAddedPhaseListener();
+         * facesContext.getLifecycle().addPhaseListener(phaseListener);
+         * phaseListenerAdded = true;
+         * }
+         */
     }
 }

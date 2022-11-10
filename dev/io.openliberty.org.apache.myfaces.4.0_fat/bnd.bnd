@@ -25,11 +25,12 @@ javac.source: 11
 javac.target: 11
 
 -buildpath: \
-    io.openliberty.jakarta.faces.4.0;version=latest,\
-    io.openliberty.jakarta.cdi.4.0;version=latest,\
-    io.openliberty.org.apache.myfaces.4.0;version=latest,\
-    io.openliberty.faces.4.0.thirdparty;version=latest,\
-    net.sourceforge.htmlunit:htmlunit;version=2.44.0,\
-    io.openliberty.org.apache.commons.codec;version=latest,\
-    io.openliberty.org.apache.xercesImpl;version=latest,\
-    xml-apis:xml-apis;version=1.4.01
+	io.openliberty.jakarta.faces.4.0;version=latest,\
+	io.openliberty.jakarta.cdi.4.0;version=latest,\
+	io.openliberty.org.apache.myfaces.4.0;version=latest,\
+	io.openliberty.faces.4.0.thirdparty;version=latest,\
+	net.sourceforge.htmlunit:htmlunit;version='2.44.0',\
+	io.openliberty.org.apache.commons.codec;version=latest,\
+	io.openliberty.org.apache.xercesImpl;version=latest,\
+	xml-apis:xml-apis;version='1.4.01',\
+	io.openliberty.jakarta.servlet.6.0

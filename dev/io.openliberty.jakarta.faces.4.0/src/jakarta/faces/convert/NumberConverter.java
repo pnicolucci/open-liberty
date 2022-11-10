@@ -102,7 +102,7 @@ public class NumberConverter implements Converter, PartialStateHolder
         
         NumberFormat format = getNumberFormat(facesContext);
         format.setParseIntegerOnly(_integerOnly);
-
+        
         DecimalFormat df = (DecimalFormat)format;
 
         // The best we can do in this case is check if there is a ValueExpression
@@ -137,6 +137,7 @@ public class NumberConverter implements Converter, PartialStateHolder
         try
         {
             return parse(value, format, destType);
+            
         }
         catch (ParseException e)
         {
@@ -187,7 +188,21 @@ public class NumberConverter implements Converter, PartialStateHolder
     private Object parse(String value, NumberFormat format, Class<?> destType)
         throws ParseException
     {
+	// Faces 3.0 parse function
+	/*
+        if (destType == BigInteger.class)
+        {
+            return ((BigDecimal) format.parse(value)).toBigInteger();
+        }
+        else
+        {
+            return format.parse(value);
+        }
+        */
+	
+	// Faces 4.0 parse function
         Object parsed = null;
+        System.out.println("PAN: parse: value: " + value);
         
         ParsePosition parsePosition = new ParsePosition(0);
         if (destType == BigInteger.class)
@@ -199,10 +214,12 @@ public class NumberConverter implements Converter, PartialStateHolder
             parsed = format.parse(value, parsePosition);
         }
         
-        if (parsePosition.getIndex() != value.length())
-        {
-            throw new ParseException(value, parsePosition.getIndex());
-        }
+       // if (parsePosition.getIndex() != value.length())
+       // {
+       //     throw new ParseException(value, parsePosition.getIndex());
+       // }
+        System.out.println("PAN: parse: parsePosition index: " + parsePosition.getIndex());
+        System.out.println("PAN: parse: value length: " + value.length());
 
         return parsed;
     }
