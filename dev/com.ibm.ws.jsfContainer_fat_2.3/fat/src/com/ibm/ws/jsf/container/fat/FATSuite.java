@@ -4,11 +4,8 @@
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/epl-2.0/
- * 
- * SPDX-License-Identifier: EPL-2.0
  *
- * Contributors:
- *     IBM Corporation - initial API and implementation
+ * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
 package com.ibm.ws.jsf.container.fat;
 
@@ -30,25 +27,24 @@ import com.ibm.ws.jsf.container.fat.tests.JSF23CDIGeneralTests;
 import com.ibm.ws.jsf.container.fat.tests.JSF23WebSocketTests;
 import com.ibm.ws.jsf.container.fat.tests.JSFContainerTest;
 
-import componenttest.topology.impl.JavaInfo;
-
 import componenttest.rules.repeater.EmptyAction;
 import componenttest.rules.repeater.FeatureReplacementAction;
-import componenttest.rules.repeater.JakartaEE9Action;
 import componenttest.rules.repeater.JakartaEE10Action;
+import componenttest.rules.repeater.JakartaEE9Action;
 import componenttest.rules.repeater.RepeatTests;
+import componenttest.topology.impl.JavaInfo;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-                JSF22FlowsTests.class, 
-                CDIFlowsTests.class, 
-                JSFContainerTest.class, 
-                JSF22StatelessViewTests.class, 
-                JSF22BeanValidationTests.class, 
-                ErrorPathsTest.class, 
-                ClassloadingTest.class, 
+                JSF22FlowsTests.class,
+                CDIFlowsTests.class,
+                JSFContainerTest.class,
+                JSF22StatelessViewTests.class,
+                JSF22BeanValidationTests.class,
+                ErrorPathsTest.class,
+                ClassloadingTest.class,
                 JSF23CDIGeneralTests.class,
-                JSF23WebSocketTests.class 
+                JSF23WebSocketTests.class
 })
 
 public class FATSuite {
@@ -57,14 +53,13 @@ public class FATSuite {
     public static RepeatTests repeat;
 
     static {
-        if(JavaInfo.JAVA_VERSION>=11)
-        {
+        if (JavaInfo.JAVA_VERSION >= 11) {
             repeat = RepeatTests.with(new EmptyAction().fullFATOnly())
-                                .andWith(FeatureReplacementAction.EE9_FEATURES().fullFATOnly())
-                                .andWith(FeatureReplacementAction.EE10_FEATURES());
+                            .andWith(FeatureReplacementAction.EE9_FEATURES().fullFATOnly())
+                            .andWith(FeatureReplacementAction.EE10_FEATURES());
         } else {
             repeat = RepeatTests.with(new EmptyAction().fullFATOnly())
-                                .andWith(FeatureReplacementAction.EE9_FEATURES());
+                            .andWith(FeatureReplacementAction.EE9_FEATURES());
         }
     }
 
@@ -79,7 +74,7 @@ public class FATSuite {
     public static WebArchive addMojarra(WebArchive app) throws Exception {
         if (JakartaEE9Action.isActive()) {
             return app.addAsLibraries(new File("publish/files/mojarra30/").listFiles());
-        } else if(JakartaEE10Action.isActive()){
+        } else if (JakartaEE10Action.isActive()) {
             return app.addAsLibraries(new File("publish/files/mojarra40/").listFiles());
         }
         return app.addAsLibraries(new File("publish/files/mojarra/").listFiles());
@@ -88,7 +83,7 @@ public class FATSuite {
     public static WebArchive addMyFaces(WebArchive app) throws Exception {
         if (JakartaEE9Action.isActive()) {
             return app.addAsLibraries(new File("publish/files/myfaces30/").listFiles()).addAsLibraries(new File("publish/files/myfaces-libs/").listFiles());
-        } else if(JakartaEE10Action.isActive()){
+        } else if (JakartaEE10Action.isActive()) {
             return app.addAsLibraries(new File("publish/files/myfaces40/").listFiles());
         }
         return app.addAsLibraries(new File("publish/files/myfaces/").listFiles()).addAsLibraries(new File("publish/files/myfaces-libs/").listFiles());
