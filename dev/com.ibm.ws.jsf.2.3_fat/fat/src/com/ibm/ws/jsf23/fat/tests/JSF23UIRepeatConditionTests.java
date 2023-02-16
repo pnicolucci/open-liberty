@@ -35,6 +35,7 @@ import componenttest.annotation.SkipForRepeat;
 import componenttest.custom.junit.runner.FATRunner;
 import componenttest.custom.junit.runner.Mode;
 import componenttest.custom.junit.runner.Mode.TestMode;
+import componenttest.rules.repeater.JakartaEE10Action;
 import componenttest.topology.impl.LibertyServer;
 
 /**
@@ -45,7 +46,8 @@ import componenttest.topology.impl.LibertyServer;
 @RunWith(FATRunner.class)
 public class JSF23UIRepeatConditionTests {
 
-    protected static final Class<?> c = JSF23UIRepeatConditionTests.class;
+    private static final Class<?> c = JSF23UIRepeatConditionTests.class;
+    private static boolean isEE10;
 
     @Rule
     public TestName name = new TestName();
@@ -55,6 +57,8 @@ public class JSF23UIRepeatConditionTests {
 
     @BeforeClass
     public static void setup() throws Exception {
+        isEE10 = JakartaEE10Action.isActive();
+
         ShrinkHelper.defaultDropinApp(server, "UIRepeatConditionCheck.war", "com.ibm.ws.jsf23.fat.uirepeat");
 
         // Start the server and use the class name so we can find logs easily.
@@ -76,7 +80,6 @@ public class JSF23UIRepeatConditionTests {
      * @throws Exception
      */
     @Test
-    @SkipForRepeat(SkipForRepeat.EE10_FEATURES)
     public void testUIRepeatCondition() throws Exception {
         String contextRoot = "UIRepeatConditionCheck";
         try (WebClient webClient = new WebClient()) {
@@ -100,7 +103,7 @@ public class JSF23UIRepeatConditionTests {
 
             String output = page.getElementById("panel1").getTextContent().replaceAll("\\s", "");
 
-            // Test the inital output for the default values of begin = 0, end = 9 and step = 1
+            // Test the initial output for the default values of begin = 0, end = 9 and step = 1
             assertTrue("The output should have been: " + expected + " but was: " + output, output.equals(expected));
 
             // Set step = 2 and ensure we get the proper output
@@ -118,6 +121,13 @@ public class JSF23UIRepeatConditionTests {
 
             // Ensure that the resulting output is correct
             assertTrue("The output should have been: " + expected + " but was: " + output, output.equals(expected));
+
+            // For Faces 4.0, HTMLUnit does not play nicely with this second AJAX request. As such
+            // we're just going to refresh the page. We should look at updating HTMLUnit in the future
+            // for this test bucket.
+            if (isEE10) {
+                page.refresh();
+            }
 
             // Set step = 1, begin = 4 and end = 6 and ensure we get the proper output
             expected = "456";
