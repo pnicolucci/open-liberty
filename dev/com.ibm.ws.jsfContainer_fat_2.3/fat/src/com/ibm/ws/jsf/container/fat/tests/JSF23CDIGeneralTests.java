@@ -41,7 +41,6 @@ import com.ibm.ws.jsf.container.fat.FATSuite;
 import com.ibm.ws.jsf.container.fat.utils.JSFUtils;
 
 import componenttest.annotation.Server;
-import componenttest.annotation.SkipForRepeat;
 import componenttest.custom.junit.runner.FATRunner;
 import componenttest.custom.junit.runner.Mode;
 import componenttest.custom.junit.runner.Mode.TestMode;
@@ -226,12 +225,10 @@ public class JSF23CDIGeneralTests extends FATServletClient {
      *
      * @throws Exception
      */
-    @SkipForRepeat(SkipForRepeat.EE10_FEATURES) // HTMLUnit gargoylesoftware thinks there's a JavaScript error
     @Test
     public void testCDIManagedProperty() throws Exception {
         try (WebClient webClient = new WebClient()) {
             webClient.setAjaxController(new NicelyResynchronizingAjaxController());
-            webClient.getOptions().setThrowExceptionOnScriptError(false);
 
             String initalValue = "numberManagedProperty = 0 textManagedProperty = zero "
                                  + "listManagedProperty = zero stringArrayManagedProperty = "
@@ -266,6 +263,13 @@ public class JSF23CDIGeneralTests extends FATServletClient {
             input2.setValueAttribute("2");
             input3.setValueAttribute("3");
             input4.setValueAttribute("4");
+
+            // For Faces 4.0, HTMLUnit does not play nicely with this AJAX request. As such
+            // we're just going to refresh the page. We should look at updating HTMLUnit in the future
+            // for this test bucket.
+            if (isEE10) {
+                page.refresh();
+            }
 
             // Now click the submit button
             page = ((HtmlElement) page.getElementById("button1")).click();
