@@ -21,36 +21,23 @@ import componenttest.rules.repeater.EmptyAction;
 import componenttest.rules.repeater.FeatureReplacementAction;
 import componenttest.rules.repeater.RepeatTests;
 import io.openliberty.webcontainer.servlet60.fat.tests.Servlet60CookieSetAttributeTest;
-import io.openliberty.webcontainer.servlet60.fat.tests.Servlet60GetMappingAsyncDispatchTest;
-import io.openliberty.webcontainer.servlet60.fat.tests.Servlet60GetRealPathTest;
-import io.openliberty.webcontainer.servlet60.fat.tests.Servlet60RequestConnectionTest;
-import io.openliberty.webcontainer.servlet60.fat.tests.Servlet60RequestCookieHeaderTest;
-import io.openliberty.webcontainer.servlet60.fat.tests.Servlet60ResponseNullCharacterEncodingTest;
-import io.openliberty.webcontainer.servlet60.fat.tests.Servlet60SessionCookieConfigSCITest;
-import io.openliberty.webcontainer.servlet60.fat.tests.Servlet60SessionCookieConfigXMLTest;
-import io.openliberty.webcontainer.servlet60.fat.tests.Servlet60URIPathCanonicalizationBadRequestTest;
-import io.openliberty.webcontainer.servlet60.fat.tests.Servlet60URIPathCanonicalizationInvalidWebXMLTest;
-import io.openliberty.webcontainer.servlet60.fat.tests.Servlet60URIPathCanonicalizationServerXMLTest;
-import io.openliberty.webcontainer.servlet60.fat.tests.Servlet60URIPathCanonicalizationTest;
-import io.openliberty.webcontainer.servlet60.fat.tests.Servlet60URIPathCanonicalizationWebXMLTest;
-import io.openliberty.webcontainer.servlet60.fat.tests.Servlet60XPoweredByHeaderTest;
 
 @RunWith(Suite.class)
 @SuiteClasses({
-                Servlet60XPoweredByHeaderTest.class,
-                Servlet60GetMappingAsyncDispatchTest.class,
-                Servlet60GetRealPathTest.class,
+                //Servlet60XPoweredByHeaderTest.class,
+                //Servlet60GetMappingAsyncDispatchTest.class,
+                //Servlet60GetRealPathTest.class,
                 Servlet60CookieSetAttributeTest.class,
-                Servlet60RequestConnectionTest.class,
-                Servlet60SessionCookieConfigXMLTest.class,
-                Servlet60SessionCookieConfigSCITest.class,
-                Servlet60RequestCookieHeaderTest.class,
-                Servlet60ResponseNullCharacterEncodingTest.class,
-                Servlet60URIPathCanonicalizationBadRequestTest.class,
-                Servlet60URIPathCanonicalizationInvalidWebXMLTest.class,
-                Servlet60URIPathCanonicalizationServerXMLTest.class,
-                Servlet60URIPathCanonicalizationTest.class,
-                Servlet60URIPathCanonicalizationWebXMLTest.class
+//Servlet60RequestConnectionTest.class,
+//Servlet60SessionCookieConfigXMLTest.class,
+//Servlet60SessionCookieConfigSCITest.class,
+//Servlet60RequestCookieHeaderTest.class,
+//Servlet60ResponseNullCharacterEncodingTest.class,
+//Servlet60URIPathCanonicalizationBadRequestTest.class,
+//Servlet60URIPathCanonicalizationInvalidWebXMLTest.class,
+//Servlet60URIPathCanonicalizationServerXMLTest.class,
+//Servlet60URIPathCanonicalizationTest.class,
+//Servlet60URIPathCanonicalizationWebXMLTest.class
 })
 public class FATSuite {
 

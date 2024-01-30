@@ -18,7 +18,6 @@
                   host="*"
                   httpPort="${bvt.prop.HTTP_default}"
                   httpsPort="${bvt.prop.HTTP_default.secure}">
-        <samesite lax="*"/>
     </httpEndpoint>
 
     <featureManager>

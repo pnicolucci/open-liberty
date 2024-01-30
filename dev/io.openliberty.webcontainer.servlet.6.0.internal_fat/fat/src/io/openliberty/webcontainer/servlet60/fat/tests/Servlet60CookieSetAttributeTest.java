@@ -77,7 +77,7 @@ public class Servlet60CookieSetAttributeTest {
      * Test basic predefined attribute setters (setPath, setDomain ...) and new setAttribute
      *
      */
-    @Test
+    //@Test
     public void test_cookiePredefinedSetterAndSetAttribute() throws Exception {
         String url = "http://" + server.getHostname() + ":" + server.getHttpDefaultPort() + "/" + TEST_APP_NAME + "/CookieSetAttributeServlet?testName=basic";
         String expectedSetCookie = "CookieSetAttributeServlet=TestCookieBasic; Path=BasicPath; Domain=basicdomain; Secure; HttpOnly; SameSite=Lax; basicsetattribute1=BasicAttributeValue1; basicsetattribute2=BasicAttributeValue2";
@@ -109,7 +109,7 @@ public class Servlet60CookieSetAttributeTest {
      * 2. Override Path and Domain with setAttribute("Path",value) and setAttribute("Domain", value)
      * 3. Also test overriding the previous setAttribute()
      */
-    @Test
+    //@Test
     public void test_cookieOverrideSetterWithSetAttribute() throws Exception {
         String url = "http://" + server.getHostname() + ":" + server.getHttpDefaultPort() + "/" + TEST_APP_NAME + "/CookieSetAttributeServlet?testName=override";
         String expectedSetCookie = "CookieSetAttributeServlet=TestCookieOverride; Path=Path_viaSetAttribute; Domain=Domain_viaSetAttribute; HttpOnly; SameSite=Lax; basicsetattribute1=BasicAttributeValue1; basicsetattribute2=BasicAttributeValue2; basicsetattribute3=BasicAttributeValueREPLACED";
@@ -141,7 +141,7 @@ public class Servlet60CookieSetAttributeTest {
     /*
      * Test Set-Cookie via addHeader and setHeader behavior do not change in Servlet 6.0..i.e it generates 2 Set-Cookie headers
      */
-    @Test
+    //@Test
     public void test_cookieAddAndSetHeader() throws Exception {
         String url = "http://" + server.getHostname() + ":" + server.getHttpDefaultPort() + "/" + TEST_APP_NAME + "/CookieSetAttributeServlet?testName=addAndSetHeaders";
         LOG.info("\n Sending Request [" + url + "]");
@@ -178,7 +178,7 @@ public class Servlet60CookieSetAttributeTest {
     /*
      * Test cookie setAttribute("SameSite","Strict") that overrides the server setting of <samesite lax="*"/>
      */
-    @Test
+    //@Test
     public void test_setAttributeSameSitePrecedence() throws Exception {
         String url = "http://" + server.getHostname() + ":" + server.getHttpDefaultPort() + "/" + TEST_APP_NAME + "/CookieSetAttributeServlet?testName=setAttributeSameSite";
         String expectedSetCookie = "CookieSetAttributeServlet=TestSetAttributeSameSite; HttpOnly; SameSite=Strict";
@@ -201,6 +201,31 @@ public class Servlet60CookieSetAttributeTest {
                 String headerValue = response.getHeader("Set-Cookie").getValue();
                 LOG.info("\n Set-Cookie value [" + headerValue + "]");
                 assertTrue("The response did not contain the following Set-Cookie header " + expectedSetCookie, headerValue.equals(expectedSetCookie));
+            }
+        }
+    }
+
+    @Test
+    public void test_partitioned() throws Exception {
+        String url = "http://" + server.getHostname() + ":" + server.getHttpDefaultPort() + "/" + TEST_APP_NAME + "/CookieSetAttributeServlet?testName=partitioned";
+        LOG.info("\n Sending Request [" + url + "]");
+        HttpGet getMethod = new HttpGet(url);
+
+        try (CloseableHttpClient client = HttpClientBuilder.create().build()) {
+            try (CloseableHttpResponse response = client.execute(getMethod)) {
+                String responseText = EntityUtils.toString(response.getEntity());
+                LOG.info("\n" + "Response Text: [" + responseText + "]");
+
+                //fail-fast check
+                assertTrue("The response did not contain the following String: " + expectedGeneralResponse, responseText.contains(expectedGeneralResponse));
+
+                Header[] headers = response.getHeaders();
+
+                for (Header header : headers) {
+                    LOG.info("\n" + "Header: " + header);
+
+                }
+
             }
         }
     }

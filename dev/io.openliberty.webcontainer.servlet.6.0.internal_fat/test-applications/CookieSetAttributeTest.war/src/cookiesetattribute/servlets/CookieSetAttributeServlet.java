@@ -63,6 +63,8 @@ public class CookieSetAttributeServlet extends HttpServlet {
         //setAttribute for SameSite
         else if (testName.equals("setAttributeSameSite")) {
             testSetAttributeSameSite(response);
+        } else if (testName.equals("partitioned")) {
+            testPartitioned(response);
         }
         // Test all default cookie setter
         else {
@@ -70,6 +72,32 @@ public class CookieSetAttributeServlet extends HttpServlet {
         }
 
         sos.print("Hello from the CookieSetAttributeServlet. Main response data are in the Set-Cookie headers");
+    }
+
+    /**
+     * @param response
+     */
+    private void testPartitioned(HttpServletResponse response) {
+        LOG.info(addDivider());
+        LOG.info(" testPartitioned");
+
+        response.setHeader("Set-Cookie", "Cookie_SetHeader=CookieValue_SetHeader; Secure; randomAttributeSetHeader=valueA; Partitioned");
+        response.addHeader("Set-Cookie", "Cookie_AddHeader=CookieValue_AddHeader; Secure; randomAttributeAddHeader=valueB; Partitioned");
+
+        // With the below then all Set-Cookie headers are parsed and we get split SetCookie headers
+        // With out the below then set/addHeader Set-Cookie isn't parsed and we are good to go, no split Set-Cookie header
+        // Still to investigate is with and without the below and with and without samesite enabled.
+        // Without the below and samesite enabled we get odd split cookies as well
+        // with the below and samesite enabled addCookie is good but others are split
+        // addCookie set-cookie resulting header is always good! Never split!
+        Cookie cookie = new Cookie("AddCookie_Cookie", "AddCookie_CookieValue");
+        cookie.setSecure(true);
+        cookie.setAttribute("randomAttributeAddCookie", "valueC");
+        response.addCookie(cookie);
+
+        LOG.info(" testPartitioned END.");
+        LOG.info(addDivider());
+
     }
 
     /*
