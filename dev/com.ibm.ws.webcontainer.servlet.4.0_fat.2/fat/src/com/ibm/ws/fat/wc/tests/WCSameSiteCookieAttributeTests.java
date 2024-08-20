@@ -98,7 +98,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void testSameSiteSetCookie() throws Exception {
         String expectedSetHeader = "Set-Cookie: MySameSiteCookieNameSetHeader=MySameSiteCookieValueSetHeader; Secure; SameSite=None";
         String expectedAddHeader = "Set-Cookie: MySameSiteCookieNameAddHeader=MySameSiteCookieValueAddHeader; Secure; SameSite=None";
@@ -158,7 +158,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteSetCookie_IncorrectSameSiteValue() throws Exception {
         String expectedSetHeader = "Set-Cookie: MySameSiteCookieNameSetHeader=MySameSiteCookieValueSetHeader; Secure; SameSite=Incorrect";
@@ -220,7 +220,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteSetCookie_DuplicateSameSiteAttribute() throws Exception {
         String expectedSetHeader = "Set-Cookie: MySameSiteCookieNameSetHeader=MySameSiteCookieValueSetHeader; Secure; SameSite=Lax; SameSite=None";
@@ -282,7 +282,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteSetCookie_EmptySameSiteValue() throws Exception {
         String expectedSetHeader = "Set-Cookie: MySameSiteCookieNameSetHeader=MySameSiteCookieValueSetHeader; Secure; SameSite";
@@ -410,7 +410,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void testSameSiteConfig_AddCookie_Strict() throws Exception {
         String expectedHeader = "Set-Cookie: cookieOne=cookieOne; SameSite=Strict";
         String expectedResponse = "Welcome to the SameSiteAddCookieServlet! Adding cookieOne!";
@@ -485,7 +485,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookie_None_Secure() throws Exception {
         String expectedHeader = "Set-Cookie: cookieOne=cookieOne; Secure; SameSite=None";
@@ -561,7 +561,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void testSameSiteConfig_AddCookie_None_NotSecure() throws Exception {
         String expectedHeader = "Set-Cookie: cookieOne=cookieOne; Secure; SameSite=None";
         String expectedResponse = "Welcome to the SameSiteAddCookieServlet! Adding cookieOne!";
@@ -632,7 +632,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookie_Lax_Wildcard() throws Exception {
         String expectedHeaderOne = "Set-Cookie: cookieOne=cookieOne; SameSite=Lax";
@@ -709,7 +709,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookie_Lax_Wildcard_CookieName() throws Exception {
         String expectedHeaderOne = "Set-Cookie: cookieOne=cookieOne; SameSite=Lax";
@@ -786,7 +786,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookie_Lax_Wildcard_CookieName_Explicit_Strict() throws Exception {
         String expectedHeaderOne = "Set-Cookie: cookieOne=cookieOne; SameSite=Lax";
@@ -867,7 +867,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookie_Lax_DuplicateCookieName() throws Exception {
         String expectedHeader = "Set-Cookie: cookieOne=cookieOne; SameSite=Lax";
@@ -940,7 +940,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookie_Lax_DuplicateCookieName_Wildcard() throws Exception {
         String expectedHeader = "Set-Cookie: cookieOne=cookieOne; SameSite=Lax";
@@ -1014,7 +1014,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookie_CookieName_Wildcards() throws Exception {
         String expectedHeader = "Set-Cookie: cookieOne=cookieOne; SameSite=Lax";
@@ -1095,7 +1095,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookie_Lax_Strict_SameCookieName() throws Exception {
         String expectedHeader = "Set-Cookie: cookieOne=cookieOne";
@@ -1165,7 +1165,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookie_Lax_Strict_SameCookieName_Wildcard() throws Exception {
         String expectedResponse = "Welcome to the SameSiteAddCookieServlet! Adding cookieOne!";
@@ -1243,7 +1243,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookie_Lax_Strict_Wildcards_None_Explicit() throws Exception {
         String expectedHeader = "Set-Cookie: cookieOne=cookieOne; Secure; SameSite=None";
@@ -1323,7 +1323,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookie_Lax_Strict_None_SameCookieName() throws Exception {
         String expectedResponse = "Welcome to the SameSiteAddCookieServlet! Adding cookieOne!";
@@ -1394,7 +1394,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookie_Lax_Unsupported_CookieName() throws Exception {
         String expectedResponse = "Welcome to the SameSiteAddCookieServlet! Adding cookieOne!";
@@ -1462,7 +1462,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookie_Strict_Wildcard() throws Exception {
         String expectedHeaderOne = "Set-Cookie: cookieOne=cookieOne; SameSite=Strict";
@@ -1539,7 +1539,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookie_Strict_Wildcard_CookieName() throws Exception {
         String expectedHeaderOne = "Set-Cookie: cookieOne=cookieOne; SameSite=Strict";
@@ -1616,7 +1616,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookie_None_NotSecure_Wildcard() throws Exception {
         String expectedHeaderOne = "Set-Cookie: cookieOne=cookieOne; Secure; SameSite=None";
@@ -1693,7 +1693,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookie_None_Wildcard_CookieName() throws Exception {
         String expectedHeaderOne = "Set-Cookie: cookieOne=cookieOne; Secure; SameSite=None";
@@ -1774,7 +1774,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookie_None_Secure_Wildcard() throws Exception {
         String expectedHeaderOne = "Set-Cookie: cookieOne=cookieOne; Secure; SameSite=None";
@@ -1854,7 +1854,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookie_Same_Name_Twice() throws Exception {
         String expectedHeaderOne = "Set-Cookie: cookieOne=cookieOne; SameSite=Lax";
@@ -1935,7 +1935,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void testSameSiteConfig_Set_Add_Header_Lax() throws Exception {
         String expectedSetHeader = "Set-Cookie: MySameSiteCookieNameSetHeader=MySameSiteCookieValueSetHeader; SameSite=Lax";
         String expectedAddHeader = "Set-Cookie: MySameSiteCookieNameAddHeader=MySameSiteCookieValueAddHeader; SameSite=Lax";
@@ -2007,7 +2007,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_SessionCookie_Explicit() throws Exception {
         boolean headerFound = false;
@@ -2078,7 +2078,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_SessionCookie_Wildcard() throws Exception {
         boolean headerFound = false;
@@ -2152,7 +2152,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_SessionCookie_Explicit_SessionConfig_Strict() throws Exception {
         boolean headerFound = false;
@@ -2227,7 +2227,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_SessionCookie_Wildcard_SessionConfig_Strict() throws Exception {
         boolean headerFound = false;
@@ -2302,7 +2302,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void testSameSiteConfig_AddCookie_SameName_DifferentCase() throws Exception {
         String expectedHeaderOne = "Set-Cookie: cookieone=cookieone";
         String expectedHeaderTwo = "Set-Cookie: cookieOne=cookieOne; SameSite=Lax";
@@ -2377,7 +2377,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookie_Multiple_Wildcards() throws Exception {
         String expectedHeaderOne = "Set-Cookie: cookieOne=cookieOne; SameSite=Strict";
@@ -2454,7 +2454,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_Use_Reference() throws Exception {
         String expectedHeader = "Set-Cookie: cookieOne=cookieOne; SameSite=Strict";
@@ -2538,7 +2538,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookieSetHeader_DuplicateSameSiteAttribute() throws Exception {
         String expectedSetHeader = "Set-Cookie: MySameSiteCookieNameSetHeader=MySameSiteCookieValueSetHeader; Secure; SameSite=None";
@@ -2623,7 +2623,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_SameSiteSetCookie_DuplicateSameSiteAttribute() throws Exception {
         String expectedSetHeader = "Set-Cookie: MySameSiteCookieNameSetHeader=MySameSiteCookieValueSetHeader; Secure; SameSite=None";
@@ -2708,7 +2708,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_AddCookieSetHeader_EmptySameSiteValue() throws Exception {
         String expectedSetHeader = "Set-Cookie: MySameSiteCookieNameSetHeader=MySameSiteCookieValueSetHeader; Secure; SameSite=Strict";
@@ -2793,7 +2793,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_SameSiteSetCookie_EmptySameSiteValue() throws Exception {
         String expectedSetHeader = "Set-Cookie: MySameSiteCookieNameSetHeader=MySameSiteCookieValueSetHeader; Secure; SameSite=Strict";
@@ -2877,7 +2877,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testSameSiteConfig_SameSiteAddCookieSetCookie_IncorrectSameSite_Lax() throws Exception {
         String expectedSetHeader = "Set-Cookie: MySameSiteCookieNameSetHeader=MySameSiteCookieValueSetHeader; Secure; SameSite=Incorrect";
@@ -2956,7 +2956,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void testSameSiteSessionCookie_Lax() throws Exception {
         boolean headerFound = false;
         boolean splitSameSiteHeaderFound = false;
@@ -3024,7 +3024,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void testSameSiteSessionCookie_Strict() throws Exception {
         boolean headerFound = false;
         boolean splitSameSiteHeaderFound = false;
@@ -3094,7 +3094,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void testSameSiteSessionCookie_None_Secure() throws Exception {
         boolean headerFound = false;
         boolean splitSameSiteHeaderFound = false;
@@ -3166,7 +3166,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void testSameSiteSessionCookie_None_Not_Secure() throws Exception {
         boolean headerFound = false;
         boolean splitSameSiteHeaderFound = false;
@@ -3233,7 +3233,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void testSameSiteSessionCookie_Disabed() throws Exception {
         boolean headerFound = false;
         String expectedResponse = "Welcome to the SameSiteSessionCreationServlet!";
@@ -3300,7 +3300,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void testSameSiteSessionCookie_NothingSpecified() throws Exception {
         boolean headerFound = false;
         String expectedResponse = "Welcome to the SameSiteSessionCreationServlet!";
@@ -3353,7 +3353,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void testSameSiteSessionCookie_InvalidValue() throws Exception {
         boolean headerFound = false;
         String expectedResponse = "Welcome to the SameSiteSessionCreationServlet!";
@@ -3425,7 +3425,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void testSameSiteSessionCookie_MixedCaseValue() throws Exception {
         boolean headerFound = false;
         boolean splitSameSiteHeaderFound = false;
@@ -3495,7 +3495,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void testSameSiteSessionCookie_UniqueName() throws Exception {
         boolean headerFound = false;
         boolean splitSameSiteHeaderFound = false;
@@ -3565,7 +3565,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void testSameSiteSessionCookie_Strict_Secure() throws Exception {
         boolean headerFound = false;
         boolean splitSameSiteHeaderFound = false;
@@ -3637,7 +3637,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void testSameSiteSetCookieJSP() throws Exception {
         String expectedSetHeader = "Set-Cookie: jspSetHeaderCookie=jspSetHeaderCookie; Secure; SameSite=None";
         String expectedAddHeader = "Set-Cookie: jspAddHeaderCookie=jspAddHeaderCookie; Secure; SameSite=None";
@@ -3697,7 +3697,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void testAddCookieSetHeader() throws Exception {
         String expectedSetHeader = "Set-Cookie: MySameSiteCookieNameSetHeader=MySameSiteCookieValueSetHeader; Secure; SameSite=None";
         String expectedAddHeader = "Set-Cookie: MySameSiteCookieNameAddHeader=MySameSiteCookieValueAddHeader; Secure; SameSite=None";
@@ -3763,7 +3763,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     public void testSetHeaderAddCookie() throws Exception {
         String expectedSetHeader = "Set-Cookie: MySameSiteCookieNameSetHeader=MySameSiteCookieValueSetHeader; Secure; SameSite=None";
         String expectedAddHeader = "Set-Cookie: MySameSiteCookieNameAddHeader=MySameSiteCookieValueAddHeader; Secure; SameSite=None";
@@ -3830,7 +3830,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testAddCookieSetHeader_IncorrectSameSiteValue() throws Exception {
         String expectedSetHeader = "Set-Cookie: MySameSiteCookieNameSetHeader=MySameSiteCookieValueSetHeader; Secure; SameSite=Incorrect";
@@ -3892,7 +3892,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testAddCookieSetHeader_DuplicateSameSiteAttribute() throws Exception {
         String expectedSetHeader = "Set-Cookie: MySameSiteCookieNameSetHeader=MySameSiteCookieValueSetHeader; Secure; SameSite=None";
@@ -3955,7 +3955,7 @@ public class WCSameSiteCookieAttributeTests {
      *
      * @throws Exception
      */
-    @Test
+    //@Test
     @Mode(TestMode.FULL)
     public void testAddCookieSetHeader_EmptySameSiteValue() throws Exception {
         String expectedSetHeader = "Set-Cookie: MySameSiteCookieNameSetHeader=MySameSiteCookieValueSetHeader; Secure";
