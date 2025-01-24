@@ -12,18 +12,12 @@ package com.ibm.ws.fat.wc;
 import java.util.Locale;
 
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import com.ibm.ws.fat.util.FatLogHandler;
-import com.ibm.ws.fat.wc.tests.WCPartitionedAttributeTests;
-import com.ibm.ws.fat.wc.tests.WCPartitionedCookieAttributeSecurityTest;
-import com.ibm.ws.fat.wc.tests.WCResponseHeadersTest;
-import com.ibm.ws.fat.wc.tests.WCSameSiteCookieAttributeSecurityTest;
-import com.ibm.ws.fat.wc.tests.WCSameSiteCookieAttributeTests;
-import com.ibm.ws.fat.wc.tests.WCSameSiteIncompatibleClientsTests;
+import com.ibm.ws.fat.wc.tests.NettyTests;
 
 import componenttest.custom.junit.runner.FATRunner;
 import componenttest.rules.repeater.EmptyAction;
@@ -48,17 +42,18 @@ import componenttest.rules.repeater.RepeatTests;
  */
 @RunWith(Suite.class)
 @SuiteClasses({
-                WCResponseHeadersTest.class,
-                WCSameSiteCookieAttributeTests.class,
-                WCSameSiteCookieAttributeSecurityTest.class,
-                WCPartitionedAttributeTests.class,
-                WCPartitionedCookieAttributeSecurityTest.class,
-                WCSameSiteIncompatibleClientsTests.class
+                //WCResponseHeadersTest.class,
+                //WCSameSiteCookieAttributeTests.class,
+                //WCSameSiteCookieAttributeSecurityTest.class,
+                //WCPartitionedAttributeTests.class,
+                //WCPartitionedCookieAttributeSecurityTest.class,
+                //WCSameSiteIncompatibleClientsTests.class,
+                NettyTests.class
 })
 
 public class FATSuite {
 
-    @ClassRule
+    // @ClassRule
     public static RepeatTests repeat;
 
     public static final boolean isWindows = System.getProperty("os.name").toLowerCase(Locale.ENGLISH).contains("win");

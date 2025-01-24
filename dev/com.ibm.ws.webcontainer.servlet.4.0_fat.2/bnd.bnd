@@ -1,5 +1,5 @@
 #*******************************************************************************
-# Copyright (c) 2024 IBM Corporation and others.
+# Copyright (c) 2024, 2025 IBM Corporation and others.
 # All rights reserved. This program and the accompanying materials
 # are made available under the terms of the Eclipse Public License 2.0
 # which accompanies this distribution, and is available at
@@ -16,9 +16,15 @@ src: \
     test-applications/SameSiteTest.war/src,\
     test-applications/SameSiteSecurityTest.war/src,\
     test-applications/PartitionedTest.war/src,\
-    test-applications/IncompatibleClientTest.war/src
+    test-applications/IncompatibleClientTest.war/src,\
+    test-applications/NettyCookieTest.war/src,\
+    test-applications/NettyReadListenerTest.war/src,\
+    test-applications/NettyServletRequestTest.war/src
 
 fat.project: true
+
+javac.source: 11
+javac.target: 11
 
 tested.features:\
     expressionlanguage-4.0,\
@@ -43,5 +49,12 @@ tested.features:\
     io.openliberty.org.apache.commons.logging;version=latest,\
     io.openliberty.org.apache.commons.codec;version=latest,\
     com.ibm.websphere.javaee.servlet.4.0;version=latest,\
+    com.ibm.websphere.javaee.jsp.2.3;version=latest,\
+    io.openliberty.jakarta.servlet.5.0;version=latest,\
+    io.openliberty.jakarta.pages.3.0;version=latest,\
+    commons-httpclient:commons-httpclient;version=3.1,\
+    httpunit:httpunit;version=1.5.4,\
+    net.sf.jtidy:jtidy;version=9.3.8,\
     org.apache.httpcomponents.client5:httpclient5;version=5.0.2,\
-    org.apache.httpcomponents.core5:httpcore5;version=5.0.2
+    org.apache.httpcomponents.core5:httpcore5;version=5.0.2,\
+    com.ibm.websphere.javaee.cdi.2.0;version=latest
