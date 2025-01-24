@@ -78,9 +78,11 @@ public class NettyResponseMessage extends NettyBaseMessage implements HttpRespon
     public NettyResponseMessage(HttpResponse response, HttpInboundServiceContext isc, HttpRequest request) {
         Objects.requireNonNull(isc);
         Objects.requireNonNull(response);
+        Thread.dumpStack();
 
         this.context = isc;
         this.nettyResponse = response;
+        System.out.println("PAN: response chunked? " + HttpUtil.isTransferEncodingChunked(this.nettyResponse));
         this.headers = nettyResponse.headers();
         this.trailers = new DefaultHttpHeaders().clear();
         this.nettyTrailerWrapper = new NettyTrailers(this.trailers);
@@ -102,6 +104,9 @@ public class NettyResponseMessage extends NettyBaseMessage implements HttpRespon
     }
 
     public void update(HttpResponse response) {
+        System.out.println("PAN: update response called.");
+        System.out.println("PAN: update response chunked? " + HttpUtil.isTransferEncodingChunked(response));
+        Thread.dumpStack();
         this.nettyResponse = response;
         this.headers = response.headers();
     }
@@ -224,6 +229,8 @@ public class NettyResponseMessage extends NettyBaseMessage implements HttpRespon
 
     @Override
     public boolean isChunkedEncodingSet() {
+        Thread.dumpStack();
+        System.out.println("PAN: isChunkedEncodingSet(): " + HttpUtil.isTransferEncodingChunked(nettyResponse) + " response:" + nettyResponse.toString() + " this: " + this);
         return HttpUtil.isTransferEncodingChunked(nettyResponse);
     }
 

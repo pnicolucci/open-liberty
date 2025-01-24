@@ -671,10 +671,14 @@ public abstract class HttpBaseMessageImpl extends GenericMessageImpl implements 
      *
      * @param version
      * @throws NullPointerException
-     *             if the input version is null
+     *                                  if the input version is null
      */
     @Override
     public void setVersion(VersionValues version) {
+        if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
+            Tr.debug(tc, "Called setVersion(VersionValue): " + version);
+            Thread.dumpStack();
+        }
         if (!version.equals(this.myVersion)) {
             this.myVersion = version;
             super.setFirstLineChanged();
@@ -693,12 +697,13 @@ public abstract class HttpBaseMessageImpl extends GenericMessageImpl implements 
      * @param version
      * @throws UnsupportedProtocolVersionException
      * @throws NullPointerException
-     *             if input version is null
+     *                                                 if input version is null
      */
     @Override
     public void setVersion(String version) throws UnsupportedProtocolVersionException {
         if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
             Tr.debug(tc, "Called setVersion(S): " + version);
+            Thread.dumpStack();
         }
         try {
             setVersion(VersionValues.find(version));
@@ -714,12 +719,13 @@ public abstract class HttpBaseMessageImpl extends GenericMessageImpl implements 
      * @param version
      * @throws UnsupportedProtocolVersionException
      * @throws NullPointerException
-     *             if input version is null
+     *                                                 if input version is null
      */
     @Override
     public void setVersion(byte[] version) throws UnsupportedProtocolVersionException {
         if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
             Tr.debug(tc, "Called setVersion(b): " + HttpChannelUtils.getEnglishString(version));
+            Thread.dumpStack();
         }
         try {
             setVersion(VersionValues.find(version));
@@ -746,7 +752,7 @@ public abstract class HttpBaseMessageImpl extends GenericMessageImpl implements 
      *
      * @param length
      * @throws IllegalArgumentException
-     *             if input length is invalid
+     *                                      if input length is invalid
      */
     @Override
     public void setContentLength(long length) {
@@ -1841,7 +1847,7 @@ public abstract class HttpBaseMessageImpl extends GenericMessageImpl implements 
      *
      * @param type
      * @throws NullPointerException
-     *             if input string is null
+     *                                  if input string is null
      */
     @Override
     public void setMIMEType(String type) {
@@ -1899,7 +1905,7 @@ public abstract class HttpBaseMessageImpl extends GenericMessageImpl implements 
      * If the content type is null, or there is no explicit character encoding, <code>null</code> is returned.
      *
      * @param contentType
-     *            a content type header.
+     *                        a content type header.
      * @return Returns the character encoding for this flow, or null if the given
      *         content-type header is null or if no character enoding is present
      *         in the content-type header.
@@ -1936,7 +1942,7 @@ public abstract class HttpBaseMessageImpl extends GenericMessageImpl implements 
      *
      * @param set
      * @throws NullPointerException
-     *             if the input Charset is null
+     *                                  if the input Charset is null
      */
     @Override
     public void setCharset(Charset set) {
@@ -2192,7 +2198,7 @@ public abstract class HttpBaseMessageImpl extends GenericMessageImpl implements 
         setVersion(VersionValues.V20.getName());
 
         //PI34161 - Record the start of the request at the time of parsing
-        if ((this instanceof HttpRequestMessageImpl) && ((HttpRequestMessageImpl) this).getServiceContext().getHttpConfig().isAccessLoggingEnabled()) {
+        if ((this instanceof HttpRequestMessageImpl) && this.getServiceContext().getHttpConfig().isAccessLoggingEnabled()) {
             this.startTime = System.nanoTime();
         }
 
@@ -2699,7 +2705,7 @@ public abstract class HttpBaseMessageImpl extends GenericMessageImpl implements 
      * operation. This is allowed on an outgoing message only.
      *
      * @param cookie
-     *            the <code>HttpCookie</code> to add.
+     *                       the <code>HttpCookie</code> to add.
      * @param cookieType
      * @return TRUE if the cookie was set successfully otherwise returns FALSE.
      *         if setcookie constraints are violated.
@@ -2758,7 +2764,7 @@ public abstract class HttpBaseMessageImpl extends GenericMessageImpl implements 
      * @param header
      * @return the caching data for the particular set of Cookies.
      * @throws IllegalArgumentException
-     *             if the header is not a cookie header
+     *                                      if the header is not a cookie header
      */
     private CookieCacheData getCookieCache(HttpHeaderKeys header) {
         // 347066 - removed sync because we only allow 1 thread to be working
@@ -2858,9 +2864,9 @@ public abstract class HttpBaseMessageImpl extends GenericMessageImpl implements 
      * Marshall the list of Cookies into the base header storage area.
      *
      * @param list
-     *            the list of new cookies.
+     *                   the list of new cookies.
      * @param header
-     *            the type of header the new cookies are intended for.
+     *                   the type of header the new cookies are intended for.
      */
     private void marshallCookies(List<HttpCookie> list, HeaderKeys header) {
 
@@ -2950,15 +2956,15 @@ public abstract class HttpBaseMessageImpl extends GenericMessageImpl implements 
 
             String partitionedValue = cookie.getAttribute("partitioned");
             // cookie contains the paritioned keyword (set via session / security)
-            if(partitionedValue != null && !partitionedValue.equalsIgnoreCase("false")) {
+            if (partitionedValue != null && !partitionedValue.equalsIgnoreCase("false")) {
                 boolean sameSiteIsNotNone = true;
-                if(cookie.getAttribute("samesite") != null) {
+                if (cookie.getAttribute("samesite") != null) {
                     sameSiteIsNotNone = !cookie.getAttribute("samesite").equalsIgnoreCase(HttpConfigConstants.SameSite.NONE.getName());
                 }
-                // webAppSecurity or httpSession can set partitioned independently in case channel sets samesite=none. 
-                // if samesite=none is NOT set in channel, then we'll override partitioned to false so it isn't rendered in the cookie. 
+                // webAppSecurity or httpSession can set partitioned independently in case channel sets samesite=none.
+                // if samesite=none is NOT set in channel, then we'll override partitioned to false so it isn't rendered in the cookie.
                 // our goal is to not render paritioned on disabled/lax/strict cookies
-                if(sameSiteIsNotNone) {
+                if (sameSiteIsNotNone) {
                     if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
                         Tr.debug(tc, "Overriding Partitioned to false for SameSite=" + cookie.getAttribute("samesite"));
                     }
@@ -2971,7 +2977,7 @@ public abstract class HttpBaseMessageImpl extends GenericMessageImpl implements 
                 String userAgent = getServiceContext().getRequest().getHeader(HttpHeaderKeys.HDR_USER_AGENT).asString();
                 if (userAgent != null && SameSiteCookieUtils.isSameSiteNoneIncompatible(userAgent)) {
                     //TODO: do we remove Secure, probably should be retained.
-                    if(TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
+                    if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
                         Tr.debug(tc, "Incompatible client for SameSite=None found with the following User-Agent: " + userAgent);
                     }
                     cookie.setAttribute("samesite", null);

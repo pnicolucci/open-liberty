@@ -196,6 +196,11 @@ public class HttpDispatcherLink extends InboundApplicationLink implements HttpIn
         if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
             Tr.debug(tc, "New conn: netty context=" + context);
         }
+
+        if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
+            Tr.debug(tc, "PAN: HttpDispatcherLink.init: FullHttpRequest request protocolVersion: " + request.protocolVersion());
+        }
+
         NettyVirtualConnectionImpl nettyVc = NettyVirtualConnectionImpl.createVC();
         nettyContext = context;
         this.isc = new HttpInboundServiceContextImpl(context, nettyVc);
@@ -207,6 +212,14 @@ public class HttpDispatcherLink extends InboundApplicationLink implements HttpIn
         this.usingNetty = true;
 
         this.request = new HttpRequestImpl(HttpDispatcher.useEE7Streams());
+
+        if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
+            Tr.debug(tc, "PAN: HttpDispatcherLink.init: FullHttpRequest nettyRequest protocolVersion: " + nettyRequest.protocolVersion());
+        }
+        //nettyRequest.setProtocolVersion(HttpVersion.HTTP_1_1);
+        //if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
+        //    Tr.debug(tc, "PAN: HttpDispatcherLink.init: FullHttpRequest nettyRequest protocolVersion after set to 1.1: " + nettyRequest.protocolVersion());
+        //}
 
         this.response = new HttpResponseImpl(this);
         isc.setNettyResponse(new DefaultHttpResponse(nettyRequest.protocolVersion(), HttpResponseStatus.OK));
@@ -575,7 +588,7 @@ public class HttpDispatcherLink extends InboundApplicationLink implements HttpIn
         }
 
         try {
-            ((NettyRequestMessage)isc.getRequest()).verifyRequest();
+            ((NettyRequestMessage) isc.getRequest()).verifyRequest();
         } catch (IllegalArgumentException iae) {
             //no FFDC required
             if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
@@ -782,7 +795,7 @@ public class HttpDispatcherLink extends InboundApplicationLink implements HttpIn
         TCPConnectionContext tcc = null;
         if (isc != null) {
             tcc = isc.getTSC();
-        } 
+        }
 
         return tcc;
     }
@@ -1805,7 +1818,5 @@ public class HttpDispatcherLink extends InboundApplicationLink implements HttpIn
 
         return connectionId;
     }
-
-
 
 }

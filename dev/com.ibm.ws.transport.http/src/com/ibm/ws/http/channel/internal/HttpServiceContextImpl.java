@@ -1406,6 +1406,8 @@ public abstract class HttpServiceContextImpl implements HttpServiceContext, FFDC
      */
     private void updateBodyFlags(HttpBaseMessageImpl msg) {
 
+        System.out.println("PAN: updateBodyFlags");
+        Thread.dumpStack();
         // only valid for an inbound message
         if (!msg.isIncoming()) {
             if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
@@ -1434,16 +1436,21 @@ public abstract class HttpServiceContextImpl implements HttpServiceContext, FFDC
             }
         }
         // set the reference CL based on the msg (could have been changed above)
+        System.out.println("PAN: updateBodyFlags: contentLength: " + msg.getContentLength());
         setContentLength(msg.getContentLength());
 
         if (0 == getContentLength()) {
+            System.out.println("PAN: updateBodyFlags: settingBodyComplete b/c Content length  is 0.");
             // not really needed since bodyValid will be false
             setBodyComplete();
         }
+
+        System.out.println("PAN: updateBodyFlags: isBodyAllowed()? : " + msg.isBodyAllowed());
         // save whether a body is allowed, as proxy env might be changing the
         // message itself
         this.bIsIncomingBodyValid = msg.isBodyAllowed();
         // @314871 - save this information now
+        System.out.println("PAN: updateBodyFlags: isBodyExpected()? : " + msg.isBodyExpected());
         this.bIsBodyExpected = msg.isBodyExpected();
 
         if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
@@ -2889,6 +2896,7 @@ public abstract class HttpServiceContextImpl implements HttpServiceContext, FFDC
         }
     }
 
+    // PAN: Only called by Netty
     final protected void sendOutgoing(WsByteBuffer[] wsbb) throws IOException {
         WsByteBuffer[] buffers = wsbb;
         boolean addedCompressionContentLength = false;
@@ -2938,10 +2946,15 @@ public abstract class HttpServiceContextImpl implements HttpServiceContext, FFDC
 //                complete = true;
                 msg.setContentLength(GenericUtils.sizeOf(buffers));
             } else if (addedCompressionContentLength || (!msg.isChunkedEncodingSet() && msg.getContentLength() == HttpGenerics.NOT_SET)) {
+                System.out.println("PAN: HttpServiceContextImpl sendOutgoing, setting to chunked");
                 HttpUtil.setTransferEncodingChunked(nettyResponse, true);
+                // commenting this out ends up with chunked transfer encoding anyhow b/c no content I think headerhanderl.compliancecheck
                 if (nettyContext.channel().hasAttr(NettyHttpConstants.CONTENT_LENGTH)) {
                     nettyContext.channel().attr(NettyHttpConstants.CONTENT_LENGTH).set(null);
                 }
+                // this works but would be bad and break tests
+                //System.out.println("PAN: HttpServiceContextImpl sendOutgoing, setting contentlength to: " + GenericUtils.sizeOf(buffers));
+                //msg.setContentLength(GenericUtils.sizeOf(buffers));
             }
 
             if (msg.isBodyExpected()) {
@@ -2956,7 +2969,7 @@ public abstract class HttpServiceContextImpl implements HttpServiceContext, FFDC
                 DefaultFullHttpResponse resp = new DefaultFullHttpResponse(nettyResponse.protocolVersion(), nettyResponse.status());
                 resp.headers().add(nettyResponse.headers());
                 nettyResponse = resp;
-                ((NettyResponseMessage)msg).update(nettyResponse);
+                ((NettyResponseMessage) msg).update(nettyResponse);
             }
             sendHeaders(nettyResponse);
             if (nettyResponse.headers().contains(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text())) {
@@ -3036,10 +3049,9 @@ public abstract class HttpServiceContextImpl implements HttpServiceContext, FFDC
                                                                    new VoidChannelPromise(this.nettyContext.channel(), true));
 
         promise.addListener(future -> {
-            if (future.isSuccess()){
+            if (future.isSuccess()) {
 
-            }
-            else {
+            } else {
                 future.cause().printStackTrace();
             }
         });
@@ -3256,6 +3268,7 @@ public abstract class HttpServiceContextImpl implements HttpServiceContext, FFDC
                 complete = true;
                 getResponse().setContentLength(GenericUtils.sizeOf(buffers));
             } else if (!msg.isChunkedEncodingSet() && msg.getContentLength() == HttpGenerics.NOT_SET) {
+                System.out.println("PAN: HttpServiceContextImpl sendFullOutgoing, setting to chunked");
                 HttpUtil.setTransferEncodingChunked(nettyResponse, true);
             }
 
@@ -3270,7 +3283,7 @@ public abstract class HttpServiceContextImpl implements HttpServiceContext, FFDC
                 DefaultFullHttpResponse resp = new DefaultFullHttpResponse(nettyResponse.protocolVersion(), nettyResponse.status());
                 resp.headers().add(nettyResponse.headers());
                 nettyResponse = resp;
-                ((NettyResponseMessage)msg).update(nettyResponse);
+                ((NettyResponseMessage) msg).update(nettyResponse);
             }
             sendHeaders(nettyResponse);
             if (nettyResponse.headers().contains(HttpConversionUtil.ExtensionHeaderNames.STREAM_ID.text())) {

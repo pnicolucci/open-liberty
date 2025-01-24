@@ -79,6 +79,7 @@ public class HeaderHandler {
                 HttpUtil.setTransferEncodingChunked(response, false);
 
             } else {
+                System.out.println("PAN: HeaderHandler complianceCheck, setting to chunked");
                 HttpUtil.setTransferEncodingChunked(response, true);
             }
         }

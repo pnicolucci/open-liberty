@@ -167,13 +167,22 @@ public class HttpResponseMessageImpl extends HttpBaseMessageImpl implements Http
      */
     private void initVersion() {
         VersionValues ver = getServiceContext().getRequestVersion();
+        if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
+            Tr.debug(tc, "PAN: getServiceContext().getRequestVersion(): " + ver);
+        }
         VersionValues configVer = getServiceContext().getHttpConfig().getOutgoingVersion();
+        if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
+            Tr.debug(tc, "PAN: getServiceContext().getHttpConfig().getOutgoingVersion(): " + configVer);
+        }
         if (VersionValues.V10.equals(configVer) && VersionValues.V11.equals(ver)) {
             if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
                 Tr.debug(tc, "Configuration forcing 1.0 instead of 1.1");
             }
             setVersion(configVer);
         } else {
+            if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
+                Tr.debug(tc, "PAN: initVersion, in else, setting ver: " + ver);
+            }
             setVersion(ver);
         }
     }
@@ -1144,15 +1153,15 @@ public class HttpResponseMessageImpl extends HttpBaseMessageImpl implements Http
         output.writeShort(getStatusCodeAsInt());
         writeByteArray(output, this.myReasonBytes);
     }
-    
+
     @Override
     public long getBytesWritten() {
         return this.getServiceContext().getNumBytesWritten();
     }
-    
+
     @Override
     public long getEndTime() {
-       return 0; 
+        return 0;
     }
 
 }

@@ -4,7 +4,7 @@
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution,  and is available at
  * http://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  *
  * Contributors:
@@ -102,10 +102,15 @@ public class H2HttpInboundLinkWrap extends HttpInboundLink {
                 isGrpc = false;
             }
         }
-        if (TraceComponent.isAnyTracingEnabled() && tc.isEntryEnabled()) {
-            String currentURL = this.pseudoHeaders == null ? "UNSET_HEADERS" : this.pseudoHeaders.get(HpackConstants.PATH);
-            Tr.exit(tc, "setAndGetIsGrpc returning " + isGrpc + " for request path " + currentURL);
-        }
+
+        // PAN: comment out for now
+        /*
+         * if (TraceComponent.isAnyTracingEnabled() && tc.isEntryEnabled()) {
+         * String currentURL = this.pseudoHeaders.get(HpackConstants.PATH);
+         * Tr.exit(tc, "setAndGetIsGrpc returning " + isGrpc + " for request path " + currentURL);
+         * }
+         */
+
         return isGrpc;
     }
 
