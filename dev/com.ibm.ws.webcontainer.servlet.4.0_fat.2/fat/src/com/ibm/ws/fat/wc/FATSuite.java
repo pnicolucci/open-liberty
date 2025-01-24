@@ -16,6 +16,7 @@ import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
 
 import com.ibm.ws.fat.util.FatLogHandler;
+import com.ibm.ws.fat.wc.tests.NettyTests;
 import com.ibm.ws.fat.wc.tests.WCPartitionedAttributeTests;
 import com.ibm.ws.fat.wc.tests.WCPartitionedCookieAttributeSecurityTest;
 import com.ibm.ws.fat.wc.tests.WCRequestAutoDecompressTest;
@@ -60,6 +61,9 @@ import componenttest.rules.repeater.RepeatTests;
                 WebAndWebFragmentServletMappingTests.class,
                 WebSphereServletEventListenerTest.class,
                 WebSphereSpiHttpRequestURLTest.class
+                WebSphereServletEventListenerTest.class,
+                WebSphereSpiHttpRequestURLTest.class,
+                NettyTests.class
 })
 
 public class FATSuite {
