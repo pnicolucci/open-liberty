@@ -107,7 +107,6 @@ public class HttpPipelineInitializer extends ChannelInitializerWrapper {
     protected void initChannel(Channel channel) throws Exception {
         Tr.entry(tc, "initChannel");
         
-
         ChannelPipeline pipeline = channel.pipeline();
 
         // Initialize with the parent bootstrap initializer
