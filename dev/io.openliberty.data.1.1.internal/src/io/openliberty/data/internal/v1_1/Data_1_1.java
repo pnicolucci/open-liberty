@@ -13,6 +13,7 @@
 package io.openliberty.data.internal.v1_1;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,7 +33,6 @@ import io.openliberty.data.repository.Count;
 import io.openliberty.data.repository.Exists;
 import io.openliberty.data.repository.Is;
 import io.openliberty.data.repository.Or;
-import io.openliberty.data.repository.Select;
 import io.openliberty.data.repository.function.AbsoluteValue;
 import io.openliberty.data.repository.function.CharCount;
 import io.openliberty.data.repository.function.ElementCount;
@@ -49,6 +49,8 @@ import jakarta.data.Order;
 import jakarta.data.Sort;
 import jakarta.data.exceptions.MappingException;
 import jakarta.data.page.PageRequest;
+import jakarta.data.repository.Find;
+import jakarta.data.repository.Select;
 
 /**
  * Capability that is specific to the version of Jakarta Data.
@@ -275,8 +277,20 @@ public class Data_1_1 implements DataVersionCompatibility {
 
     @Override
     @Trivial
+    public boolean atLeast(int major, int minor) {
+        return major == 1 && minor <= 1;
+    }
+
+    @Override
+    @Trivial
     public Annotation getCountAnnotation(Method method) {
         return method.getAnnotation(Count.class);
+    }
+
+    @Override
+    @Trivial
+    public Class<?> getEntityClass(Find find) {
+        return find.value();
     }
 
     @Override
@@ -287,8 +301,8 @@ public class Data_1_1 implements DataVersionCompatibility {
 
     @Override
     @Trivial
-    public String[] getSelections(Method method) {
-        Annotation select = method.getAnnotation(Select.class);
+    public String[] getSelections(AnnotatedElement element) {
+        Annotation select = element.getAnnotation(Select.class);
         return select == null ? null : ((Select) select).value();
     }
 

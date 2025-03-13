@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2023 IBM Corporation and others.
+ * Copyright (c) 2023, 2025 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -214,10 +214,12 @@ public class NettyTCPWriteRequestContext implements TCPWriteRequestContext {
 
             throw new IllegalStateException("Cannot invoke a blocking write on the Netty event loop thread.");
         }
-
+      
         long writtenBytes = 0L;
         // If using HTTP2 chunk logic or something else, keep the relevant parts.
         final String protocol = nettyChannel.attr(NettyHttpConstants.PROTOCOL).get();
+      
+        final boolean isHttp10 = "HTTP10".equals(protocol);
         final boolean isWsoc = "WebSocket".equals(protocol);
         final boolean isH2 = "HTTP2".equals(protocol);
         final boolean hasContentLength = nettyChannel.hasAttr(NettyHttpConstants.CONTENT_LENGTH)
@@ -228,16 +230,12 @@ public class NettyTCPWriteRequestContext implements TCPWriteRequestContext {
                 if (buffer == null || buffer.remaining() <= 0) {
                     continue;
                 }
-
-                
-
                 if (isH2) {
-                    
                     writtenBytes += buffer.remaining();
                     AbstractMap.SimpleEntry<Integer, WsByteBuffer> entry = new AbstractMap.SimpleEntry<>(Integer.valueOf(this.streamID), HttpDispatcher.getBufferManager().wrap(WsByteBufferUtils.asByteArray(buffer)));
                     ChannelFuture future = nettyChannel.write(entry);
-
-                } else if (hasContentLength || isWsoc) {
+                  
+                } else if (hasContentLength || isWsoc || isHttp10) {
                     ByteBuf nettyBuf = Unpooled.wrappedBuffer(WsByteBufferUtils.asByteArray(buffer));
                     int bytes = nettyBuf.readableBytes();
                     ChannelFuture future = nettyChannel.write(nettyBuf);
@@ -276,6 +274,8 @@ public class NettyTCPWriteRequestContext implements TCPWriteRequestContext {
         //check if wsoc
         final String protocol = nettyChannel.attr(NettyHttpConstants.PROTOCOL).get();
 
+        final boolean isHttp10 = "HTTP10".equals(protocol);
+
         final boolean isWsoc = "WebSocket".equals(protocol);
 
         final boolean isH2 = "HTTP2".equals(protocol);
@@ -300,8 +300,7 @@ public class NettyTCPWriteRequestContext implements TCPWriteRequestContext {
                             lastWriteFuture = this.nettyChannel.writeAndFlush(entry);
 
                         }
-
-                        else if (hasContentLength || isWsoc) {
+                        else if (hasContentLength || isWsoc || isHttp10) {
                             if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
                                 Tr.debug(this, tc, "Writing async on channel: " + nettyChannel + " which is wsoc? " + isWsoc);
                             }
@@ -330,7 +329,6 @@ public class NettyTCPWriteRequestContext implements TCPWriteRequestContext {
             }
 
             boolean stillWritable = nettyChannel.isWritable();
-            //nettyChannel.flush();
 
             if (lastWriteFuture == null && wasWritable && stillWritable && totalWrittenBytes >= numBytes) {
                 if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {

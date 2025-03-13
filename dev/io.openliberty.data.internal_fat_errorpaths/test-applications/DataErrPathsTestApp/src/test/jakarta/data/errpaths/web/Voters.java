@@ -112,6 +112,11 @@ public interface Voters extends BasicRepository<Voter, Integer> {
     List<Voter> changeBoth(Voter v1, Voter v2);
 
     /**
+     * This invalid method attempts to return a long count result as Page of Long.
+     */
+    Page<Long> countByBirthday(LocalDate birthday);
+
+    /**
      * Invalid method. A method with a life cycle annotation must have exactly
      * 1 parameter.
      */
@@ -146,12 +151,18 @@ public interface Voters extends BasicRepository<Voter, Integer> {
     int discardSorted(@By("address") String mailingAddress, Sort<Voter> sort);
 
     /**
-     * This invalid method attempts to return a true/false exists results as int.
+     * This invalid method attempts to return a true/false exist result as int.
      */
     int existsByAddress(String homeAddress);
 
     /**
-     * This invalid method attempts to return a true/false exists results as a
+     * This invalid method attempts to return a true/false exists result as Page
+     * of Boolean.
+     */
+    Page<Boolean> existsByBirthday(LocalDate birthday, PageRequest pageReq);
+
+    /**
+     * This invalid method attempts to return a true/false exist result as a
      * Long value within a CompletableFuture. The CompletableFuture is fine, but
      * Long does not match the true/false result type.
      */
@@ -218,6 +229,30 @@ public interface Voters extends BasicRepository<Voter, Integer> {
                            Limit limit,
                            Order<Voter> order,
                            PageRequest pageReq);
+
+    /**
+     * This invalid method has a By annotation where the value is an empty string
+     * instead of a valid entity attribute name.
+     */
+    @Find
+    List<Voter> inPrecinct(@By("") int precinct);
+
+    /**
+     * This invalid method has an OrderBy annotation where the value is an
+     * empty string instead of a valid entity attribute name.
+     */
+    @Query("WHERE address LIKE CONCAT('%;TOWNSHIP:', ?1, ';%')")
+    @OrderBy("address")
+    @OrderBy("")
+    @OrderBy("ssn")
+    List<Voter> inTownship(String name);
+
+    /**
+     * This invalid method has a Param annotation where the value is an empty string
+     * instead of a valid named parameter name.
+     */
+    @Query("WHERE address IS NOT NULL")
+    List<Voter> inWard(@Param("") int ward);
 
     /**
      * This invalid method has 2 Limit parameters.
@@ -372,6 +407,22 @@ public interface Voters extends BasicRepository<Voter, Integer> {
     CursoredPage<Voter> selectByName(@By("name") String name,
                                      PageRequest pageReq,
                                      Sort<Voter> sort);
+
+    /**
+     * Invalid method. A function that does not exist cannot be used within the
+     * sort criteria.
+     */
+    @Find
+    @OrderBy("last5DigitsOf(address)")
+    List<Voter> sortedByEndOfAddress();
+
+    /**
+     * Invalid method. The entity has no zipcode attribute upon which to sort.
+     */
+    @Find
+    @OrderBy("birthday")
+    @OrderBy("zipcode")
+    List<Voter> sortedByZipCode();
 
     /**
      * Invalid method. A method with a life cycle annotation must have exactly
