@@ -23,8 +23,11 @@ import io.openliberty.transport.http_fat.accesslists.AccessListsTests;
 @RunWith(Suite.class)
 @SuiteClasses({
                 AccessListsTests.class,
-                MaxOpenConnectionsTest.class
+                MaxOpenConnectionsTest.class,
+                PortOpenRetriesTests.class,
+                SoLingerTests.class
 })
+
 public class FATSuite {
 
     @ClassRule
