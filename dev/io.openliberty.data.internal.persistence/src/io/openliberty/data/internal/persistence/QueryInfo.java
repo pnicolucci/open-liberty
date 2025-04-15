@@ -2984,7 +2984,7 @@ public class QueryInfo {
         String o_ = entityVar_;
 
         String[] cols, selections = entityInfo.builder.provider.compat.getSelections(method);
-        if (selections == null || selections.length == 0) {
+        if (selections.length == 0) {
             cols = null;
         } else if (type == Type.FIND_AND_DELETE) {
             // Unreachable in version 1.0 and uncertain what will be added to
@@ -2993,7 +2993,8 @@ public class QueryInfo {
             ("The " + method.getName() + " method of the " +
              repositoryInterface.getName() + " repository has a " +
              method.getGenericReturnType().getTypeName() + " return type and" +
-             " specifies to return the " + selections + " entity attributes," +
+             " specifies to return the " +
+             Arrays.toString(selections) + " entity attributes," +
              " but delete operations can only return void, a deletion count," +
              " a boolean deletion indicator, or the removed entities.");
         } else {
@@ -4933,10 +4934,11 @@ public class QueryInfo {
      */
     private int parseFirst(int start, int endBefore) {
         String methodName = method.getName();
+        int i = start;
         int num = start == endBefore ? 1 : 0;
         if (num == 0)
-            while (start < endBefore) {
-                char ch = methodName.charAt(start);
+            while (i < endBefore) {
+                char ch = methodName.charAt(i);
                 if (ch >= '0' && ch <= '9') {
                     if (num <= (Integer.MAX_VALUE - (ch - '0')) / 10)
                         num = num * 10 + (ch - '0');
@@ -4945,9 +4947,9 @@ public class QueryInfo {
                                   "CWWKD1028.first.exceeds.max",
                                   methodName,
                                   repositoryInterface.getName(),
-                                  methodName.substring(0, endBefore),
+                                  methodName.substring(start, endBefore),
                                   "Integer.MAX_VALUE (" + Integer.MAX_VALUE + ")");
-                    start++;
+                    i++;
                 } else {
                     if (num == 0)
                         num = 1;
@@ -4963,7 +4965,7 @@ public class QueryInfo {
         else
             maxResults = num;
 
-        return start;
+        return i;
     }
 
     /**
@@ -4989,6 +4991,25 @@ public class QueryInfo {
                 endBefore -= 10;
 
             String attribute = methodName.substring(i, endBefore);
+
+            if (attribute.length() == 0) {
+                // Error handling for missing attribute name due to Asc or Desc
+                // appearing within an attribute name that is used in the OrderBy
+                String lowerOrderBy = methodName.substring(orderBy + 7).toLowerCase();
+                for (String lowerAttrName : entityInfo.attributeNames.keySet()) {
+                    String keyword = lowerAttrName.contains("asc") ? "Asc" //
+                                    : lowerAttrName.contains("desc") ? "Desc" //
+                                                    : null;
+                    if (keyword != null && lowerOrderBy.contains(lowerAttrName))
+                        throw exc(MappingException.class,
+                                  "CWWKD1105.keyword.in.orderby",
+                                  methodName,
+                                  repositoryInterface.getName(),
+                                  entityInfo.attributeNames.get(lowerAttrName),
+                                  entityInfo.getType().getName(),
+                                  keyword);
+                }
+            }
 
             addSort(ignoreCase, attribute, descending);
 
