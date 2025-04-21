@@ -72,11 +72,11 @@ public class MaxOpenConnectionsTests {
             // CWWKO0222W: TCP Channel defaultHttpEndpoint has exceeded the maximum number of open connections 2.
             // CWWKO0029E: An exception was generated  when initializing chain CHAIN-defaultHttpEndpoint because of exception com.ibm.wsspi.channelfw.exception.ChannelException: A TCP Channel has been constructed with incorrect configuration property value, Channel Name: defaultHttpEndpoint name: maxOpenConnections value: -1 minimum Value: 1 maximum Value: 1280000
             // CWWKO0211E: TCP Channel defaultHttpEndpoint has been constructed with an incorrect configuration property value. Name: maxOpenConnections  Value: -1  Valid Range: Minimum 1, Maximum 1280000
-            if (runningNetty) {
-                server.stopServer("CWWKO0222W", "CWWKO0211E");
-            } else {
-                server.stopServer("CWWKO0222W", "CWWKO0029E", "CWWKO0211E");
-            }
+            //if (runningNetty) {
+            //    server.stopServer("CWWKO0222W", "CWWKO0211E");
+            //} else {
+            server.stopServer("CWWKO0222W", "CWWKO0029E", "CWWKO0211E");
+            // }
         }
     }
 
@@ -192,13 +192,8 @@ public class MaxOpenConnectionsTests {
         server.waitForConfigUpdateInLogUsingMark(null);
 
         // Validate error messages due to an invalid configuration.
-        // When not running Netty there are two unique message, with Netty the same message is output twice.
-        if (!runningNetty) {
-            assertNotNull("CWWKO0211E was not found and should have been!", server.waitForStringInLogUsingMark("CWWKO0211E"));
-            assertNotNull("CWWKO0029E was not found and should have been!", server.waitForStringInLogUsingMark("CWWKO0029E"));
-        } else {
-            assertTrue("CWWKO0211E was not found twice and should have been!", server.waitForMultipleStringsInLogUsingMark(2, "CWWKO0211E") == 2);
-        }
+        assertNotNull("CWWKO0211E was not found and should have been!", server.waitForStringInLogUsingMark("CWWKO0211E"));
+        assertNotNull("CWWKO0029E was not found and should have been!", server.waitForStringInLogUsingMark("CWWKO0029E"));
 
         assertTrue("There were not at least two FFDCs created!", server.waitForMultipleStringsInLogUsingMark(2, "FFDC1015I") == 2);
 
@@ -270,17 +265,8 @@ public class MaxOpenConnectionsTests {
         server.waitForConfigUpdateInLogUsingMark(null);
 
         // Validate error messages due to an invalid configuration. This message should reference the updated httpEndpoint.
-        // When not running Netty there are two unique message, with Netty there is only one.
-        if (!runningNetty) {
-            assertNotNull("CWWKO0211E was not found and should have been!", server.waitForStringInLogUsingMark("CWWKO0211E: TCP Channel updatedHttpEndpoint"));
-            assertNotNull("CWWKO0029E was not found and should have been!", server.waitForStringInLogUsingMark("CWWKO0029E"));
-        } else {
-            // PAN: We fail here b/c there is only one message when we update the endpoint name, looking at the trace we look to then start using the old endpoint name.
-            // To be clear the message is only output one time!
-            //assertTrue("CWWKO0211E was not found twice and should have been!", server.waitForMultipleStringsInLogUsingMark(2, "CWWKO0211E: TCP Channel updatedHttpEndpoint") == 2);
-            // For example the below also fails:
-            assertTrue("CWWKO0211E was not found twice and should have been!", server.waitForMultipleStringsInLogUsingMark(2, "CWWKO0211E") == 2);
-        }
+        assertNotNull("CWWKO0211E was not found and should have been!", server.waitForStringInLogUsingMark("CWWKO0211E: TCP Channel updatedHttpEndpoint"));
+        assertNotNull("CWWKO0029E was not found and should have been!", server.waitForStringInLogUsingMark("CWWKO0029E"));
 
         assertTrue("There were not at least two FFDCs created!", server.waitForMultipleStringsInLogUsingMark(2, "FFDC1015I") == 2);
 
