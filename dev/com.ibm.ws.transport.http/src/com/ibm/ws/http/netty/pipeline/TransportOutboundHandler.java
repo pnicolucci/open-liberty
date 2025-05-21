@@ -48,36 +48,28 @@ public class TransportOutboundHandler extends ChannelOutboundHandlerAdapter {
 
             final boolean isSwitching = response.status().equals(HttpResponseStatus.SWITCHING_PROTOCOLS);
 
-            ChannelFuture future = ctx.writeAndFlush(msg);
+            if(isSwitching) {
+                promise.addListener(new ChannelFutureListener() {
+                    @Override
+                    public void operationComplete(ChannelFuture future) {
+                        if (future.isSuccess()) {
 
-            future.addListener(new ChannelFutureListener() {
-                @Override
-                public void operationComplete(ChannelFuture future) {
-                    if (future.isSuccess() && isSwitching) {
+                            ctx.pipeline().remove(TransportOutboundHandler.class);
+                            if (Objects.nonNull(ctx.pipeline().get(HttpServerCodec.class))) {
+                                ctx.pipeline().remove(HttpServerCodec.class);
+                            }
 
-                        ctx.pipeline().remove(TransportOutboundHandler.class);
-                        if (Objects.nonNull(ctx.pipeline().get(HttpServerCodec.class))) {
-                            ctx.pipeline().remove(HttpServerCodec.class);
-                        }
+                            if (ctx.pipeline().get(NettyServletUpgradeHandler.class) == null) {
 
-                        ctx.pipeline().remove("maxConnectionHandler");
-                        ctx.pipeline().remove("chunkLoggingHandler");
-                        ctx.pipeline().remove("chunkWriteHandler");
-                        ctx.pipeline().remove(ByteBufferCodec.class);
-
-                        if (ctx.pipeline().get(NettyServletUpgradeHandler.class) == null) {
-
-                            NettyServletUpgradeHandler upgradeHandler = new NettyServletUpgradeHandler(ctx.channel());
-                            ctx.pipeline().addLast(upgradeHandler);
+                                NettyServletUpgradeHandler upgradeHandler = new NettyServletUpgradeHandler(ctx.channel());
+                                ctx.pipeline().addLast(upgradeHandler);
+                            }
                         }
                     }
-                }
-            });
+                });
+            }
         }
-
-        else {
-            super.write(ctx, msg, promise);
-        }
+        super.write(ctx, msg, promise);
     }
 
 }

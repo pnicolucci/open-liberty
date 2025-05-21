@@ -14,6 +14,8 @@ import java.nio.ByteBuffer;
 import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.Objects;
+import java.util.Queue;
+import java.util.LinkedList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -34,11 +36,15 @@ import com.ibm.wsspi.tcpchannel.TCPWriteRequestContext;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelPromise;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.handler.codec.http.DefaultHttpContent;
+import io.netty.handler.codec.http.HttpContent;
 import io.netty.handler.codec.http.LastHttpContent;
+import io.netty.handler.codec.http2.StreamSpecificHttpContent;
 import io.netty.handler.stream.ChunkedInput;
+import io.netty.handler.timeout.WriteTimeoutHandler;
 import io.openliberty.http.netty.stream.WsByteBufferChunkedInput;
 
 /**
@@ -52,6 +58,7 @@ public class NettyTCPWriteRequestContext implements TCPWriteRequestContext {
     private final Channel nettyChannel;
 
     private WsByteBuffer[] buffers;
+    private Queue<Object> prefixQueue = new LinkedList<Object>();
     private final WsByteBuffer[] defaultBuffers = new WsByteBuffer[1];
     private ByteBuffer byteBufferArray[] = null;
     private ByteBuffer byteBufferArrayDirect[] = null;
@@ -193,37 +200,61 @@ public class NettyTCPWriteRequestContext implements TCPWriteRequestContext {
         }
 
     }
+    
+    public void queuePrefixObject(Object object) {
+        this.prefixQueue.add(object);
+    }
 
-    private void awaitChannelFuture(ChannelFuture future, int timeout, String timeoutMsg, String failureMsg)
+    private void awaitChannelFuture(ChannelPromise future, String failureMsg)
         throws IOException, InterruptedException {
-
         CountDownLatch latch = new CountDownLatch(1);
         future.addListener(f -> latch.countDown());
-        if (!latch.await(timeout, TimeUnit.MILLISECONDS)) {
-            throw new IOException(timeoutMsg);
-        }
+        latch.await();
         if (!future.isSuccess()) {
             throw new IOException(failureMsg, future.cause());
         }
     }
 
+    private void verifyTimeout(int timeout) {
+        // Verify timeout and add it to the timeout handler
+        long timeoutNanos = TimeUnit.MILLISECONDS.toNanos(timeout);
+        WriteTimeoutHandler timeoutHandler = nettyChannel.pipeline().get(WriteTimeoutHandler.class);
+        if (Objects.isNull(timeoutHandler)) {
+            nettyChannel.pipeline().addLast("writeTimeoutHandler", new WriteTimeoutHandler(timeout, TimeUnit.MILLISECONDS));
+        } else if(timeoutHandler.getTimeout() != timeoutNanos) {
+            // Updated timeout so need to do so here as well
+            timeoutHandler.setTimeout(timeout, TimeUnit.MILLISECONDS);
+        }
+    }
+
     @Override
     public long write(long numBytes, int timeout) throws IOException {
-        
         if (nettyChannel.eventLoop().inEventLoop()) {
 
             throw new IllegalStateException("Cannot invoke a blocking write on the Netty event loop thread.");
         }
+
+        verifyTimeout(timeout);
       
         long writtenBytes = 0L;
         // If using HTTP2 chunk logic or something else, keep the relevant parts.
         final String protocol = nettyChannel.attr(NettyHttpConstants.PROTOCOL).get();
+
+        // A write queue to run all the write events inside the eventloop to improve performance
+        // Maybe we should see if this writequeue should belong to the class to improve performance?
+        // See https://github.com/OpenLiberty/open-liberty/issues/31555
+        final Queue<Object> writeQueue = new LinkedList<Object>();
+        final ChannelPromise writePromise = nettyChannel.newPromise();
       
         final boolean isHttp10 = "HTTP10".equals(protocol);
         final boolean isWsoc = "WebSocket".equals(protocol);
         final boolean isH2 = "HTTP2".equals(protocol);
         final boolean hasContentLength = nettyChannel.hasAttr(NettyHttpConstants.CONTENT_LENGTH)
                                          && nettyChannel.attr(NettyHttpConstants.CONTENT_LENGTH).get() != null;
+        
+        while(!prefixQueue.isEmpty()) {
+            writeQueue.add(prefixQueue.poll());
+        }
 
         try {
             for (WsByteBuffer buffer : buffers) {
@@ -232,27 +263,36 @@ public class NettyTCPWriteRequestContext implements TCPWriteRequestContext {
                 }
                 if (isH2) {
                     writtenBytes += buffer.remaining();
-                    AbstractMap.SimpleEntry<Integer, WsByteBuffer> entry = new AbstractMap.SimpleEntry<>(Integer.valueOf(this.streamID), HttpDispatcher.getBufferManager().wrap(WsByteBufferUtils.asByteArray(buffer)));
-                    ChannelFuture future = nettyChannel.write(entry);
+                    ByteBuf nettyBuf = Unpooled.wrappedBuffer(WsByteBufferUtils.asByteArray(buffer));
+                    HttpContent httpContent = new StreamSpecificHttpContent(Integer.valueOf(this.streamID), Unpooled.wrappedBuffer(WsByteBufferUtils.asByteArray(buffer)));
+                    writeQueue.add(httpContent);
                   
                 } else if (hasContentLength || isWsoc || isHttp10) {
                     ByteBuf nettyBuf = Unpooled.wrappedBuffer(WsByteBufferUtils.asByteArray(buffer));
                     int bytes = nettyBuf.readableBytes();
-                    ChannelFuture future = nettyChannel.write(nettyBuf);
+                    writeQueue.add(nettyBuf);
                     writtenBytes += bytes;
 
                 } else {
 
                     ByteBuf nettyBuf = Unpooled.wrappedBuffer(WsByteBufferUtils.asByteArray(buffer));
                     DefaultHttpContent httpContent = new DefaultHttpContent(nettyBuf);
-                
-                    ChannelFuture future = nettyChannel.write(httpContent);
                     writtenBytes += nettyBuf.readableBytes();
+                    writeQueue.add(httpContent);
                 }
             }
 
-            ChannelFuture flushFuture = nettyChannel.writeAndFlush(Unpooled.EMPTY_BUFFER);
-            awaitChannelFuture(flushFuture, timeout, "Flush operation timed out.", "Flush operation failed.");
+            // Run all the channel operations in the event loop
+            nettyChannel.eventLoop().execute(new Runnable() {
+                @Override
+                public void run() {
+                    for(Object writeBuffer : writeQueue){
+                        nettyChannel.write(writeBuffer);
+                    }
+                    nettyChannel.writeAndFlush(Unpooled.EMPTY_BUFFER, writePromise);
+                }
+            });
+            awaitChannelFuture(writePromise, "Flush operation timed out!");
 
 
         } catch (InterruptedException e) {
@@ -267,10 +307,16 @@ public class NettyTCPWriteRequestContext implements TCPWriteRequestContext {
 
     @Override
     public VirtualConnection write(long numBytes, TCPWriteCompletedCallback callback, boolean forceQueue, int timeout) {
+        verifyTimeout(timeout);
         boolean wasWritable = nettyChannel.isWritable();
         long totalWrittenBytes = 0;
-        ChannelFuture lastWriteFuture = null;
+        // ChannelFuture lastWriteFuture = null;
         boolean hasContentLength = nettyChannel.hasAttr(NettyHttpConstants.CONTENT_LENGTH) && Objects.nonNull(nettyChannel.attr(NettyHttpConstants.CONTENT_LENGTH).get());
+        // A write queue to run all the write events inside the eventloop to improve performance
+        // Maybe we should see if this writequeue should belong to the class to improve performance?
+        // See https://github.com/OpenLiberty/open-liberty/issues/31555
+        final Queue<Object> writeQueue = new LinkedList<Object>();
+        final ChannelPromise writePromise = nettyChannel.newPromise();
         //check if wsoc
         final String protocol = nettyChannel.attr(NettyHttpConstants.PROTOCOL).get();
 
@@ -284,8 +330,12 @@ public class NettyTCPWriteRequestContext implements TCPWriteRequestContext {
             if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
                 Tr.debug(this, tc, "Ignoring write, null buffers passed for channel: " + nettyChannel);
             }
-            // TODO If there is nothing to write, should this be null or vc?
-            return null;
+            // If there is nothing to write, return vc since wrote everything we could
+            return vc;
+        }
+        
+        while(!prefixQueue.isEmpty()) {
+            writeQueue.add(prefixQueue.poll());
         }
 
         try {
@@ -296,8 +346,9 @@ public class NettyTCPWriteRequestContext implements TCPWriteRequestContext {
 
                         if (isH2) {
                             totalWrittenBytes += buffer.remaining();
-                            AbstractMap.SimpleEntry<Integer, WsByteBuffer> entry = new AbstractMap.SimpleEntry<Integer, WsByteBuffer>(Integer.valueOf(this.streamID), HttpDispatcher.getBufferManager().wrap(WsByteBufferUtils.asByteArray(buffer)));
-                            lastWriteFuture = this.nettyChannel.writeAndFlush(entry);
+                            ByteBuf nettyBuf = Unpooled.wrappedBuffer(WsByteBufferUtils.asByteArray(buffer));
+                            HttpContent httpContent = new StreamSpecificHttpContent(Integer.valueOf(this.streamID), Unpooled.wrappedBuffer(WsByteBufferUtils.asByteArray(buffer)));
+                            writeQueue.add(httpContent);
 
                         }
                         else if (hasContentLength || isWsoc || isHttp10) {
@@ -305,35 +356,42 @@ public class NettyTCPWriteRequestContext implements TCPWriteRequestContext {
                                 Tr.debug(this, tc, "Writing async on channel: " + nettyChannel + " which is wsoc? " + isWsoc);
                             }
                             ByteBuf nettyBuf = Unpooled.wrappedBuffer(WsByteBufferUtils.asByteArray(buffer));
-                            lastWriteFuture = this.nettyChannel.writeAndFlush(nettyBuf); // Write data to the channel
                             totalWrittenBytes += nettyBuf.readableBytes();
+                            writeQueue.add(nettyBuf);
                         }
 
                         else {
-                            //ChunkedInput<ByteBuf> chunkedInput = new WsByteBufferChunkedInput(buffer);
-                            //lastWriteFuture = nettyChannel.writeAndFlush(chunkedInput);
-                            //totalWrittenBytes += chunkedInput.length();
-
                             ByteBuf nettyBuf = Unpooled.wrappedBuffer(WsByteBufferUtils.asByteArray(buffer));
                             DefaultHttpContent httpContent = new DefaultHttpContent(nettyBuf);
-
-                            ChannelFuture future = nettyChannel.writeAndFlush(httpContent);
                             totalWrittenBytes += nettyBuf.readableBytes();
+                            writeQueue.add(httpContent);
                         }
-
-//                        ByteBuf nettyBuf = Unpooled.wrappedBuffer(WsByteBufferUtils.asByteArray(buffer));
-//                        lastWriteFuture = nettyChannel.write(nettyBuf);
-//                        totalWrittenBytes += nettyBuf.readableBytes();
                     }
                 }
             }
 
+            // Run all channel operations in the event loop
+            nettyChannel.eventLoop().execute(new Runnable() {
+                @Override
+                public void run() {
+                    for(Object writeBuffer : writeQueue){
+                        nettyChannel.write(writeBuffer);
+                    }
+                    nettyChannel.writeAndFlush(Unpooled.EMPTY_BUFFER, writePromise);
+                }
+            });
+
             boolean stillWritable = nettyChannel.isWritable();
 
-            if (lastWriteFuture == null && wasWritable && stillWritable && totalWrittenBytes >= numBytes) {
+            if (Objects.isNull(callback)) {
+                // No callback so no need to queue anything else to run. We can just return null here meaning it went async
+                return null;
+            }
+
+            if (writePromise == null && wasWritable && stillWritable && totalWrittenBytes >= numBytes) {
                 if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
-                    Tr.debug(this, tc, "Found lastWriteFuture to be null or unable to keep writing on channel: " + nettyChannel);
-                    Tr.debug(this, tc, "lastWriteFuture: " + lastWriteFuture + " wasWritable: " + wasWritable + " stillWritable: " + stillWritable + " totalWrittenBytes: "
+                    Tr.debug(this, tc, "Found writePromise to be null or unable to keep writing on channel: " + nettyChannel);
+                    Tr.debug(this, tc, "writePromise: " + writePromise + " wasWritable: " + wasWritable + " stillWritable: " + stillWritable + " totalWrittenBytes: "
                                        + totalWrittenBytes + " numBytes: " + numBytes);
                 }
                 // Every thing was written here. Do callback in another thread
@@ -356,11 +414,11 @@ public class NettyTCPWriteRequestContext implements TCPWriteRequestContext {
 
             } else {
 
-                if (lastWriteFuture != null) {
+                if (writePromise != null) {
                     // We don't have to do the callback if everything wrote properly
-                    if (lastWriteFuture.isDone()) {
+                    if (writePromise.isDone()) {
                         if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
-                            Tr.debug(this, tc, "Found lastWriteFuture to be finished on channel: " + nettyChannel);
+                            Tr.debug(this, tc, "Found writePromise to be finished on channel: " + nettyChannel);
                         }
                         // Everything was written, if forceQueue need to do callback on another thread
                         if (forceQueue) {
@@ -378,9 +436,9 @@ public class NettyTCPWriteRequestContext implements TCPWriteRequestContext {
                         return vc;
                     }
                     if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
-                        Tr.debug(this, tc, "Went async, found lastWriteFuture to be running on channel: " + nettyChannel);
+                        Tr.debug(this, tc, "Went async, found writePromise to be running on channel: " + nettyChannel);
                     }
-                    lastWriteFuture.addListener((ChannelFutureListener) future -> {
+                    writePromise.addListener((ChannelFutureListener) future -> {
                         boolean succeeded = future.isSuccess();
                         HttpDispatcher.getExecutorService().submit(() -> {
                             if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
@@ -389,13 +447,13 @@ public class NettyTCPWriteRequestContext implements TCPWriteRequestContext {
                             if(succeeded){
                                 callback.complete(vc, this);
                             } else {
-                                callback.error(vc, this, new IOException(future.cause()));
+                                callback.error(vc, this, (future.cause() instanceof IOException) ? ((IOException)future.cause()) : new IOException(future.cause()));
                             }
                         });
                     });
                 } else {
                     if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
-                        Tr.debug(this, tc, "In else block with lastWriteFuture being null for channel: " + nettyChannel);
+                        Tr.debug(this, tc, "In else block with writePromise being null for channel: " + nettyChannel);
                     }
                 }
             }
