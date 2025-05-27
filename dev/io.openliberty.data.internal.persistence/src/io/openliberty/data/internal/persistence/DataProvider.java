@@ -323,7 +323,8 @@ public class DataProvider implements //
 
     @Override
     public void applicationStarted(ApplicationInfo appInfo) throws StateChangeException {
-        String appName = appInfo.getName();
+        //Use deployment name but fall back to generated name
+        String appName = appInfo.getDeploymentName() == null ? appInfo.getName() : appInfo.getDeploymentName();
         Set<FutureEMBuilder> futures = futureEMBuilders.get(appName);
         Set<FutureEMBuilder> skip = futureEMBuildersInEJB.remove(appName);
         if (futures != null) {
@@ -902,7 +903,9 @@ public class DataProvider implements //
                     moduleNameWithDot != null &&
                     moduleNameWithDot.length() == moduleName.length() + 4 &&
                     moduleNameWithDot.startsWith(moduleName) &&
-                    moduleNameWithDot.endsWith(".jar")) {
+                    moduleNameWithDot.regionMatches(true, //
+                                                    moduleNameWithDot.length() - 4, //
+                                                    ".jar", 0, 4)) {
 
                     if (trace && tc.isDebugEnabled())
                         Tr.debug(this, tc, "matched with " + futureEMBuilder.jeeName);

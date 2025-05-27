@@ -21,10 +21,12 @@ import java.beans.PropertyDescriptor;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.Writer;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.RecordComponent;
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.util.AbstractMap.SimpleImmutableEntry;
 import java.util.ArrayList;
@@ -347,9 +349,10 @@ public class DBStoreEMBuilder extends EntityManagerBuilder implements DDLGenerat
                 // record that is specified by the user, not from the generated
                 // entity class that is used internally in place of a record.
                 String tableName = c.getSimpleName();
-
                 Class<?> ec = c;
                 if (c.isRecord()) {
+                    disallowPersistenceAnnos(c, true);
+
                     // an entity class is generated for the record
                     String entityClassName = c.getName() + EntityInfo.RECORD_ENTITY_SUFFIX;
                     byte[] generatedEntityBytes = RecordTransformer //
@@ -363,6 +366,8 @@ public class DBStoreEMBuilder extends EntityManagerBuilder implements DDLGenerat
                                                               entityClassName,
                                                               generatedEntityBytes);
                     generatedToRecordClass.put(ec, c);
+                } else {
+                    disallowPersistenceAnnos(c, false);
                 }
 
                 StringBuilder xml = new StringBuilder(500);
@@ -482,12 +487,35 @@ public class DBStoreEMBuilder extends EntityManagerBuilder implements DDLGenerat
             entityClassInfo.add(xml.toString());
         }
 
-        for (Class<?> type : converterTypes) {
+        Set<Class<?>> convertibleTypes = new HashSet<>();
+        for (Class<?> converterType : converterTypes) {
             StringBuilder xml = new StringBuilder(500) //
                             .append(" <converter class=\"") //
-                            .append(type.getName()).append("\"></converter>") //
+                            .append(converterType.getName()) //
+                            .append("\"></converter>") //
                             .append(EOLN);
             entityClassInfo.add(xml.toString());
+
+            for (Class<?> c = converterType; c != null; c = c.getSuperclass())
+                for (Type ifc : c.getGenericInterfaces())
+                    if (ifc instanceof ParameterizedType type &&
+                        ifc.getTypeName().startsWith(Util.ATTR_CONVERTER_CLASS_NAME)) {
+                        if (trace && tc.isDebugEnabled())
+                            Tr.debug(this, tc, "found converter: " + ifc.getTypeName());
+
+                        Type[] typeParams = type.getActualTypeArguments();
+                        if (Util.UNSUPPORTED_ATTR_TYPES.contains(typeParams[1]))
+                            throw exc(MappingException.class,
+                                      "CWWKD1111.unsupported.convert",
+                                      converterType.getName(),
+                                      typeParams[0].getTypeName(),
+                                      typeParams[1].getTypeName(),
+                                      Util.SUPPORTED_TEMPORAL_TYPES,
+                                      Util.SUPPORTED_BASIC_TYPES);
+
+                        if (typeParams[0] instanceof Class)
+                            convertibleTypes.add((Class<?>) typeParams[0]);
+                    }
         }
 
         Map<String, Object> properties = new HashMap<>();
@@ -505,7 +533,7 @@ public class DBStoreEMBuilder extends EntityManagerBuilder implements DDLGenerat
                                                                       properties,
                                                                       entityClassNames.toArray(new String[entityClassNames.size()]));
 
-        collectEntityInfo(entityTypes);
+        collectEntityInfo(entityTypes, convertibleTypes);
     }
 
     @Override
@@ -516,6 +544,47 @@ public class DBStoreEMBuilder extends EntityManagerBuilder implements DDLGenerat
         if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled())
             Tr.debug(this, tc, "createEntityManager: " + em);
         return em;
+    }
+
+    /**
+     * Raises an error if any method (or field if not a Java record) is annotated
+     * with an annotation from Jakarta Persistence.
+     *
+     * @param c        class that does not have the Entity annotation.
+     * @param isRecord true if the entity class is a Java record, otherwise false.
+     */
+    @Trivial
+    private void disallowPersistenceAnnos(Class<?> c, boolean isRecord) {
+
+        if (!isRecord)
+            for (Field field : c.getDeclaredFields())
+                for (Annotation anno : field.getAnnotations())
+                    if (anno.annotationType().getPackageName() //
+                                    .startsWith("jakarta.persistence"))
+                        throw exc(MappingException.class,
+                                  "CWWKD1108.missing.entity.anno",
+                                  c.getName(),
+                                  Entity.class.getName(),
+                                  anno.annotationType().getName(),
+                                  field.getName());
+
+        for (Method method : c.getDeclaredMethods())
+            for (Annotation anno : method.getAnnotations())
+                if (anno.annotationType().getPackageName() //
+                                .startsWith("jakarta.persistence"))
+                    if (isRecord)
+                        throw exc(MappingException.class,
+                                  "CWWKD1109.jpa.anno.on.record",
+                                  anno.annotationType().getName(),
+                                  method.getName(),
+                                  c.getName());
+                    else
+                        throw exc(MappingException.class,
+                                  "CWWKD1108.missing.entity.anno",
+                                  c.getName(),
+                                  Entity.class.getName(),
+                                  anno.annotationType().getName(),
+                                  method.getName());
     }
 
     /**
@@ -708,11 +777,15 @@ public class DBStoreEMBuilder extends EntityManagerBuilder implements DDLGenerat
                 x.getMessage().startsWith("CWWKD"))
                 throw (RuntimeException) x;
 
+            String datastore = dsFactory instanceof ResRefDelegator //
+                            ? ((ResRefDelegator) dsFactory).jndiName //
+                            : databaseStoreId;
+
             throw (DataException) exc(DataException.class,
                                       "CWWKD1064.datastore.error",
                                       repoMethod.getName(),
                                       repoInterface.getName(),
-                                      databaseStoreId,
+                                      datastore,
                                       x.getMessage()).initCause(x);
         }
     }

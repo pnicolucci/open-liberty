@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2009, 2024 IBM Corporation and others.
+ * Copyright (c) 2009, 2025 IBM Corporation and others.
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the Eclipse Public License 2.0
  * which accompanies this distribution, and is available at
@@ -16,6 +16,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Arrays;
@@ -1049,7 +1050,7 @@ public class HttpDispatcherLink extends InboundApplicationLink implements HttpIn
 
         rMsg.setStatusCode(code);
         rMsg.setConnection(ConnectionValues.CLOSE);
-        rMsg.setCharset(Charset.forName("UTF-8"));
+        rMsg.setCharset(StandardCharsets.UTF_8);
         rMsg.setHeader("Content-Type", "text/html; charset=UTF-8");
     }
 
@@ -1376,19 +1377,12 @@ public class HttpDispatcherLink extends InboundApplicationLink implements HttpIn
      */
     @Override
     public SSLContext getSSLContext() {
-
-//        if (this.usingNetty) {
-//            //TODO: return null for now, connect to pipeline ssl
-//            return null;
-//        } else {
         if (this.sslinfo == null &&
             this.isc != null &&
             this.isc.getSSLContext() != null) {
             this.sslinfo = new SSLContextImpl(this.isc.getSSLContext());
         }
         return this.sslinfo;
-        //    }
-
     }
 
     /*
