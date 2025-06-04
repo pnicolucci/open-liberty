@@ -29,16 +29,25 @@ public class InactivityTimeoutHandler extends IdleStateHandler {
 
     public InactivityTimeoutHandler(long readerIdleTime, long writerIdleTime, long allIdleTime, TimeUnit unit) {
         super(readerIdleTime, writerIdleTime, allIdleTime, unit);
+        if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
+            Tr.debug(tc, "PAN: InactivityTimeoutHandler init: reader: " + readerIdleTime + " writer: " + writerIdleTime + " all: " + allIdleTime + " unit: " + unit);
+        }
     }
 
     @Override
     protected void channelIdle(ChannelHandlerContext ctx, IdleStateEvent evt) throws Exception{
+        if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
+            Tr.debug(tc, "PAN: channelIdle ChannelHandlerContext: " + ctx + " IdleStateEvent: " + evt);
+        }
         // Overriden to call the userEventTriggered of this handler instead of the next to keep the timeout logic contained to one class/handler
         userEventTriggered(ctx, evt);
     }
 
     @Override
    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
+            Tr.debug(tc, "PAN: userEventTriggered ChannelHandlerContext: " + ctx + " IdleStateEvent: " + evt);
+        }
        if (evt instanceof IdleStateEvent) {
            ctx.close();
            if (TraceComponent.isAnyTracingEnabled() && tc.isDebugEnabled()) {
