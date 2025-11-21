@@ -10,7 +10,6 @@
 package com.ibm.ws.fat.wc;
 
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
 import org.junit.runners.Suite.SuiteClasses;
@@ -31,6 +30,7 @@ import com.ibm.ws.fat.wc.tests.WebSphereSpiHttpRequestURLTest;
 
 import componenttest.rules.repeater.FeatureReplacementAction;
 import componenttest.rules.repeater.RepeatTests;
+import com.ibm.ws.fat.wc.tests.NettyTests;
 
 /**
  * Servlet 4.0 Tests
@@ -50,19 +50,6 @@ import componenttest.rules.repeater.RepeatTests;
  */
 @RunWith(Suite.class)
 @SuiteClasses({
-                WCRequestAutoDecompressTest.class,
-                WCResponseContentLengthChunkedEncodingTest.class,
-                WCResponseHeadersTest.class,
-                WCSameSiteCookieAttributeTests.class,
-                WCSameSiteCookieAttributeSecurityTest.class,
-                WCPartitionedAttributeTests.class,
-                WCPartitionedCookieAttributeSecurityTest.class,
-                WCSameSiteIncompatibleClientsTests.class,
-                WebAndWebFragmentServletMappingTests.class,
-                WebSphereServletEventListenerTest.class,
-                WebSphereSpiHttpRequestURLTest.class
-                WebSphereServletEventListenerTest.class,
-                WebSphereSpiHttpRequestURLTest.class,
                 NettyTests.class
 })
 
