@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package io.openliberty.transport.http_fat;
+package io.openliberty.transport_fat;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

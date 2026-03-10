@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package io.openliberty.transport.http_fat;
+package io.openliberty.transport_fat;
 
 import static org.junit.Assert.assertNotNull;
 
@@ -28,7 +28,7 @@ import componenttest.custom.junit.runner.Mode;
 import componenttest.custom.junit.runner.Mode.TestMode;
 import componenttest.topology.impl.LibertyServer;
 import componenttest.topology.utils.FATServletClient;
-import io.openliberty.transport.http_fat.accesslists.Utils;
+import io.openliberty.transport_fat.accesslists.Utils;
 
 /**
  * Tests exposing Socket from HTTP layers

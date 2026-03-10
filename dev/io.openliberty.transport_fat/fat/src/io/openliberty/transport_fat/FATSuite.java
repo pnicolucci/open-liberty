@@ -7,7 +7,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0
  *******************************************************************************/
-package io.openliberty.transport.http_fat;
+package io.openliberty.transport_fat;
 
 import org.junit.ClassRule;
 import org.junit.runner.RunWith;
@@ -17,7 +17,7 @@ import org.junit.runners.Suite.SuiteClasses;
 import componenttest.rules.repeater.EmptyAction;
 import componenttest.rules.repeater.FeatureReplacementAction;
 import componenttest.rules.repeater.RepeatTests;
-import io.openliberty.transport.http_fat.accesslists.AccessListsTests;
+import io.openliberty.transport_fat.accesslists.AccessListsTests;
 
 @RunWith(Suite.class)
 @SuiteClasses({
